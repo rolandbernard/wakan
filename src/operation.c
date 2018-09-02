@@ -195,6 +195,7 @@ void operation_exec(operation_t* op, environment_t* env) {
 			case OPERATION_TYPE_NOOP_EMP_REC:
 			case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 			case OPERATION_TYPE_NOOP_PROC_DEADEND:
+			case OPERATION_TYPE_NOOP_PLUS:
 			case OPERATION_TYPE_NOOP_EMP_CUR: break;
 			case OPERATION_TYPE_NONE: break;
 			case OPERATION_TYPE_NUM: break;
@@ -494,6 +495,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 			case OPERATION_TYPE_NOOP_EMP_REC:
 			case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 			case OPERATION_TYPE_NOOP_PROC_DEADEND:
+			case OPERATION_TYPE_NOOP_PLUS:
 			case OPERATION_TYPE_NOOP_EMP_CUR: break;
 			case OPERATION_TYPE_NONE: 
 				ret = (object_t**)_alloc(sizeof(object_t*)*2);
@@ -2452,6 +2454,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 			case OPERATION_TYPE_NOOP_EMP_REC:
 			case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 			case OPERATION_TYPE_NOOP_PROC_DEADEND:
+			case OPERATION_TYPE_NOOP_PLUS:
 			case OPERATION_TYPE_NOOP_EMP_CUR: break;
 			case OPERATION_TYPE_NONE: break;
 			case OPERATION_TYPE_NUM: break;
@@ -2724,6 +2727,7 @@ void operation_free(operation_t* op) {
 			case OPERATION_TYPE_NOOP_EMP_REC:
 			case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 			case OPERATION_TYPE_NOOP_PROC_DEADEND:
+			case OPERATION_TYPE_NOOP_PLUS:
 			case OPERATION_TYPE_NOOP_EMP_CUR: break;
 			case OPERATION_TYPE_NONE: break;
 			case OPERATION_TYPE_NUM: break;
@@ -3030,6 +3034,7 @@ id_t operation_id(operation_t* op) {
 			case OPERATION_TYPE_NOOP_EMP_REC:
 			case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 			case OPERATION_TYPE_NOOP_PROC_DEADEND:
+			case OPERATION_TYPE_NOOP_PLUS:
 			case OPERATION_TYPE_NOOP_EMP_CUR: break;
 			case OPERATION_TYPE_NUM: break;
 			case OPERATION_TYPE_NONE: break;
@@ -3124,6 +3129,7 @@ bool_t operation_equ(operation_t* o1, operation_t* o2) {
 		case OPERATION_TYPE_NOOP_BRAC:
 		case OPERATION_TYPE_NOOP_EMP_REC:
 		case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
+		case OPERATION_TYPE_NOOP_PLUS:
 		case OPERATION_TYPE_NOOP_PROC_DEADEND:
 		case OPERATION_TYPE_NOOP_EMP_CUR: ret = true; break;
 		case OPERATION_TYPE_NONE: ret = true; break;

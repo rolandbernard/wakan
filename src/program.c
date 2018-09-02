@@ -79,6 +79,7 @@ int get_operation_priority(operation_type_t type) {
 		case OPERATION_TYPE_SUB:
 			return 9;
 		case OPERATION_TYPE_NEG:
+		case OPERATION_TYPE_NOOP_PLUS:
 			return 8;
 		case OPERATION_TYPE_ABS:
 			return 9;
@@ -279,6 +280,8 @@ operation_type_t get_operation(token_t** stack, size_t count, bool_t(*func)(toke
 		return OPERATION_TYPE_SUB;
 	else if(func(stack, count, 2, TOKEN_TYPE_MINUS, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_NEG;
+	else if(func(stack, count, 2, TOKEN_TYPE_PLUS, TOKEN_TYPE_EXP))
+		return OPERATION_TYPE_NOOP_PLUS;
 	else if(func(stack, count, 3, TOKEN_TYPE_ABS, TOKEN_TYPE_EXP, TOKEN_TYPE_ABS))
 		return OPERATION_TYPE_ABS;
 	else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_EQU, TOKEN_TYPE_EXP))
@@ -452,6 +455,12 @@ program_t* parse_program(tokenlist_t* list) {
 							_free(stack[count-2]);
 							_free(stack[count-1]);
 							count -= 3;
+							break;
+						case OPERATION_TYPE_NOOP_PLUS:
+							tmp->data.op = stack[count-1]->data.op;
+							_free(stack[count-2]);
+							_free(stack[count-1]);
+							count -= 2;
 							break;
 						case OPERATION_TYPE_NOOP_BRAC:
 							tmp->data.op = stack[count-2]->data.op;
