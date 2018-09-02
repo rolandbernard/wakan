@@ -1,4 +1,0 @@
-
-counter := 0;
-while counter <= 50 do (write(to_str counter + "\n"); counter := counter + 1)
-
