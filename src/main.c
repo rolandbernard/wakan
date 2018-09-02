@@ -1,3 +1,4 @@
+// Copyright (c) 2018 Roland Bernard
 
 #include <stdio.h>
 #include <stdlib.h>

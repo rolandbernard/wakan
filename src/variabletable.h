@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __VARIABLETABLE_H__
 #define __VARIABLETABLE_H__
 

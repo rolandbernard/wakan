@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __PROGRAM_H__
 #define __PROGRAM_H__
 

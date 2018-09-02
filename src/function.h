@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __FUNCTION_H__
 #define __FUNCTION_H__
 

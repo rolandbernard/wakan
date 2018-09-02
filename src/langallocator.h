@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __LANGALLOCATOR_H__
 #define __LANGALLOCATOR_H__
 

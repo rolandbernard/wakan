@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __DICTIONARY_H__
 #define __DICTIONARY_H__
 

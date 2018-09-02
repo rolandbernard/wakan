@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __NUMBER_H__
 #define __NUMBER_H__
 

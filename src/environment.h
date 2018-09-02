@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __ENVIRONMENT_H__
 #define __ENVIRONMENT_H__
 

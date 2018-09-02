@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __TYPES_H__
 #define __TYPES_H__
 

@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __STRUCT_H__
 #define __STRUCT_H__
 

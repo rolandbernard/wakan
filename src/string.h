@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __STRING_H__
 #define __STRING_H__
 
@@ -13,6 +15,7 @@ string_t* string_create(const char* str);
 string_t* string_create_full(const char* str, size_t length);
 string_t* string_copy(string_t* str);
 string_t* string_concat(string_t* s1, string_t* s2);
+string_t* string_concat_and_free(string_t* s1, string_t* s2);
 string_t* string_mult(string_t* str, size_t n);
 string_t* string_substr(string_t* str, pos_t pos, pos_t n);
 pos_t string_find(string_t* str, string_t* find);

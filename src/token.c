@@ -1,3 +1,4 @@
+// Copyright (c) 2018 Roland Bernard
 
 #include "./token.h"
 #include "./langallocator.h"

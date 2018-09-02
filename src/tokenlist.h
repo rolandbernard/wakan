@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __TOKENLIST_H__
 #define __TOKENLIST_H__
 

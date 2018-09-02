@@ -1,3 +1,4 @@
+// Copyright (c) 2018 Roland Bernard
 
 #include <stdlib.h>
 #include <math.h>
@@ -65,6 +66,13 @@ string_t* string_concat(string_t* s1, string_t* s2) {
 		ret->data[ret->length] = 0;
 	}
 
+	return ret;
+}
+
+string_t* string_concat_and_free(string_t* s1, string_t* s2) {
+	string_t* ret = string_concat(s1, s2);
+	string_free(s1);
+	string_free(s2);
 	return ret;
 }
 

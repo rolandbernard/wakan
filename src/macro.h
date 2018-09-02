@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __MACRO_H__
 #define __MACRO_H__
 

@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __TOKEN_H__
 #define __TOKEN_H__
 

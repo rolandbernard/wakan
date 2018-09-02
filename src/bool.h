@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __BOOL_H__
 #define __BOOL_H__
 

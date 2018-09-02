@@ -1,7 +1,12 @@
+// Copyright (c) 2018 Roland Bernard
+
+#include <stdio.h>
 
 #include "./object.h"
 #include "./langallocator.h"
 #include "./prime.h"
+
+#define TMP_STR_MAX 1<<12
 
 object_t* object_create_none() {
 	object_t* ret = (object_t*)_alloc(sizeof(object_t));
@@ -165,4 +170,161 @@ void object_free(object_t* obj) {
 		}
 		_free(obj);
 	}
+}
+
+void print_object(object_t* obj) {
+	if(obj == NULL)
+		fprintf(stdout, "null");
+	else {
+		switch(obj->type) {
+			case OBJECT_TYPE_NONE: fprintf(stdout, "none"); break;
+			case OBJECT_TYPE_NUMBER: fprintf(stdout, "%.15lg", obj->data.number); break;
+			case OBJECT_TYPE_BOOL: fprintf(stdout, (obj->data.boolean ? "true" : "false")); break;
+			case OBJECT_TYPE_STRING: fprintf(stdout, "%s", string_get_cstr(obj->data.string)); break;
+			case OBJECT_TYPE_PAIR: 
+				if(obj->data.pair->key->type == OBJECT_TYPE_STRING)
+					fprintf(stdout, "\"");
+				print_object(obj->data.pair->key);
+				if(obj->data.pair->key->type == OBJECT_TYPE_STRING)
+					fprintf(stdout, "\"");
+				fprintf(stdout, ":");
+				if(obj->data.pair->value->type == OBJECT_TYPE_STRING)
+					fprintf(stdout, "\"");
+				print_object(obj->data.pair->value);
+				if(obj->data.pair->value->type == OBJECT_TYPE_STRING)
+					fprintf(stdout, "\"");
+			break;
+			case OBJECT_TYPE_LIST: 
+				fprintf(stdout, "[");
+				for(int i = 0; i < obj->data.list->size; i++) {
+					if(obj->data.list->data[i]->type == OBJECT_TYPE_STRING)
+						fprintf(stdout, "\"");
+					print_object(obj->data.list->data[i]);
+					if(obj->data.list->data[i]->type == OBJECT_TYPE_STRING)
+						fprintf(stdout, "\"");
+					fprintf(stdout, ",");
+				}
+				fprintf(stdout, "]");
+			break;
+			case OBJECT_TYPE_DICTIONARY: 
+				fprintf(stdout, "dic(");
+				for(int i = 0; i < obj->data.dic->size; i++) 
+					if(obj->data.dic->data[i] != NULL) {
+						if(obj->data.dic->data[i]->key->type == OBJECT_TYPE_STRING)
+							fprintf(stdout, "\"");
+						print_object(obj->data.dic->data[i]->key);
+						if(obj->data.dic->data[i]->key->type == OBJECT_TYPE_STRING)
+							fprintf(stdout, "\"");
+						fprintf(stdout, ":");
+						if(obj->data.dic->data[i]->value->type == OBJECT_TYPE_STRING)
+							fprintf(stdout, "\"");
+						print_object(obj->data.dic->data[i]->value);
+						if(obj->data.dic->data[i]->value->type == OBJECT_TYPE_STRING)
+							fprintf(stdout, "\"");
+						fprintf(stdout, ",");
+					}
+				fprintf(stdout, ")");
+			break;
+			case OBJECT_TYPE_FUNCTION: fprintf(stdout, "/function/"); break;
+			case OBJECT_TYPE_MACRO: fprintf(stdout, "/macro/"); break;
+			case OBJECT_TYPE_STRUCT: fprintf(stdout, "/struct/"); break;
+		}
+	}
+}
+
+string_t* object_to_string(object_t* obj) {
+	string_t* ret = NULL;
+	if(obj == NULL)
+		ret = string_create("null");
+	switch (obj->type) {
+		case OBJECT_TYPE_NONE: ret = string_create("none"); break;
+		case OBJECT_TYPE_NUMBER: {
+			char temp_str[TMP_STR_MAX];
+			sprintf(temp_str, "%.15g", obj->data.number);
+			ret = string_create(temp_str);
+		} break;
+		case OBJECT_TYPE_BOOL: ret = string_create(obj->data.boolean ? "true" : "false"); break;
+		case OBJECT_TYPE_STRING: ret = obj->data.string; break;
+		case OBJECT_TYPE_LIST: 
+			ret = string_create("");
+			ret = string_concat_and_free(ret, string_create("["));
+			for(int i = 0; i < obj->data.list->size; i++) {
+				ret = string_concat_and_free(ret, object_to_string(obj->data.list->data[i]));
+				ret = string_concat_and_free(ret, string_create(","));
+			}
+			ret = string_concat_and_free(ret, string_create("]"));
+		break;
+		case OBJECT_TYPE_PAIR: 
+			ret = string_create("");
+			ret = string_concat_and_free(ret, object_to_string(obj->data.pair->key));
+			ret = string_concat_and_free(ret, string_create(":"));
+			ret = string_concat_and_free(ret, object_to_string(obj->data.pair->value));
+		break;
+		case OBJECT_TYPE_DICTIONARY:
+			ret = string_create("");
+			ret = string_concat_and_free(ret, string_create("dic("));
+			for(int i = 0; i < obj->data.dic->size; i++) 
+				if(obj->data.dic->data[i] != NULL) {
+					ret = string_concat_and_free(ret, object_to_string(obj->data.dic->data[i]->key));
+					ret = string_concat_and_free(ret, string_create(":"));
+					ret = string_concat_and_free(ret, object_to_string(obj->data.dic->data[i]->value));
+					ret = string_concat_and_free(ret, string_create(","));
+				}
+			ret = string_concat_and_free(ret, string_create(")"));
+		break;
+		case OBJECT_TYPE_FUNCTION: ret = string_create("/function/"); break;
+		case OBJECT_TYPE_MACRO: ret = string_create("/macro/"); break;
+		case OBJECT_TYPE_STRUCT: ret = string_create("/struct/"); break;
+	}
+	return ret;
+}
+
+bool_t is_true(object_t* obj) {
+	if(obj == NULL)
+		return false;
+	switch (obj->type) {
+		case OBJECT_TYPE_NONE: return false; break;
+		case OBJECT_TYPE_NUMBER: return obj->data.number == 0 ? false : true; break;
+		case OBJECT_TYPE_BOOL: return obj->data.boolean; break;
+		case OBJECT_TYPE_STRING: return string_length(obj->data.string) == 0 ? false : true; break;
+		case OBJECT_TYPE_LIST: return list_size(obj->data.list) == 0 ? false : true; break;
+		case OBJECT_TYPE_PAIR:
+		case OBJECT_TYPE_DICTIONARY:
+		case OBJECT_TYPE_FUNCTION:
+		case OBJECT_TYPE_MACRO:
+		case OBJECT_TYPE_STRUCT: return true; break;
+	}
+	return false;
+}
+
+object_t* object_add(object_t* o1, object_t* o2) {
+	object_t* ret = NULL;
+	if(o1->type == OBJECT_TYPE_NUMBER && o2->type == OBJECT_TYPE_NUMBER) {
+		ret = object_create_number(o1->data.number + o2->data.number);
+	} else if (o1->type == OBJECT_TYPE_LIST && o2->type == OBJECT_TYPE_LIST) {
+		ret = object_create_list(list_add(o1->data.list, o2->data.list));
+	} else if (o1->type == OBJECT_TYPE_STRING && o2->type == OBJECT_TYPE_STRING) {
+		ret = object_create_string(string_concat(o1->data.string, o2->data.string));
+	} else 
+		error("Runtime error: Addition type error.");
+
+	return ret;
+}
+
+object_t* object_mul(object_t* o1, object_t* o2) {
+	object_t* ret = NULL;
+	if(o1->type == OBJECT_TYPE_NUMBER && o2->type == OBJECT_TYPE_NUMBER) {
+		ret = object_create_number(o1->data.number * o2->data.number);
+	} else if (o1->type == OBJECT_TYPE_STRING && o2->type == OBJECT_TYPE_NUMBER) {
+		ret = object_create_string(string_mult(o1->data.string, (size_t)round(o2->data.number)));
+	} else if (o1->type == OBJECT_TYPE_NUMBER && o2->type == OBJECT_TYPE_STRING) {
+		ret = object_create_string(string_mult(o2->data.string, (size_t)round(o1->data.number)));
+	} else if (o1->type == OBJECT_TYPE_LIST && o2->type == OBJECT_TYPE_NUMBER) {
+		ret = object_create_list(list_mul(o1->data.list, (size_t)round(o2->data.number)));
+	} else if (o1->type == OBJECT_TYPE_NUMBER && o2->type == OBJECT_TYPE_LIST) {
+		ret = object_create_list(list_mul(o2->data.list, (size_t)round(o1->data.number)));
+	} else 
+		error("Runtime error: Multiplication type error.");
+
+	return ret;
 }

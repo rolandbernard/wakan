@@ -1,3 +1,4 @@
+// Copyright (c) 2018 Roland Bernard
 
 // SUB 100
 #define TINY_PRIME_1 5

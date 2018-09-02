@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Roland Bernard
+
 #ifndef __OBJECT_H__
 #define __OBJECT_H__
 
@@ -66,5 +68,10 @@ void object_reference(object_t* obj);
 bool_t object_dereference(object_t* obj);
 bool_t object_check_reference(object_t* obj);
 void object_free(object_t* obj);
+void print_object(object_t* obj);
+string_t* object_to_string(object_t* obj);
+bool_t is_true(object_t* obj);
+object_t* object_add(object_t* o1, object_t* o2);
+object_t* object_mul(object_t* o1, object_t* o2);
 
 #endif
