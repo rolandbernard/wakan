@@ -1,0 +1,19 @@
+{
+	"files.associations": {
+		"string_view": "c",
+		"sstream": "cpp",
+		"array": "cpp",
+		"list": "c",
+		"tuple": "cpp",
+		"initializer_list": "c",
+		"utility": "c",
+		"cmath": "c",
+		"chrono": "c",
+		"typeinfo": "cpp",
+		"type_traits": "c"
+	},
+	"cSpell.words": [
+		"splt",
+		"upos"
+	]
+}
