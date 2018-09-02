@@ -12,7 +12,7 @@ id_t bool_id(bool_t b)
 
 bool_t bool_equ(bool_t b1, bool_t b2) {
 	if((b1 && b2) || (!b1 && !b2))
-		return 1;
+		return true;
 	else 
-		return 0;
+		return false;
 }

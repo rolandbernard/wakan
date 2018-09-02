@@ -1,10 +1,12 @@
 // Copyright (c) 2018 Roland Bernard
 
 #include <stdio.h>
+#include <math.h>
 
 #include "./object.h"
 #include "./langallocator.h"
 #include "./prime.h"
+#include "./error.h"
 
 #define TMP_STR_MAX 1<<12
 
