@@ -559,7 +559,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 
 								list_t* list = list_range(data[i]->data.list, index_start, (index_end - index_start) > 0 ? (index_end - index_start + 1) : (index_end - index_start - 1));
 								if(list == NULL)
-									ret[i*num_index+j] = object_create_none();
+									ret[i*num_index+j] = object_create_list(list_create_empty());
 								else
 									ret[i*num_index+j] = object_create_list(list);
 								object_reference(ret[i*num_index+j]);
@@ -600,7 +600,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 
 								string_t* str = string_substr(data[i]->data.string, index_start, (index_end - index_start) > 0 ? (index_end - index_start + 1) : (index_end - index_start - 1));
 								if(str == NULL)
-									ret[i*num_index+j] = object_create_none();
+									ret[i*num_index+j] = object_create_string(string_create(""));
 								else
 									ret[i*num_index+j] = object_create_string(str);
 								object_reference(ret[i*num_index+j]);
@@ -2466,7 +2466,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 
 							ret[i*num_index+j] = dictionary_get_loc(data[i]->data.dic, index[j]);
 
-						}  else
+						} else
 							error("Runtime error: Indexing type error."); 
 					}
 				
