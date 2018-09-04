@@ -312,7 +312,7 @@ tokenlist_t* tokenize(const char* src) {
 
 			cur_pos += index;
 			start_pos = cur_pos+1;
-		} else if(*cur_pos >= '0' && *cur_pos <= '9') {
+		} else if(*cur_pos >= '0' && *cur_pos <= '9' && cur_pos == start_pos) {
 			number_t num = 0;
 			long div = 1;
 			int exp = 0;

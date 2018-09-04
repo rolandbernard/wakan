@@ -11,6 +11,7 @@
 #include "./langallocator.h"
 
 int main(int argc, char** argv) {
+	set_stack_start(&argc);
 	srand(time(NULL) + clock());
 	environment_t* env = environment_create();
 
@@ -25,7 +26,7 @@ int main(int argc, char** argv) {
 		size_t file_size = ftell(file);
 		fseek(file, 0, SEEK_SET);
 
-		char* buffer = (char*)_alloc(file_size+1);
+		char* buffer = (char*)_alloc(sizeof(char)*(file_size+1));
 		buffer[file_size] = '\0';
 		fread(buffer, 1, file_size, file);
 

@@ -1,21 +1,44 @@
 // Copyright (c) 2018 Roland Bernard
 
 #include "./struct.h"
+#include "./error.h"
 
 struct_t* struct_create() {
 	return environment_create();
 }
 
 void struct_exec(struct_t* stc, operation_t* op) {
+	if(check_for_stackoverflow())
+		error("Runtime error: Stack overflow.");
+
+	int prev_local_limit = stc->local_mode_limit;
+	environment_set_local_mode(stc, 0);
 	operation_exec(op, stc);
+	environment_set_local_mode(stc, prev_local_limit);
 }
 
 object_t** struct_result(struct_t* stc, operation_t* op) {
-	return operation_result(op, stc);
+	if(check_for_stackoverflow())
+		error("Runtime error: Stack overflow.");
+
+	object_t** ret;
+	int prev_local_limit = stc->local_mode_limit;
+	environment_set_local_mode(stc, 0);
+	ret = operation_result(op, stc);
+	environment_set_local_mode(stc, prev_local_limit);
+	return ret;
 }
 
 object_t*** struct_var(struct_t* stc, operation_t* op) {
-	return operation_var(op, stc);
+	if(check_for_stackoverflow())
+		error("Runtime error: Stack overflow.");
+
+	object_t*** ret;
+	int prev_local_limit = stc->local_mode_limit;
+	environment_set_local_mode(stc, 0);
+	ret = operation_var(op, stc);
+	environment_set_local_mode(stc, prev_local_limit);
+	return ret;
 }
 
 void struct_free(struct_t* stc) {

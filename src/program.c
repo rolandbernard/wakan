@@ -21,20 +21,21 @@ int get_operation_priority(operation_type_t type) {
 			return 0;
 		case OPERATION_TYPE_EXEC:
 		case OPERATION_TYPE_INDEX:
-		case OPERATION_TYPE_IN_STRUCT:
 			return 1;
+		case OPERATION_TYPE_IN_STRUCT:
+			return 2;
 		case OPERATION_TYPE_NOOP_BRAC:
 		case OPERATION_TYPE_NOOP:
 		case OPERATION_TYPE_LIST:
 		case OPERATION_TYPE_NOOP_EMP_REC:
 		case OPERATION_TYPE_SCOPE:
 		case OPERATION_TYPE_NOOP_EMP_CUR: 
-			return 2;
+			return 3;
 		case OPERATION_TYPE_FIND:
 		case OPERATION_TYPE_SPLIT:
-			return 3;
-		case OPERATION_TYPE_IFELSE:
 			return 4;
+		case OPERATION_TYPE_IFELSE:
+			return 5;
 		case OPERATION_TYPE_IF:
 		case OPERATION_TYPE_WHILE:
 		case OPERATION_TYPE_FOR:
@@ -42,7 +43,7 @@ int get_operation_priority(operation_type_t type) {
 		case OPERATION_TYPE_MACRO:
 		case OPERATION_TYPE_STRUCT:
 		case OPERATION_TYPE_DIC:
-			return 5;
+			return 6;
 		case OPERATION_TYPE_SIN:
 		case OPERATION_TYPE_COS:
 		case OPERATION_TYPE_TAN:
@@ -69,46 +70,46 @@ int get_operation_priority(operation_type_t type) {
 		case OPERATION_TYPE_LOCAL:
 		case OPERATION_TYPE_GLOBAL:
 		case OPERATION_TYPE_COPY:
-			return 6;
-		case OPERATION_TYPE_POW:
 			return 7;
+		case OPERATION_TYPE_POW:
+			return 8;
 		case OPERATION_TYPE_MUL:
 		case OPERATION_TYPE_DIV:
 		case OPERATION_TYPE_MOD:
-			return 8;
+			return 9;
 		case OPERATION_TYPE_ADD:
 		case OPERATION_TYPE_SUB:
 			return 9;
 		case OPERATION_TYPE_NEG:
 		case OPERATION_TYPE_NOOP_PLUS:
-			return 8;
+			return 10;
 		case OPERATION_TYPE_ABS:
-			return 9;
+			return 11;
 		case OPERATION_TYPE_EQU:
 		case OPERATION_TYPE_GTR:
 		case OPERATION_TYPE_LES:
 		case OPERATION_TYPE_LEQ:
 		case OPERATION_TYPE_GEQ:
-			return 10;
-		case OPERATION_TYPE_NOT:
-			return 11;
-		case OPERATION_TYPE_AND:
 			return 12;
+		case OPERATION_TYPE_NOT:
+			return 13;
+		case OPERATION_TYPE_AND:
+			return 14;
 		case OPERATION_TYPE_OR:
 		case OPERATION_TYPE_XOR:
-			return 13;
-		case OPERATION_TYPE_PAIR:
-			return 14;
-		case OPERATION_TYPE_O_LIST:
 			return 15;
-		case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
+		case OPERATION_TYPE_PAIR:
 			return 16;
-		case OPERATION_TYPE_ASSIGN:
+		case OPERATION_TYPE_O_LIST:
 			return 17;
-		case OPERATION_TYPE_PROC:
+		case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 			return 18;
-		case OPERATION_TYPE_NOOP_PROC_DEADEND:
+		case OPERATION_TYPE_ASSIGN:
 			return 19;
+		case OPERATION_TYPE_PROC:
+			return 20;
+		case OPERATION_TYPE_NOOP_PROC_DEADEND:
+			return 21;
 		default: return 1024;
 	}
 }

@@ -25,6 +25,9 @@ operation_t* operation_create_NOOP() {
 }
 
 void operation_exec(operation_t* op, environment_t* env) {
+	if(check_for_stackoverflow())
+		error("Runtime error: Stack overflow.");
+	
 	if(op != NULL) {
 		switch(op->type) {
 			case OPERATION_TYPE_NOOP: 
@@ -72,7 +75,9 @@ void operation_exec(operation_t* op, environment_t* env) {
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_exec(op->data.operations[i], env);
 				break;
-			case OPERATION_TYPE_STRUCT: break;
+			case OPERATION_TYPE_STRUCT: 
+				operation_exec(op->data.operations[0], env); 
+				break;
 			case OPERATION_TYPE_O_LIST:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_exec(op->data.operations[i], env);
@@ -277,6 +282,7 @@ void operation_exec(operation_t* op, environment_t* env) {
 						error("Runtime error: Struct type error.");
 					else
 						struct_exec(stc[i]->data.stc, op->data.operations[1]);
+					
 
 				for(int i = 0; stc[i] != NULL; i++)
 					object_dereference(stc[i]);
@@ -323,6 +329,9 @@ void operation_exec(operation_t* op, environment_t* env) {
 }
 
 object_t** operation_result(operation_t* op, environment_t* env) {
+	if(check_for_stackoverflow())
+		error("Runtime error: Stack overflow.");
+
 	object_t** ret = NULL;
 	
 	if(op != NULL) {
@@ -354,7 +363,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				break;
 			case OPERATION_TYPE_VAR: 
 				ret = (object_t**)_alloc(sizeof(object_t*)*2);
-				environment_make(env, op->data.str);	// ?
+				environment_make(env, op->data.str);
 				ret[0] = environment_get(env, op->data.str);
 				ret[1] = NULL;
 				if(ret[0]->type == OBJECT_TYPE_MACRO) {
@@ -454,13 +463,17 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 					operation_exec(op->data.operations[i], env);
 				ret = operation_result(op->data.operations[i], env);
 			} break;
-			case OPERATION_TYPE_STRUCT: 
+			case OPERATION_TYPE_STRUCT: {
 				ret = (object_t**)_alloc(sizeof(object_t*)*2);
 				ret[0] = object_create_struct(struct_create());
 				object_reference(ret[0]);
 				ret[1] = NULL;
+				string_t* name_self = string_create("self");
+				environment_write(ret[0]->data.stc, name_self, ret[0]);
+				object_dereference(ret[0]);	// Since the object contains itfels derefrencing helps to prevent loops (Better garbage collector is required)
+				string_free(name_self);
 				struct_exec(ret[0]->data.stc, op->data.operations[0]);
-				break;
+			} break;
 			case OPERATION_TYPE_O_LIST: {
 				size_t num_op = 0;
 				while(op->data.operations[num_op] != NULL) num_op++;
@@ -656,7 +669,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				size_t num_vals = 0;
 				while(vals[num_vals] != NULL) num_vals++;
 
-				ret = (object_t**)_alloc(sizeof(object_t**)*(num_vals+1));
+				ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
 				for(int i = 0; i < num_vals; i++) {
 					switch (vals[i]->type) {
 						case OBJECT_TYPE_NONE: ret[i] = object_create_number(0); break;
@@ -685,7 +698,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				size_t num_vals = 0;
 				while(vals[num_vals] != NULL) num_vals++;
 
-				ret = (object_t**)_alloc(sizeof(object_t**)*(num_vals+1));
+				ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
 				for(int i = 0; i < num_vals; i++) {
 					ret[i] = object_create_boolean(is_true(vals[i]));
 					object_reference(ret[i]);
@@ -703,7 +716,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				size_t num_vals = 0;
 				while(vals[num_vals] != NULL) num_vals++;
 
-				ret = (object_t**)_alloc(sizeof(object_t**)*(num_vals+1));
+				ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
 				for(int i = 0; i < num_vals; i++) {
 					if(vals[i]->type == OBJECT_TYPE_STRING)
 						ret[i] = vals[i];
@@ -1626,7 +1639,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				_free(vals);
 			} break;
 			case OPERATION_TYPE_RAND:
-				ret = (object_t**)_alloc(sizeof(object_t*)*(2));
+				ret = (object_t**)_alloc(sizeof(object_t*)*2);
 				ret[0] = object_create_number((double)rand()/RAND_MAX);
 				object_reference(ret[0]);
 				ret[1] = NULL;
@@ -2282,6 +2295,9 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 }
 
 object_t*** operation_var(operation_t* op, environment_t* env) {
+	if(check_for_stackoverflow())
+		error("Runtime error: Stack overflow.");
+
 	object_t*** ret = NULL;
 
 	if(op != NULL) {

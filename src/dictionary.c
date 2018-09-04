@@ -74,8 +74,10 @@ dictionary_t* dictionary_copy(dictionary_t* dic) {
 void dictionary_resize(dictionary_t* dic, size_t size) {
 	if(dic != NULL) {
 		dictionary_t* temp_new_dic = dictionary_create_sized(size);
+		for(int i = 0; i < temp_new_dic->size; i++)
+			temp_new_dic->data[i] = NULL;
 
-		for(int i = 0; i < dic->count; i++)
+		for(int i = 0; i < dic->size; i++)
 			if(dic->data[i] != NULL)
 				dictionary_put_pair(temp_new_dic, dic->data[i]);
 
@@ -94,7 +96,6 @@ void dictionary_put_pair(dictionary_t* dic, pair_t* pair) {
 		else 
 			dic->count++;
 		dic->data[index] = pair;
-		dictionary_check_size(dic);
 	}
 }
 

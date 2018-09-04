@@ -25,6 +25,8 @@ void variabletable_resize(variabletable_t* tbl, size_t size) {
 
 	temp_data->size = next_prime(size);
 	temp_data->data = (bucket_element_t**)_alloc(sizeof(bucket_element_t*)*temp_data->size);
+	for(int i = 0; i < temp_data->size; i++)
+		temp_data->data[i] = NULL;
 
 	for(int i = 0; i < tbl->size; i++)
 		if(tbl->data[i] != NULL)
@@ -102,9 +104,11 @@ void variabletable_write(variabletable_t* tbl, string_t* name, object_t* data) {
 		if(tbl->data[index] == NULL) {
 			tbl->data[index] = (bucket_element_t*)_alloc(sizeof(bucket_element_t));
 			tbl->data[index]->name = string_copy(name);
+			tbl->data[index]->value = NULL;
 			tbl->count++;
 			variabletable_check_size(tbl);
 		}
+		index = variabletable_find(tbl, name);
 		object_dereference(tbl->data[index]->value);
 		tbl->data[index]->value = data;
 		object_reference(tbl->data[index]->value);
@@ -133,6 +137,7 @@ object_t** variabletable_get_loc(variabletable_t* tbl, string_t* name) {
 			tbl->count++;
 			variabletable_check_size(tbl);
 		}
+		index = variabletable_find(tbl, name);
 		return &(tbl->data[index]->value);
 	} else
 		return NULL;

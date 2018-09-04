@@ -22,7 +22,7 @@ string_t* string_create(const char* str) {
 string_t* string_create_full(const char* str, size_t length) {
 	string_t* ret = (string_t*)_alloc(sizeof(string_t));
 
-	ret->data = (char*)_alloc(length + 1);
+	ret->data = (char*)_alloc((sizeof(char)*length + 1));
 	ret->length = length;
 	while(length) {
 		length--;
@@ -38,7 +38,7 @@ string_t* string_copy(string_t* str) {
 
 	if(str != NULL) {
 		ret = (string_t*)_alloc(sizeof(string_t));
-		ret->data = (char*)_alloc(str->length + 1);
+		ret->data = (char*)_alloc(sizeof(char)*(str->length + 1));
 		for(ret->length = 0; ret->length < str->length; ret->length++)
 			ret->data[ret->length] = str->data[ret->length];
 		ret->data[ret->length] = 0;
@@ -52,7 +52,7 @@ string_t* string_concat(string_t* s1, string_t* s2) {
 	
 	if(s1 != NULL && s2 != NULL) {
 		ret = (string_t*)_alloc(sizeof(string_t));
-		ret->data = (char*)_alloc(s1->length + s2->length + 1);
+		ret->data = (char*)_alloc(sizeof(char)*(s1->length + s2->length + 1));
 		ret->length = 0;
 		while(ret->length < s1->length) {
 			ret->data[ret->length] = s1->data[ret->length];
@@ -81,7 +81,7 @@ string_t* string_mult(string_t* str, size_t n) {
 	
 	if(str != NULL) {
 		ret = (string_t*)_alloc(sizeof(string_t));
-		ret->data = (char*)_alloc(str->length * n + 1);
+		ret->data = (char*)_alloc(sizeof(char)*(str->length * n + 1));
 		ret->length = 0;
 		while(ret->length < str->length * n) {
 			ret->data[ret->length] = str->data[ret->length % str->length];
@@ -99,7 +99,7 @@ string_t* string_substr(string_t* str, pos_t pos, pos_t n) {
 	if(n >= 0) {
 		if(str != NULL && str->length >= pos + n && pos >= 0) {
 			ret = (string_t*)_alloc(sizeof(string_t));
-			ret->data = (char*)_alloc(n + 1);
+			ret->data = (char*)_alloc(sizeof(char)*(n + 1));
 			ret->length = n;
 			while(n--) {
 				ret->data[n] = str->data[pos+n];
@@ -109,7 +109,7 @@ string_t* string_substr(string_t* str, pos_t pos, pos_t n) {
 	} else {
 		if(str != NULL && 0 < pos + n && pos < str->length) {
 			ret = (string_t*)_alloc(sizeof(string_t));
-			ret->data = (char*)_alloc((-n) + 1);
+			ret->data = (char*)_alloc(sizeof(char)*((-n) + 1));
 			ret->length = -n;
 			while(n++) {
 				ret->data[-n] = str->data[pos+n];

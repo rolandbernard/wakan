@@ -30,9 +30,7 @@ typedef enum object_type_e {
 
 typedef struct object_s {
 	size_t num_references;
-
 	object_type_t type;
-	
 	union
 	{
 		number_t number;
