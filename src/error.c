@@ -19,6 +19,7 @@ void error(const char* msg) {
 }
 
 void set_error_handler(error_handler_t handler) {
+	curr_handler = handler;
 }
 
 void default_error_handler(const char* msg) {
