@@ -1,9 +1,10 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us improve.
 
 ---
 
+##### Please make sure you are using the latest version.
 **Describe the bug**
 A clear and concise description of what the bug is.
 
