@@ -15,6 +15,20 @@ int main(int argc, char** argv) {
 	srand(time(NULL) + clock());
 	environment_t* env = environment_create();
 
+	fseek(stdin, 0, SEEK_END);
+	size_t file_size = ftell(stdin);
+	fseek(stdin, 0, SEEK_SET);
+
+	char* buffer = (char*)_alloc(sizeof(char)*(file_size+1));
+	buffer[file_size] = '\0';
+	fread(buffer, 1, file_size, stdin);
+
+	program_t* program = tokenize_and_parse_program(buffer);
+	program_exec(program, env);
+	program_free(program);
+
+	_free(buffer);
+
 	for(int i = 1; i < argc; i++) {
 		FILE* file = fopen(argv[i], "r");
 		if(file == NULL) {
@@ -23,17 +37,18 @@ int main(int argc, char** argv) {
 		}
 
 		fseek(file, 0, SEEK_END);
-		size_t file_size = ftell(file);
+		file_size = ftell(file);
 		fseek(file, 0, SEEK_SET);
 
-		char* buffer = (char*)_alloc(sizeof(char)*(file_size+1));
+	    buffer = (char*)_alloc(sizeof(char)*(file_size+1));
 		buffer[file_size] = '\0';
 		fread(buffer, 1, file_size, file);
 
-		program_t* program = tokenize_and_parse_program(buffer);
+		program = tokenize_and_parse_program(buffer);
 		program_exec(program, env);
 		program_free(program);
 
 		_free(buffer);
+		fclose(file);
 	}
 }

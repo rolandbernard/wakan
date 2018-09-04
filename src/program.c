@@ -614,9 +614,13 @@ program_t* parse_program(tokenlist_t* list) {
 		}
 	}
 
-	if(stack[0]->type != TOKEN_TYPE_START || stack[1]->type != TOKEN_TYPE_EXP || stack[2]->type != TOKEN_TYPE_END)
+	program_t* ret;
+	if (stack[0]->type == TOKEN_TYPE_START && stack[1]->type == TOKEN_TYPE_END)
+		ret = operation_create_NOOP();
+	else if(stack[0]->type == TOKEN_TYPE_START && stack[1]->type == TOKEN_TYPE_EXP && stack[2]->type == TOKEN_TYPE_END)
+		ret = stack[1]->data.op;
+	else 
 		error("Parsing error.");
-	program_t* ret = stack[1]->data.op;
 
 	_free(stack[0]);
 	_free(stack[1]);
