@@ -1057,13 +1057,13 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				ret = (object_t**)_alloc(sizeof(object_t*)*(num_ret+1));
 				for(int i = 0; i < num_ret; i++) {
 					number_t ret_part;
-					if(vals[0][1] == NULL)
-						ret_part = (int)(vals[0][0]->data.number);
+					if(vals[num_op-1][1] == NULL)
+						ret_part = (int)(vals[num_op-1][0]->data.number);
 					else 
-						ret_part = (int)(vals[0][i]->data.number);
+						ret_part = (int)(vals[num_op-1][i]->data.number);
 					
 
-					for(int j = num_op-1; j >= 0; j--) {
+					for(int j = num_op-2; j >= 0; j--) {
 						if(vals[j][1] == NULL)
 							ret_part = pow(vals[j][0]->data.number, ret_part);
 						else

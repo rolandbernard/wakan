@@ -79,37 +79,37 @@ int get_operation_priority(operation_type_t type) {
 			return 9;
 		case OPERATION_TYPE_ADD:
 		case OPERATION_TYPE_SUB:
-			return 9;
+			return 10;
 		case OPERATION_TYPE_NEG:
 		case OPERATION_TYPE_NOOP_PLUS:
-			return 10;
-		case OPERATION_TYPE_ABS:
 			return 11;
+		case OPERATION_TYPE_ABS:
+			return 12;
 		case OPERATION_TYPE_EQU:
 		case OPERATION_TYPE_GTR:
 		case OPERATION_TYPE_LES:
 		case OPERATION_TYPE_LEQ:
 		case OPERATION_TYPE_GEQ:
-			return 12;
-		case OPERATION_TYPE_NOT:
 			return 13;
-		case OPERATION_TYPE_AND:
+		case OPERATION_TYPE_NOT:
 			return 14;
+		case OPERATION_TYPE_AND:
+			return 15;
 		case OPERATION_TYPE_OR:
 		case OPERATION_TYPE_XOR:
-			return 15;
-		case OPERATION_TYPE_PAIR:
 			return 16;
-		case OPERATION_TYPE_O_LIST:
+		case OPERATION_TYPE_PAIR:
 			return 17;
-		case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
+		case OPERATION_TYPE_O_LIST:
 			return 18;
-		case OPERATION_TYPE_ASSIGN:
+		case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 			return 19;
-		case OPERATION_TYPE_PROC:
+		case OPERATION_TYPE_ASSIGN:
 			return 20;
-		case OPERATION_TYPE_NOOP_PROC_DEADEND:
+		case OPERATION_TYPE_PROC:
 			return 21;
+		case OPERATION_TYPE_NOOP_PROC_DEADEND:
+			return 22;
 		default: return 1024;
 	}
 }
