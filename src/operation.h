@@ -87,6 +87,7 @@ typedef enum operation_type_e {
 	OPERATION_TYPE_NOOP_PROC_DEADEND,		// E;
 	OPERATION_TYPE_FOR,		// for E\E\E do E
 	OPERATION_TYPE_NOOP_PLUS,		// +E
+	OPERATION_TYPE_TO_ASCII,		// to_ascii E
 } operation_type_t;
 
 typedef struct operation_s {

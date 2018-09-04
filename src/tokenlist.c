@@ -129,6 +129,8 @@ void add_token(tokenlist_t* list, const char* start, const char* end) {
 		add_simple_token(list, TOKEN_TYPE_TO_STR);
 	} else if(cmp_str(start, end, "to_bool")) {
 		add_simple_token(list, TOKEN_TYPE_TO_BOOL);
+	} else if(cmp_str(start, end, "to_ascii")) {
+		add_simple_token(list, TOKEN_TYPE_TO_ASCII);
 	} else if(cmp_str(start, end, "function")) {
 		add_simple_token(list, TOKEN_TYPE_FUNCTION);
 	} else {

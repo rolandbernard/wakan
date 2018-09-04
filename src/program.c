@@ -66,6 +66,7 @@ int get_operation_priority(operation_type_t type) {
 		case OPERATION_TYPE_TO_STR:
 		case OPERATION_TYPE_TO_NUM:
 		case OPERATION_TYPE_TO_BOOL:
+		case OPERATION_TYPE_TO_ASCII:
 		case OPERATION_TYPE_WRITE:
 		case OPERATION_TYPE_LOCAL:
 		case OPERATION_TYPE_GLOBAL:
@@ -260,6 +261,8 @@ operation_type_t get_operation(token_t** stack, size_t count, bool_t(*func)(toke
 		return OPERATION_TYPE_TO_NUM;
 	else if(func(stack, count, 2, TOKEN_TYPE_TO_BOOL, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_TO_BOOL;
+	else if(func(stack, count, 2, TOKEN_TYPE_TO_ASCII, TOKEN_TYPE_EXP))
+		return OPERATION_TYPE_TO_ASCII;
 	else if(func(stack, count, 2, TOKEN_TYPE_WRITE, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_WRITE;
 	else if(func(stack, count, 2, TOKEN_TYPE_LOCAL, TOKEN_TYPE_EXP))
@@ -561,6 +564,7 @@ program_t* parse_program(tokenlist_t* list) {
 						case OPERATION_TYPE_TO_STR:
 						case OPERATION_TYPE_TO_NUM:
 						case OPERATION_TYPE_TO_BOOL:
+						case OPERATION_TYPE_TO_ASCII:
 						case OPERATION_TYPE_WRITE:
 						case OPERATION_TYPE_NEG:
 						case OPERATION_TYPE_NOT:

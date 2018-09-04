@@ -109,6 +109,7 @@ void operation_exec(operation_t* op, environment_t* env) {
 			} break;
 			case OPERATION_TYPE_TO_NUM: operation_exec(op->data.operations[0], env); break;
 			case OPERATION_TYPE_TO_BOOL: operation_exec(op->data.operations[0], env); break;
+			case OPERATION_TYPE_TO_ASCII: operation_exec(op->data.operations[0], env); break;
 			case OPERATION_TYPE_TO_STR: operation_exec(op->data.operations[0], env); break;
 			case OPERATION_TYPE_READ: {
 				char temp_str[TMP_STR_MAX];
@@ -701,6 +702,55 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
 				for(int i = 0; i < num_vals; i++) {
 					ret[i] = object_create_boolean(is_true(vals[i]));
+					object_reference(ret[i]);
+				}
+				ret[num_vals] = NULL;
+
+				for(int i = 0; i < num_vals; i++)
+					object_dereference(vals[i]);
+				_free(vals);
+			} break;
+			case OPERATION_TYPE_TO_ASCII: {
+				object_t** vals = operation_result(op->data.operations[0], env);
+				if(vals == NULL)
+					error("Runtime error: To_ascii NULL error.");
+				size_t num_vals = 0;
+				while(vals[num_vals] != NULL) num_vals++;
+
+				ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
+				for(int i = 0; i < num_vals; i++) {
+					switch (vals[i]->type) {
+						case OBJECT_TYPE_NUMBER: {
+							char tmp[2];
+							if(vals[i]->data.number != round(vals[i]->data.number))
+								error("Runtime error: To_ascii non-integer error.");
+							tmp[0] = (char)(int)round(vals[i]->data.number);
+							tmp[1] = '\0';
+							ret[i] = object_create_string(string_create(tmp));
+						} break;
+						case OBJECT_TYPE_STRING: ret[i] = vals[i]; break;
+						case OBJECT_TYPE_LIST: {
+							char tmp[vals[i]->data.list->size+1];
+							tmp[vals[i]->data.list->size] = '\0';
+
+							for(int j = 0; j < vals[i]->data.list->size; j++) {
+								if(vals[i]->data.list->data[j]->type != OBJECT_TYPE_NUMBER)
+									error("Runtime error: To_ascii type error.");
+								if(vals[i]->data.list->data[j]->data.number != round(vals[i]->data.list->data[j]->data.number))
+									error("Runtime error: To_ascii non-integer error.");
+								tmp[j] = (char)(int)round(vals[i]->data.list->data[j]->data.number);
+							}
+
+							ret[i] = object_create_string(string_create(tmp));
+						} break;
+						case OBJECT_TYPE_BOOL:
+						case OBJECT_TYPE_NONE:
+						case OBJECT_TYPE_PAIR:
+						case OBJECT_TYPE_DICTIONARY:
+						case OBJECT_TYPE_FUNCTION:
+						case OBJECT_TYPE_MACRO:
+						case OBJECT_TYPE_STRUCT: error("Runtime error: To_ascii type error."); break;
+					}
 					object_reference(ret[i]);
 				}
 				ret[num_vals] = NULL;
@@ -2432,6 +2482,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 			case OPERATION_TYPE_EXEC: break;
 			case OPERATION_TYPE_TO_NUM: break;
 			case OPERATION_TYPE_TO_BOOL: break;
+			case OPERATION_TYPE_TO_ASCII: break;
 			case OPERATION_TYPE_TO_STR: break;
 			case OPERATION_TYPE_READ: break;
 			case OPERATION_TYPE_WRITE: break;
@@ -2639,6 +2690,10 @@ void operation_free(operation_t* op) {
 				_free(op->data.operations);
 			break;
 			case OPERATION_TYPE_TO_BOOL: 
+				operation_free(op->data.operations[0]);
+				_free(op->data.operations);
+			break;
+			case OPERATION_TYPE_TO_ASCII: 
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
@@ -2906,6 +2961,7 @@ id_t operation_id(operation_t* op) {
 			case OPERATION_TYPE_EXEC: break;
 			case OPERATION_TYPE_TO_NUM: break;
 			case OPERATION_TYPE_TO_BOOL: break;
+			case OPERATION_TYPE_TO_ASCII: break;
 			case OPERATION_TYPE_TO_STR: break;
 			case OPERATION_TYPE_READ: break;
 			case OPERATION_TYPE_WRITE: break;
@@ -3002,6 +3058,7 @@ bool_t operation_equ(operation_t* o1, operation_t* o2) {
 		case OPERATION_TYPE_EXEC: break;
 		case OPERATION_TYPE_TO_NUM: break;
 		case OPERATION_TYPE_TO_BOOL: break;
+		case OPERATION_TYPE_TO_ASCII: break;
 		case OPERATION_TYPE_TO_STR: break;
 		case OPERATION_TYPE_READ: break;
 		case OPERATION_TYPE_WRITE: break;
