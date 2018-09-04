@@ -1,0 +1,20 @@
+
+sort := function (list) does (
+	k := len list - 1;
+	while(k > 0) do {
+		tmp_k := 0;
+		for i := 0 \ i < k \ i := i+1 do (
+			if (list[i] > list[i+1]) then (
+				list[i], list[i+1] := list[i+1], list[i];
+				tmp_k := i
+			)
+		);
+		k := tmp_k
+	}
+);
+
+list := [for i := 0 \ i < 10 \ i := i+1 do rand];
+write (list, '\n');
+sort(list);
+write (list, '\n')
+
