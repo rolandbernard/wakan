@@ -10,9 +10,22 @@
 #include "./error.h"
 #include "./langallocator.h"
 
+static bool_t error_flag = false;
+
+void error_handler(const char* msg) {
+	fprintf(stderr, "Error: %s\n", msg);
+	error_flag = true;
+}
+
 int main(int argc, char** argv) {
+	// Initialize error
 	set_stack_start(&argc);
+	set_error_handler(error_handler);
+
+	// Initialize rand
 	srand(time(NULL) + clock());
+
+	// Create environment
 	environment_t* env = environment_create();
 
 	fseek(stdin, 0, SEEK_END);
@@ -29,7 +42,7 @@ int main(int argc, char** argv) {
 
 	_free(buffer);
 
-	for(int i = 1; i < argc; i++) {
+	for(int i = 1; !error_flag && i < argc; i++) {
 		FILE* file = fopen(argv[i], "r");
 		if(file == NULL) {
 			printf("Couldn't open the file \"%s\".\n", argv[i]);
@@ -51,4 +64,6 @@ int main(int argc, char** argv) {
 		_free(buffer);
 		fclose(file);
 	}
+
+	return error_flag;
 }

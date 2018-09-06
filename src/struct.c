@@ -7,37 +7,51 @@ struct_t* struct_create() {
 	return environment_create();
 }
 
-void struct_exec(struct_t* stc, operation_t* op) {
-	if(check_for_stackoverflow())
-		error("Runtime error: Stack overflow.");
+void* struct_exec(struct_t* stc, operation_t* op) {
+	void* ret = NULL;
 
-	int prev_local_limit = stc->local_mode_limit;
-	environment_set_local_mode(stc, 0);
-	operation_exec(op, stc);
-	environment_set_local_mode(stc, prev_local_limit);
+	if(check_for_stackoverflow()) {
+		error("Runtime error: Stack overflow.");
+		ret = RET_ERROR;
+	} else {
+		int prev_local_limit = stc->local_mode_limit;
+		environment_set_local_mode(stc, 0);
+		ret = operation_exec(op, stc);
+		environment_set_local_mode(stc, prev_local_limit);
+	}	
+
+	return ret;
 }
 
 object_t** struct_result(struct_t* stc, operation_t* op) {
-	if(check_for_stackoverflow())
-		error("Runtime error: Stack overflow.");
-
 	object_t** ret;
-	int prev_local_limit = stc->local_mode_limit;
-	environment_set_local_mode(stc, 0);
-	ret = operation_result(op, stc);
-	environment_set_local_mode(stc, prev_local_limit);
+
+	if(check_for_stackoverflow()) {
+		error("Runtime error: Stack overflow.");
+		ret = RET_ERROR;
+	} else {
+		int prev_local_limit = stc->local_mode_limit;
+		environment_set_local_mode(stc, 0);
+		ret = operation_result(op, stc);
+		environment_set_local_mode(stc, prev_local_limit);
+	}
+
 	return ret;
 }
 
 object_t*** struct_var(struct_t* stc, operation_t* op) {
-	if(check_for_stackoverflow())
-		error("Runtime error: Stack overflow.");
-
 	object_t*** ret;
-	int prev_local_limit = stc->local_mode_limit;
-	environment_set_local_mode(stc, 0);
-	ret = operation_var(op, stc);
-	environment_set_local_mode(stc, prev_local_limit);
+
+	if(check_for_stackoverflow()) {
+		error("Runtime error: Stack overflow.");
+		ret = RET_ERROR;
+	} else {
+		int prev_local_limit = stc->local_mode_limit;
+		environment_set_local_mode(stc, 0);
+		ret = operation_var(op, stc);
+		environment_set_local_mode(stc, prev_local_limit);
+	}
+
 	return ret;
 }
 

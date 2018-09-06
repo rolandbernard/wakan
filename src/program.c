@@ -332,301 +332,306 @@ operation_type_t get_expected_on_stack(token_t** stack, size_t count) {
 }
 
 program_t* parse_program(tokenlist_t* list) {
-
-	token_t** stack = (token_t**)_alloc(sizeof(token_t*)*MAX_STACK_SIZE);
-	stack[0] = list->start;
-	size_t count = 1;
-	
-	while(stack[count-1]->type != TOKEN_TYPE_END)
-	{
-		operation_type_t on_stack = get_on_stack(stack, count);
-		if(on_stack == ~0) {
-			// shift in next value
-			stack[count] = stack[count-1]->next;
-			count++;
-		} else {
-			// look ahead
-			operation_type_t expected_on_stack = get_expected_on_stack(stack, count);
-			if(on_stack == OPERATION_TYPE_POW ||
-			  on_stack == OPERATION_TYPE_MUL ||
-			  on_stack == OPERATION_TYPE_DIV || 
-			  on_stack == OPERATION_TYPE_MOD ||
-			  on_stack == OPERATION_TYPE_ADD ||
-			  on_stack == OPERATION_TYPE_SUB ||
-			  on_stack == OPERATION_TYPE_AND ||
-			  on_stack == OPERATION_TYPE_OR ||
-			  on_stack == OPERATION_TYPE_XOR ||
-			  on_stack == OPERATION_TYPE_O_LIST ||
-			  on_stack == OPERATION_TYPE_PROC) {
-				  if(get_operation_priority(expected_on_stack) < get_operation_priority(on_stack) || on_stack == expected_on_stack) {
-					// shift in next value
-					stack[count] = stack[count-1]->next;
-					count++;
-				} else {
-					// reduce
-					token_t* tmp = token_create();
-					tmp->type = TOKEN_TYPE_EXP;
-					tmp->next = stack[count-1]->next;
-					
-					int num_of_repetitions = 0;
-					while(get_on_stack(stack, count-num_of_repetitions*2) == on_stack) num_of_repetitions++;
-
-					tmp->data.op = operation_create();
-					tmp->data.op->type = on_stack;
-					tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*(2+num_of_repetitions));
-					tmp->data.op->data.operations[1+num_of_repetitions] = NULL;
-
-					for(int i = 0; i < 1+num_of_repetitions; i++)
-						tmp->data.op->data.operations[i] = stack[count - (1+num_of_repetitions*2) + (i*2)]->data.op;
-
-					for(int i = 1; i <= 1+num_of_repetitions*2; i++)
-						_free(stack[count-i]);
-					count -= 1+num_of_repetitions*2;
-
-					stack[count] = tmp;
-					count++;
-				}
+	if(list != NULL) {
+		token_t** stack = (token_t**)_alloc(sizeof(token_t*)*MAX_STACK_SIZE);
+		stack[0] = list->start;
+		size_t count = 1;
+		
+		while(stack[count-1]->type != TOKEN_TYPE_END)
+		{
+			operation_type_t on_stack = get_on_stack(stack, count);
+			if(on_stack == ~0) {
+				// shift in next value
+				stack[count] = stack[count-1]->next;
+				count++;
 			} else {
-				if(get_operation_priority(expected_on_stack) < get_operation_priority(on_stack)) {
-					// shift in next value
-					stack[count] = stack[count-1]->next;
-					count++;
-				} else {
-					// reduce
-					token_t* tmp = token_create();
-					tmp->type = TOKEN_TYPE_EXP;
-					tmp->next = stack[count-1]->next;
+				// look ahead
+				operation_type_t expected_on_stack = get_expected_on_stack(stack, count);
+				if(on_stack == OPERATION_TYPE_POW ||
+				on_stack == OPERATION_TYPE_MUL ||
+				on_stack == OPERATION_TYPE_DIV || 
+				on_stack == OPERATION_TYPE_MOD ||
+				on_stack == OPERATION_TYPE_ADD ||
+				on_stack == OPERATION_TYPE_SUB ||
+				on_stack == OPERATION_TYPE_AND ||
+				on_stack == OPERATION_TYPE_OR ||
+				on_stack == OPERATION_TYPE_XOR ||
+				on_stack == OPERATION_TYPE_O_LIST ||
+				on_stack == OPERATION_TYPE_PROC) {
+					if(get_operation_priority(expected_on_stack) < get_operation_priority(on_stack) || on_stack == expected_on_stack) {
+						// shift in next value
+						stack[count] = stack[count-1]->next;
+						count++;
+					} else {
+						// reduce
+						token_t* tmp = token_create();
+						tmp->type = TOKEN_TYPE_EXP;
+						tmp->next = stack[count-1]->next;
+						
+						int num_of_repetitions = 0;
+						while(get_on_stack(stack, count-num_of_repetitions*2) == on_stack) num_of_repetitions++;
 
-					switch(on_stack) {
-						case OPERATION_TYPE_VAR:
-						case OPERATION_TYPE_STR:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.str = stack[count-1]->data.str;
-							_free(stack[count-1]);
-							count--;
-							break;
-						case OPERATION_TYPE_NUM:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.num = stack[count-1]->data.num;
-							_free(stack[count-1]);
-							count--;
-							break;
-						case OPERATION_TYPE_BOOL:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.boolean = stack[count-1]->data.boolean;
-							_free(stack[count-1]);
-							count--;
-							break;
-						case OPERATION_TYPE_NONE:
-						case OPERATION_TYPE_READ:
-						case OPERATION_TYPE_RAND:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							_free(stack[count-1]);
-							count--;
-							break;
-						case OPERATION_TYPE_EXEC:
-						case OPERATION_TYPE_INDEX:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*2);
-							tmp->data.op->data.operations[0] = stack[count-4]->data.op;
-							tmp->data.op->data.operations[1] = stack[count-2]->data.op;
-							_free(stack[count-4]);
-							_free(stack[count-3]);
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 4;
-							break;
-						case OPERATION_TYPE_IN_STRUCT:
-						case OPERATION_TYPE_PAIR:
-						case OPERATION_TYPE_ASSIGN:
-						case OPERATION_TYPE_EQU:
-						case OPERATION_TYPE_GTR:
-						case OPERATION_TYPE_LES:
-						case OPERATION_TYPE_LEQ:
-						case OPERATION_TYPE_GEQ:
-						case OPERATION_TYPE_FIND:
-						case OPERATION_TYPE_SPLIT:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*2);
-							tmp->data.op->data.operations[0] = stack[count-3]->data.op;
-							tmp->data.op->data.operations[1] = stack[count-1]->data.op;
-							_free(stack[count-3]);
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 3;
-							break;
-						case OPERATION_TYPE_NOOP_PLUS:
-							tmp->data.op = stack[count-1]->data.op;
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 2;
-							break;
-						case OPERATION_TYPE_NOOP_BRAC:
-							tmp->data.op = stack[count-2]->data.op;
-							_free(stack[count-3]);
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 3;
-							break;
-						case OPERATION_TYPE_NOOP:
-							stack[count-1]->type = TOKEN_TYPE_EXP;
-							stack[count-1]->data.op = operation_create_NOOP();
-							stack[count-1]->next = tmp;
-							tmp->type = TOKEN_TYPE_CLOSE_BRAC;
-							break;
-						case OPERATION_TYPE_LIST:
-						case OPERATION_TYPE_SCOPE:
-						case OPERATION_TYPE_ABS:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
-							tmp->data.op->data.operations[0] = stack[count-2]->data.op;
-							_free(stack[count-3]);
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 3;
-							break;
-						case OPERATION_TYPE_NOOP_EMP_REC:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = OPERATION_TYPE_LIST;
-							tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
-							tmp->data.op->data.operations[0] = operation_create_NOOP();
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 2;
-							break;
-						case OPERATION_TYPE_NOOP_EMP_CUR: 
-							tmp->data.op = operation_create();
-							tmp->data.op->type = OPERATION_TYPE_SCOPE;
-							tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
-							tmp->data.op->data.operations[0] = operation_create_NOOP();
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 2;
-							break;
-						case OPERATION_TYPE_IFELSE:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*3);
-							tmp->data.op->data.operations[0] = stack[count-5]->data.op;
-							tmp->data.op->data.operations[1] = stack[count-3]->data.op;
-							tmp->data.op->data.operations[2] = stack[count-1]->data.op;
-							_free(stack[count-6]);
-							_free(stack[count-5]);
-							_free(stack[count-4]);
-							_free(stack[count-3]);
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 6;
-							break;
-						case OPERATION_TYPE_IF:
-						case OPERATION_TYPE_WHILE:
-						case OPERATION_TYPE_FUNCTION:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*2);
-							tmp->data.op->data.operations[0] = stack[count-3]->data.op;
-							tmp->data.op->data.operations[1] = stack[count-1]->data.op;
-							_free(stack[count-4]);
-							_free(stack[count-3]);
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 4;
-							break;
-						case OPERATION_TYPE_MACRO:
-						case OPERATION_TYPE_STRUCT:
-						case OPERATION_TYPE_DIC:
-						case OPERATION_TYPE_SIN:
-						case OPERATION_TYPE_COS:
-						case OPERATION_TYPE_TAN:
-						case OPERATION_TYPE_ASIN:
-						case OPERATION_TYPE_ACOS:
-						case OPERATION_TYPE_ATAN:
-						case OPERATION_TYPE_SINH:
-						case OPERATION_TYPE_COSH:
-						case OPERATION_TYPE_TANH:
-						case OPERATION_TYPE_ASINH:
-						case OPERATION_TYPE_ACOSH:
-						case OPERATION_TYPE_ATANH:
-						case OPERATION_TYPE_TRUNC:
-						case OPERATION_TYPE_FLOOR:
-						case OPERATION_TYPE_CEIL:
-						case OPERATION_TYPE_ROUND:
-						case OPERATION_TYPE_LEN:
-						case OPERATION_TYPE_CBRT:
-						case OPERATION_TYPE_SQRT:
-						case OPERATION_TYPE_TO_STR:
-						case OPERATION_TYPE_TO_NUM:
-						case OPERATION_TYPE_TO_BOOL:
-						case OPERATION_TYPE_TO_ASCII:
-						case OPERATION_TYPE_WRITE:
-						case OPERATION_TYPE_NEG:
-						case OPERATION_TYPE_NOT:
-						case OPERATION_TYPE_LOCAL:
-						case OPERATION_TYPE_GLOBAL:
-						case OPERATION_TYPE_COPY:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
-							tmp->data.op->data.operations[0] = stack[count-1]->data.op;
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 2;
-							break;
-						case OPERATION_TYPE_FOR:
-							tmp->data.op = operation_create();
-							tmp->data.op->type = on_stack;
-							tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*4);
-							tmp->data.op->data.operations[0] = stack[count-7]->data.op;
-							tmp->data.op->data.operations[1] = stack[count-5]->data.op;
-							tmp->data.op->data.operations[2] = stack[count-3]->data.op;
-							tmp->data.op->data.operations[3] = stack[count-1]->data.op;
-							_free(stack[count-8]);
-							_free(stack[count-7]);
-							_free(stack[count-6]);
-							_free(stack[count-5]);
-							_free(stack[count-4]);
-							_free(stack[count-3]);
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 8;
-							break;
-						case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
-						case OPERATION_TYPE_NOOP_PROC_DEADEND:
-							tmp->data.op = stack[count-2]->data.op;
-							_free(stack[count-2]);
-							_free(stack[count-1]);
-							count -= 2;
-							break;
-						default: /* this should never happen. */ break;
+						tmp->data.op = operation_create();
+						tmp->data.op->type = on_stack;
+						tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*(2+num_of_repetitions));
+						tmp->data.op->data.operations[1+num_of_repetitions] = NULL;
+
+						for(int i = 0; i < 1+num_of_repetitions; i++)
+							tmp->data.op->data.operations[i] = stack[count - (1+num_of_repetitions*2) + (i*2)]->data.op;
+
+						for(int i = 1; i <= 1+num_of_repetitions*2; i++)
+							_free(stack[count-i]);
+						count -= 1+num_of_repetitions*2;
+
+						stack[count] = tmp;
+						count++;
 					}
+				} else {
+					if(get_operation_priority(expected_on_stack) < get_operation_priority(on_stack)) {
+						// shift in next value
+						stack[count] = stack[count-1]->next;
+						count++;
+					} else {
+						// reduce
+						token_t* tmp = token_create();
+						tmp->type = TOKEN_TYPE_EXP;
+						tmp->next = stack[count-1]->next;
 
-					stack[count] = tmp;
-					count++;
+						switch(on_stack) {
+							case OPERATION_TYPE_VAR:
+							case OPERATION_TYPE_STR:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.str = stack[count-1]->data.str;
+								_free(stack[count-1]);
+								count--;
+								break;
+							case OPERATION_TYPE_NUM:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.num = stack[count-1]->data.num;
+								_free(stack[count-1]);
+								count--;
+								break;
+							case OPERATION_TYPE_BOOL:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.boolean = stack[count-1]->data.boolean;
+								_free(stack[count-1]);
+								count--;
+								break;
+							case OPERATION_TYPE_NONE:
+							case OPERATION_TYPE_READ:
+							case OPERATION_TYPE_RAND:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								_free(stack[count-1]);
+								count--;
+								break;
+							case OPERATION_TYPE_EXEC:
+							case OPERATION_TYPE_INDEX:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*2);
+								tmp->data.op->data.operations[0] = stack[count-4]->data.op;
+								tmp->data.op->data.operations[1] = stack[count-2]->data.op;
+								_free(stack[count-4]);
+								_free(stack[count-3]);
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 4;
+								break;
+							case OPERATION_TYPE_IN_STRUCT:
+							case OPERATION_TYPE_PAIR:
+							case OPERATION_TYPE_ASSIGN:
+							case OPERATION_TYPE_EQU:
+							case OPERATION_TYPE_GTR:
+							case OPERATION_TYPE_LES:
+							case OPERATION_TYPE_LEQ:
+							case OPERATION_TYPE_GEQ:
+							case OPERATION_TYPE_FIND:
+							case OPERATION_TYPE_SPLIT:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*2);
+								tmp->data.op->data.operations[0] = stack[count-3]->data.op;
+								tmp->data.op->data.operations[1] = stack[count-1]->data.op;
+								_free(stack[count-3]);
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 3;
+								break;
+							case OPERATION_TYPE_NOOP_PLUS:
+								tmp->data.op = stack[count-1]->data.op;
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 2;
+								break;
+							case OPERATION_TYPE_NOOP_BRAC:
+								tmp->data.op = stack[count-2]->data.op;
+								_free(stack[count-3]);
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 3;
+								break;
+							case OPERATION_TYPE_NOOP:
+								stack[count-1]->type = TOKEN_TYPE_EXP;
+								stack[count-1]->data.op = operation_create_NOOP();
+								stack[count-1]->next = tmp;
+								tmp->type = TOKEN_TYPE_CLOSE_BRAC;
+								break;
+							case OPERATION_TYPE_LIST:
+							case OPERATION_TYPE_SCOPE:
+							case OPERATION_TYPE_ABS:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
+								tmp->data.op->data.operations[0] = stack[count-2]->data.op;
+								_free(stack[count-3]);
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 3;
+								break;
+							case OPERATION_TYPE_NOOP_EMP_REC:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = OPERATION_TYPE_LIST;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
+								tmp->data.op->data.operations[0] = operation_create_NOOP();
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 2;
+								break;
+							case OPERATION_TYPE_NOOP_EMP_CUR: 
+								tmp->data.op = operation_create();
+								tmp->data.op->type = OPERATION_TYPE_SCOPE;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
+								tmp->data.op->data.operations[0] = operation_create_NOOP();
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 2;
+								break;
+							case OPERATION_TYPE_IFELSE:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*3);
+								tmp->data.op->data.operations[0] = stack[count-5]->data.op;
+								tmp->data.op->data.operations[1] = stack[count-3]->data.op;
+								tmp->data.op->data.operations[2] = stack[count-1]->data.op;
+								_free(stack[count-6]);
+								_free(stack[count-5]);
+								_free(stack[count-4]);
+								_free(stack[count-3]);
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 6;
+								break;
+							case OPERATION_TYPE_IF:
+							case OPERATION_TYPE_WHILE:
+							case OPERATION_TYPE_FUNCTION:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*2);
+								tmp->data.op->data.operations[0] = stack[count-3]->data.op;
+								tmp->data.op->data.operations[1] = stack[count-1]->data.op;
+								_free(stack[count-4]);
+								_free(stack[count-3]);
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 4;
+								break;
+							case OPERATION_TYPE_MACRO:
+							case OPERATION_TYPE_STRUCT:
+							case OPERATION_TYPE_DIC:
+							case OPERATION_TYPE_SIN:
+							case OPERATION_TYPE_COS:
+							case OPERATION_TYPE_TAN:
+							case OPERATION_TYPE_ASIN:
+							case OPERATION_TYPE_ACOS:
+							case OPERATION_TYPE_ATAN:
+							case OPERATION_TYPE_SINH:
+							case OPERATION_TYPE_COSH:
+							case OPERATION_TYPE_TANH:
+							case OPERATION_TYPE_ASINH:
+							case OPERATION_TYPE_ACOSH:
+							case OPERATION_TYPE_ATANH:
+							case OPERATION_TYPE_TRUNC:
+							case OPERATION_TYPE_FLOOR:
+							case OPERATION_TYPE_CEIL:
+							case OPERATION_TYPE_ROUND:
+							case OPERATION_TYPE_LEN:
+							case OPERATION_TYPE_CBRT:
+							case OPERATION_TYPE_SQRT:
+							case OPERATION_TYPE_TO_STR:
+							case OPERATION_TYPE_TO_NUM:
+							case OPERATION_TYPE_TO_BOOL:
+							case OPERATION_TYPE_TO_ASCII:
+							case OPERATION_TYPE_WRITE:
+							case OPERATION_TYPE_NEG:
+							case OPERATION_TYPE_NOT:
+							case OPERATION_TYPE_LOCAL:
+							case OPERATION_TYPE_GLOBAL:
+							case OPERATION_TYPE_COPY:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
+								tmp->data.op->data.operations[0] = stack[count-1]->data.op;
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 2;
+								break;
+							case OPERATION_TYPE_FOR:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*4);
+								tmp->data.op->data.operations[0] = stack[count-7]->data.op;
+								tmp->data.op->data.operations[1] = stack[count-5]->data.op;
+								tmp->data.op->data.operations[2] = stack[count-3]->data.op;
+								tmp->data.op->data.operations[3] = stack[count-1]->data.op;
+								_free(stack[count-8]);
+								_free(stack[count-7]);
+								_free(stack[count-6]);
+								_free(stack[count-5]);
+								_free(stack[count-4]);
+								_free(stack[count-3]);
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 8;
+								break;
+							case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
+							case OPERATION_TYPE_NOOP_PROC_DEADEND:
+								tmp->data.op = stack[count-2]->data.op;
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 2;
+								break;
+							default: /* this should never happen. */ break;
+						}
+
+						stack[count] = tmp;
+						count++;
+					}
 				}
 			}
 		}
-	}
 
-	program_t* ret;
-	if (stack[0]->type == TOKEN_TYPE_START && stack[1]->type == TOKEN_TYPE_END)
-		ret = operation_create_NOOP();
-	else if(stack[0]->type == TOKEN_TYPE_START && stack[1]->type == TOKEN_TYPE_EXP && stack[2]->type == TOKEN_TYPE_END)
-		ret = stack[1]->data.op;
-	else 
-		error("Parsing error.");
+		program_t* ret;
+		if (stack[0]->type == TOKEN_TYPE_START && stack[1]->type == TOKEN_TYPE_END)
+			ret = operation_create_NOOP();
+		else if(stack[0]->type == TOKEN_TYPE_START && stack[1]->type == TOKEN_TYPE_EXP && stack[2]->type == TOKEN_TYPE_END)
+			ret = stack[1]->data.op;
+		else {
+			error("Parsing error.");
+			for(int i = 0; i < count; i++)
+				if(stack[i]->type == TOKEN_TYPE_EXP)
+					operation_free(stack[i]->data.op);
+		}
 
-	_free(stack[0]);
-	_free(stack[1]);
-	_free(stack[2]);
-	_free(stack);
-	return ret;
+		for(int i = 0; i < count; i++)
+			_free(stack[i]);
+		_free(stack);
+		return ret;
+	} else 
+		return NULL;
 }
 
 program_t* tokenize_and_parse_program(const char* src) {

@@ -17,67 +17,74 @@ function_t* function_create(operation_t* par, operation_t* func) {
 	return ret;
 }
 
-void function_exec(function_t* func, object_t** par, environment_t* env) {
-	if(check_for_stackoverflow())
+void* function_exec(function_t* func, object_t** par, environment_t* env) {
+	void* ret = NULL;
+
+	if(check_for_stackoverflow()) {
 		error("Runtime error: Stack overflow.");
+		ret = RET_ERROR;
+	} else
+		if(func != NULL) {
+			environment_add_scope(env);
+			size_t prev_limit = env->local_mode_limit;
+			environment_set_local_mode(env, env->count-1);
+			string_t* func_self_name = string_create("func_self");
+			environment_write(env, func_self_name, object_create_function(function_create(func->parameter, func->function)));
 
-	if(func != NULL) {
-		environment_add_scope(env);
-		size_t prev_limit = env->local_mode_limit;
-		environment_set_local_mode(env, env->count-1);
-		string_t* func_self_name = string_create("func_self");
-		environment_write(env, func_self_name, object_create_function(function_create(func->parameter, func->function)));
+			object_t*** par_loc_list = operation_var(func->parameter, env);
 
-		object_t*** par_loc_list = operation_var(func->parameter, env);
+			if(par != NULL && par_loc_list != NULL)
+				for(int i = 0; par[i] != NULL && par_loc_list[i] != NULL; i++) {
+					object_dereference(*(par_loc_list[i]));
+					*(par_loc_list[i]) = par[i];
+					object_reference(*(par_loc_list[i]));
+				}
 
-		if(par != NULL && par_loc_list != NULL)
-			for(int i = 0; par[i] != NULL && par_loc_list[i] != NULL; i++) {
-				object_dereference(*(par_loc_list[i]));
-				*(par_loc_list[i]) = par[i];
-				object_reference(*(par_loc_list[i]));
-			}
+			if(operation_exec(func->function, env) == RET_ERROR)
+				ret = RET_ERROR;
 
-		operation_exec(func->function, env);
+			environment_del(env, func_self_name);
+			_free(func_self_name);
+			
+			environment_set_local_mode(env, prev_limit);
+			environment_remove_scope(env);
+		}
 
-		environment_del(env, func_self_name);
-		_free(func_self_name);
-		
-		environment_set_local_mode(env, prev_limit);
-		environment_remove_scope(env);
-	}
+	return ret;
 }
 
 
 object_t** function_result(function_t* func, object_t** par, environment_t* env) {
-	if(check_for_stackoverflow())
-		error("Runtime error: Stack overflow.");
-
 	object_t** ret = NULL;
 
-	if(func != NULL) {
-		environment_add_scope(env);
-		size_t prev_limit = env->local_mode_limit;
-		environment_set_local_mode(env, env->count-1);
-		string_t* func_self_name = string_create("func_self");
-		environment_write(env, func_self_name, object_create_function(function_create(func->parameter, func->function)));
+	if(check_for_stackoverflow()) {
+		error("Runtime error: Stack overflow.");
+		ret = RET_ERROR;
+	} else
+		if(func != NULL) {
+			environment_add_scope(env);
+			size_t prev_limit = env->local_mode_limit;
+			environment_set_local_mode(env, env->count-1);
+			string_t* func_self_name = string_create("func_self");
+			environment_write(env, func_self_name, object_create_function(function_create(func->parameter, func->function)));
 
-		object_t*** par_loc_list = operation_var(func->parameter, env);
+			object_t*** par_loc_list = operation_var(func->parameter, env);
 
-		if(par != NULL && par_loc_list != NULL)
-			for(int i = 0; par[i] != NULL && par_loc_list[i] != NULL; i++) {
-				object_dereference(*(par_loc_list[i]));
-				*(par_loc_list[i]) = par[i];
-				object_reference(*(par_loc_list[i]));
-			}
+			if(par != NULL && par_loc_list != NULL)
+				for(int i = 0; par[i] != NULL && par_loc_list[i] != NULL; i++) {
+					object_dereference(*(par_loc_list[i]));
+					*(par_loc_list[i]) = par[i];
+					object_reference(*(par_loc_list[i]));
+				}
 
-		ret = operation_result(func->function, env);
-		
-		environment_del(env, func_self_name);
-		string_free(func_self_name);
+			ret = operation_result(func->function, env);
+			
+			environment_del(env, func_self_name);
+			string_free(func_self_name);
 
-		environment_set_local_mode(env, prev_limit);
-		environment_remove_scope(env);
-	}
+			environment_set_local_mode(env, prev_limit);
+			environment_remove_scope(env);
+		}
 
 	return ret;
 }

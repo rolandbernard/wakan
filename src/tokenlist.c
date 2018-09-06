@@ -146,8 +146,9 @@ tokenlist_t* tokenize(const char* src) {
 	ret->end = ret->start;
 	const char* cur_pos = src;
 	const char* start_pos = src;
+	bool_t had_error = false;
 
-	while(*cur_pos != '\0') {
+	while(!had_error && *cur_pos != '\0') {
 		if(*cur_pos == ' ' || *cur_pos == '\t' || *cur_pos == '\n' || *cur_pos == '\0') {
 			if(start_pos != cur_pos)
 				add_token(ret, start_pos, cur_pos);
@@ -281,39 +282,46 @@ tokenlist_t* tokenize(const char* src) {
 
 			size_t length = 0;
 			int index = 1;
-			while(*(cur_pos+index) != *cur_pos) {
+			while(!had_error && *(cur_pos+index) != *cur_pos) {
 				char c = *(cur_pos+index);
 				index++;
 
-				if(c == '\0')
+				if(c == '\0') {
 					error("Tokenization error: Unexpected end of input.");
-
-				if(c == '\\') {
-					c = *(cur_pos+index);
-					index++;
-					switch(c) {
-						case '\0': error("Tokenization error: Unexpected end of input."); break;
-						case '0': c = '\0'; break;
-						case 'a': c = '\a'; break;
-						case 'b': c = '\b'; break;
-						case 't': c = '\t'; break;
-						case 'n': c = '\n'; break;
-						case 'v': c = '\v'; break;
-						case 'f': c = '\f'; break;
-						case 'r': c = '\r'; break;
-						default: break;
+					had_error = true;
+				} else {
+					if(c == '\\') {
+						c = *(cur_pos+index);
+						index++;
+						switch(c) {
+							case '\0': 
+								error("Tokenization error: Unexpected end of input.");
+								had_error = true;
+								break;
+							case '0': c = '\0'; break;
+							case 'a': c = '\a'; break;
+							case 'b': c = '\b'; break;
+							case 't': c = '\t'; break;
+							case 'n': c = '\n'; break;
+							case 'v': c = '\v'; break;
+							case 'f': c = '\f'; break;
+							case 'r': c = '\r'; break;
+							default: break;
+						}
 					}
-				}
 
-				temp_str[length] = c;
-				length++;	
+					temp_str[length] = c;
+					length++;	
+				}
 			}
 
-			add_simple_token(ret, TOKEN_TYPE_STR);
-			ret->end->data.str = string_create_full(temp_str, length);
+			if(!had_error) {
+				add_simple_token(ret, TOKEN_TYPE_STR);
+				ret->end->data.str = string_create_full(temp_str, length);
 
-			cur_pos += index;
-			start_pos = cur_pos+1;
+				cur_pos += index;
+				start_pos = cur_pos+1;
+			}
 		} else if(*cur_pos >= '0' && *cur_pos <= '9' && cur_pos == start_pos) {
 			number_t num = 0;
 			long div = 1;
@@ -357,10 +365,19 @@ tokenlist_t* tokenize(const char* src) {
 		}
 		cur_pos++;
 	}
-	if(start_pos != cur_pos)
-		add_token(ret, start_pos, cur_pos);
+	if(had_error) {
+		for(token_t* head = ret->start; head != NULL;) {
+			token_t* tmp = head->next;
+			_free(head);
+			head = tmp;
+		}
+		ret = NULL;
+	} else {
+		if(start_pos != cur_pos)
+			add_token(ret, start_pos, cur_pos);
 
-	add_simple_token(ret, TOKEN_TYPE_END);
+		add_simple_token(ret, TOKEN_TYPE_END);
+	}
 
 	return ret;
 }

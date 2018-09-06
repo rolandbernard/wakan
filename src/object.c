@@ -307,8 +307,10 @@ object_t* object_add(object_t* o1, object_t* o2) {
 		ret = object_create_list(list_add(o1->data.list, o2->data.list));
 	} else if (o1->type == OBJECT_TYPE_STRING && o2->type == OBJECT_TYPE_STRING) {
 		ret = object_create_string(string_concat(o1->data.string, o2->data.string));
-	} else 
+	} else {
 		error("Runtime error: Addition type error.");
+		ret = RET_ERROR;
+	}
 
 	return ret;
 }
@@ -325,8 +327,10 @@ object_t* object_mul(object_t* o1, object_t* o2) {
 		ret = object_create_list(list_mul(o1->data.list, (size_t)round(o2->data.number)));
 	} else if (o1->type == OBJECT_TYPE_NUMBER && o2->type == OBJECT_TYPE_LIST) {
 		ret = object_create_list(list_mul(o2->data.list, (size_t)round(o1->data.number)));
-	} else 
+	} else {
 		error("Runtime error: Multiplication type error.");
+		ret = RET_ERROR;
+	}
 
 	return ret;
 }

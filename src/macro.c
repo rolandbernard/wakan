@@ -6,8 +6,8 @@ macro_t* macro_create(operation_t* mac) {
 	return mac;
 }
 
-void macro_exec(macro_t* mac, environment_t* env) {
-	operation_exec(mac, env);
+void* macro_exec(macro_t* mac, environment_t* env) {
+	return operation_exec(mac, env);
 }
 
 object_t** macro_result(macro_t* mac, environment_t* env) {
