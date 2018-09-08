@@ -35,6 +35,8 @@ void add_token(tokenlist_t* list, const char* start, const char* end) {
 		add_simple_token(list, TOKEN_TYPE_IF);
 	} else if(cmp_str(start, end, "do")) {
 		add_simple_token(list, TOKEN_TYPE_DO);
+	} else if(cmp_str(start, end, "in")) {
+		add_simple_token(list, TOKEN_TYPE_IN);
 	} else if(cmp_str(start, end, "or")) {
 		add_simple_token(list, TOKEN_TYPE_OR);
 	} else if(cmp_str(start, end, "mod")) {

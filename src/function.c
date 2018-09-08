@@ -40,7 +40,7 @@ void* function_exec(function_t* func, object_t** par, environment_t* env) {
 						object_dereference(*obj);
 
 						size_t length_left = 0;
-						while(par[length_left] != NULL) length_left++;
+						while(par[i + length_left] != NULL) length_left++;
 
 						list_t* list = list_create_null(length_left);
 						for(int j = 0; j < length_left; j++) {
@@ -94,7 +94,7 @@ object_t** function_result(function_t* func, object_t** par, environment_t* env)
 						object_dereference(*obj);
 
 						size_t length_left = 0;
-						while(par[length_left] != NULL) length_left++;
+						while(par[i + length_left] != NULL) length_left++;
 
 						list_t* list = list_create_null(length_left);
 						for(int j = 0; j < length_left; j++) {

@@ -74,7 +74,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 								object_dereference(*obj);
 
 								size_t length_left = 0;
-								while(assign_val[length_left] != NULL) length_left++;
+								while(assign_val[i + length_left] != NULL) length_left++;
 
 								list_t* list = list_create_null(length_left);
 								for(int j = 0; j < length_left; j++) {
@@ -544,6 +544,61 @@ void* operation_exec(operation_t* op, environment_t* env) {
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
+				case OPERATION_TYPE_FOR_IN: {
+					object_t*** vals_loc = operation_var(op->data.operations[0], env);
+					object_t** vals_in = operation_result(op->data.operations[1], env);
+
+					if(vals_loc == NULL || vals_in == NULL) {
+						error("Runtime error: For-in NULL error.");
+						ret = RET_ERROR;
+					} else if(vals_loc == RET_ERROR || vals_in == RET_ERROR) {
+						ret = RET_ERROR;
+					} else {
+						bool_t end = false;
+						int pos_in = 0;
+						while(ret != RET_ERROR && !end) {
+							// Assign values
+							for(int i = 0; vals_loc[i] != NULL && vals_in[pos_in] != NULL; i++) {
+								if(vals_loc[i] == OBJECT_LIST_OPENED) {
+									object_t** obj = vals_loc[i+1];
+									object_dereference(*obj);
+
+									size_t length_left = 0;
+									while(vals_in[pos_in + length_left] != NULL) length_left++;
+
+									list_t* list = list_create_null(length_left);
+									for(int j = 0; j < length_left; j++) {
+										list->data[j] = vals_in[i+j];
+										object_reference(list->data[j]);
+									}
+									*obj = object_create_list(list);
+									object_reference(*obj);
+									pos_in += length_left;
+								} else {
+									object_dereference(*(vals_loc[i]));
+									*(vals_loc[i]) = vals_in[pos_in];
+									object_reference(*(vals_loc[i]));
+									pos_in++;
+								}
+							}
+							if(vals_in[pos_in] == NULL)
+								end = true;
+
+							if(operation_exec(op->data.operations[2], env) == RET_ERROR)
+								ret = RET_ERROR;
+						}
+					}
+
+					if(vals_loc != RET_ERROR && vals_loc != NULL) {
+						_free(vals_loc);
+					}
+					if(vals_in != RET_ERROR && vals_in != NULL) {
+						for(int i = 0; vals_in[i] != NULL; i++)
+							object_dereference(vals_in[i]);
+						_free(vals_in);
+					}
+				} break;
+
 			}
 		}
 
@@ -693,7 +748,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 								object_dereference(*obj);
 
 								size_t length_left = 0;
-								while(assign_val[length_left] != NULL) length_left++;
+								while(assign_val[i + length_left] != NULL) length_left++;
 
 								list_t* list = list_create_null(length_left);
 								for(int j = 0; j < length_left; j++) {
@@ -3442,7 +3497,82 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						_free(vals);
 					}
 				} break;
-			}
+				case OPERATION_TYPE_FOR_IN: {
+					list_t* list = list_create_empty();
+					
+					object_t*** vals_loc = operation_var(op->data.operations[0], env);
+					object_t** vals_in = operation_result(op->data.operations[1], env);
+
+					if(vals_loc == NULL || vals_in == NULL) {
+						error("Runtime error: For-in NULL error.");
+						ret = RET_ERROR;
+					} else if(vals_loc == RET_ERROR || vals_in == RET_ERROR) {
+						ret = RET_ERROR;
+					} else {
+						bool_t end = false;
+						int pos_in = 0;
+						while(ret != RET_ERROR && !end) {
+							// Assign values
+							for(int i = 0; vals_loc[i] != NULL && vals_in[pos_in] != NULL; i++) {
+								if(vals_loc[i] == OBJECT_LIST_OPENED) {
+									object_t** obj = vals_loc[i+1];
+									object_dereference(*obj);
+
+									size_t length_left = 0;
+									while(vals_in[pos_in + length_left] != NULL) length_left++;
+
+									list_t* list = list_create_null(length_left);
+									for(int j = 0; j < length_left; j++) {
+										list->data[j] = vals_in[i+j];
+										object_reference(list->data[j]);
+									}
+									*obj = object_create_list(list);
+									object_reference(*obj);
+									pos_in += length_left;
+								} else {
+									object_dereference(*(vals_loc[i]));
+									*(vals_loc[i]) = vals_in[pos_in];
+									object_reference(*(vals_loc[i]));
+									pos_in++;
+								}
+							}
+							if(vals_in[pos_in] == NULL)
+								end = true;
+
+							object_t** tmp = operation_result(op->data.operations[2], env);
+							if(tmp == NULL) {
+								error("Runtime error: For NULL error.");
+								list_free(list);
+								ret = RET_ERROR;
+							} else if(tmp == RET_ERROR) {
+								list_free(list);
+								ret = RET_ERROR;
+							} else {
+								for(int i = 0; tmp[i] != NULL; i++) {
+									list_append(list, tmp[i]);
+									object_dereference(tmp[i]);
+								}
+								_free(tmp);
+							}
+						}
+					}
+
+					if(vals_loc != RET_ERROR && vals_loc != NULL) {
+						_free(vals_loc);
+					}
+					if(vals_in != RET_ERROR && vals_in != NULL) {
+						for(int i = 0; vals_in[i] != NULL; i++)
+							object_dereference(vals_in[i]);
+						_free(vals_in);
+					}
+
+					if(ret != RET_ERROR) {
+						list_append(list, NULL);
+						ret = list->data;
+						_free(list);
+					}
+				} break;
+			} 
 		}
 	
 	return ret;
@@ -3502,7 +3632,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 								object_dereference(*obj);
 
 								size_t length_left = 0;
-								while(assign_val[length_left] != NULL) length_left++;
+								while(assign_val[i + length_left] != NULL) length_left++;
 
 								list_t* list = list_create_null(length_left);
 								for(int j = 0; j < length_left; j++) {
@@ -3959,6 +4089,80 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						}
 					}
 				} break;
+				case OPERATION_TYPE_FOR_IN: {
+					list_t* list = list_create_empty();
+					
+					object_t*** vals_loc = operation_var(op->data.operations[0], env);
+					object_t** vals_in = operation_result(op->data.operations[1], env);
+
+					if(vals_loc == NULL || vals_in == NULL) {
+						error("Runtime error: For-in NULL error.");
+						ret = RET_ERROR;
+					} else if(vals_loc == RET_ERROR || vals_in == RET_ERROR) {
+						ret = RET_ERROR;
+					} else {
+						bool_t end = false;
+						int pos_in = 0;
+						while(ret != RET_ERROR && !end) {
+							// Assign values
+							for(int i = 0; vals_loc[i] != NULL && vals_in[pos_in] != NULL; i++) {
+								if(vals_loc[i] == OBJECT_LIST_OPENED) {
+									object_t** obj = vals_loc[i+1];
+									object_dereference(*obj);
+
+									size_t length_left = 0;
+									while(vals_in[pos_in + length_left] != NULL) length_left++;
+
+									list_t* list = list_create_null(length_left);
+									for(int j = 0; j < length_left; j++) {
+										list->data[j] = vals_in[i+j];
+										object_reference(list->data[j]);
+									}
+									*obj = object_create_list(list);
+									object_reference(*obj);
+									pos_in += length_left;
+								} else {
+									object_dereference(*(vals_loc[i]));
+									*(vals_loc[i]) = vals_in[pos_in];
+									object_reference(*(vals_loc[i]));
+									pos_in++;
+								}
+							}
+							if(vals_in[pos_in] == NULL)
+								end = true;
+
+							object_t** tmp = operation_result(op->data.operations[2], env);
+							if(tmp == NULL) {
+								error("Runtime error: For NULL error.");
+								list_free(list);
+								ret = RET_ERROR;
+							} else if(tmp == RET_ERROR) {
+								list_free(list);
+								ret = RET_ERROR;
+							} else {
+								for(int i = 0; tmp[i] != NULL; i++) {
+									list_append(list, (object_t*)tmp[i]);
+								}
+								_free(tmp);
+							}
+						}
+					}
+
+					if(vals_loc != RET_ERROR && vals_loc != NULL) {
+						_free(vals_loc);
+					}
+					if(vals_in != RET_ERROR && vals_in != NULL) {
+						for(int i = 0; vals_in[i] != NULL; i++)
+							object_dereference(vals_in[i]);
+						_free(vals_in);
+					}
+
+					if(ret != RET_ERROR) {
+						list_append(list, NULL);
+						ret = (object_t***)list->data;
+						_free(list);
+					}
+				} break;
 			}
 		}
 
@@ -4269,6 +4473,12 @@ void operation_free(operation_t* op) {
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
+			case OPERATION_TYPE_FOR_IN:
+				operation_free(op->data.operations[0]);
+				operation_free(op->data.operations[1]);
+				operation_free(op->data.operations[2]);
+				_free(op->data.operations);
+			break;
 		}
 		_free(op);
 	}
@@ -4357,6 +4567,7 @@ id_t operation_id(operation_t* op) {
 			case OPERATION_TYPE_COPY: break;
 			case OPERATION_TYPE_FOR: break;
 			case OPERATION_TYPE_LIST_OPEN: break;
+			case OPERATION_TYPE_FOR_IN: break;
 		}
 	}
 	
@@ -4452,6 +4663,7 @@ bool_t operation_equ(operation_t* o1, operation_t* o2) {
 		case OPERATION_TYPE_COPY: break;
 		case OPERATION_TYPE_FOR: break;
 		case OPERATION_TYPE_LIST_OPEN: break;
+		case OPERATION_TYPE_FOR_IN: break;
 	}
 
 	return ret;

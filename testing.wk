@@ -1,6 +1,12 @@
 # This example is not guaranteed to work.
 
-list := [1] * 700;
-write len list;
-write '\n'
+list := [2, 3] * 20;
+a, *l := *list;
+write len l;
+write '\n';
+sum := 0;
+l2 := [for e1,e2 in *list do (
+	sum := sum + e1 + e2
+)];
+write ("sum: ", l2, '\n')
 
