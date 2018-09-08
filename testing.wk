@@ -1,6 +1,7 @@
 # This example is not guaranteed to work.
 
 list := [1] * 700;
-write len list;
+a, *l := *list;
+write len l;
 write '\n'
 

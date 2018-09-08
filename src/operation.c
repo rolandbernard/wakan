@@ -74,7 +74,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 								object_dereference(*obj);
 
 								size_t length_left = 0;
-								while(assign_val[length_left] != NULL) length_left++;
+								while(assign_val[i + length_left] != NULL) length_left++;
 
 								list_t* list = list_create_null(length_left);
 								for(int j = 0; j < length_left; j++) {
@@ -693,7 +693,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 								object_dereference(*obj);
 
 								size_t length_left = 0;
-								while(assign_val[length_left] != NULL) length_left++;
+								while(assign_val[i + length_left] != NULL) length_left++;
 
 								list_t* list = list_create_null(length_left);
 								for(int j = 0; j < length_left; j++) {
@@ -3502,7 +3502,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 								object_dereference(*obj);
 
 								size_t length_left = 0;
-								while(assign_val[length_left] != NULL) length_left++;
+								while(assign_val[i + length_left] != NULL) length_left++;
 
 								list_t* list = list_create_null(length_left);
 								for(int j = 0; j < length_left; j++) {
