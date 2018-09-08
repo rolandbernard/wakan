@@ -179,7 +179,8 @@ void list_append(list_t* list, object_t* obj) {
 			tmp[i] = list->data[i];
 		tmp[i] = obj;
 		object_reference(obj);
-		_free(list->data);
+		if(list->data != NULL)
+			_free(list->data);
 		list->data = tmp;
 		list->size++;
 	}

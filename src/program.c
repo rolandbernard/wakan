@@ -40,6 +40,7 @@ int get_operation_priority(operation_type_t type) {
 		case OPERATION_TYPE_IF:
 		case OPERATION_TYPE_WHILE:
 		case OPERATION_TYPE_FOR:
+		case OPERATION_TYPE_FOR_IN:
 		case OPERATION_TYPE_FUNCTION:
 		case OPERATION_TYPE_MACRO:
 		case OPERATION_TYPE_STRUCT:
@@ -210,6 +211,8 @@ operation_type_t get_operation(token_t** stack, size_t count, bool_t(*func)(toke
 		return OPERATION_TYPE_WHILE;
 	else if(func(stack, count, 8, TOKEN_TYPE_FOR, TOKEN_TYPE_EXP, TOKEN_TYPE_BACKSLASH, TOKEN_TYPE_EXP, TOKEN_TYPE_BACKSLASH, TOKEN_TYPE_EXP, TOKEN_TYPE_DO, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_FOR;
+	else if(func(stack, count, 6, TOKEN_TYPE_FOR, TOKEN_TYPE_EXP, TOKEN_TYPE_IN, TOKEN_TYPE_EXP, TOKEN_TYPE_DO, TOKEN_TYPE_EXP))
+		return OPERATION_TYPE_FOR_IN;
 	else if(func(stack, count, 4, TOKEN_TYPE_FUNCTION, TOKEN_TYPE_EXP, TOKEN_TYPE_DOES, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_FUNCTION;
 	else if(func(stack, count, 2, TOKEN_TYPE_DEF, TOKEN_TYPE_EXP))
@@ -514,6 +517,7 @@ program_t* parse_program(tokenlist_t* list) {
 								count -= 2;
 								break;
 							case OPERATION_TYPE_IFELSE:
+							case OPERATION_TYPE_FOR_IN:
 								tmp->data.op = operation_create();
 								tmp->data.op->type = on_stack;
 								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*3);
