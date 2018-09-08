@@ -136,18 +136,18 @@ bool_t object_equ(object_t* o1, object_t* o2) {
 }
 
 void object_reference(object_t* obj) {
-	if(obj != NULL)
+	if(obj != NULL && obj != OBJECT_LIST_OPENED)
 		obj->num_references++;
 }
 
 bool_t object_dereference(object_t* obj) {
-	if(obj != NULL && obj->num_references > 0)
+	if(obj != NULL && obj != OBJECT_LIST_OPENED && obj->num_references > 0 )
 		obj->num_references--;
 	return object_check_reference(obj);
 }
 
 bool_t object_check_reference(object_t* obj) {
-	if(obj != NULL && obj->num_references == 0) {
+	if(obj != NULL && obj != OBJECT_LIST_OPENED && obj->num_references == 0) {
 		object_free(obj);
 		return true;
 	}
@@ -156,7 +156,7 @@ bool_t object_check_reference(object_t* obj) {
 
 // TODO:
 void object_free(object_t* obj) {
-	if(obj != NULL) {
+	if(obj != NULL && obj != OBJECT_LIST_OPENED) {
 		switch(obj->type)
 		{
 			case OBJECT_TYPE_NONE: break;
@@ -175,7 +175,7 @@ void object_free(object_t* obj) {
 }
 
 void print_object(object_t* obj) {
-	if(obj == NULL)
+	if(obj == NULL || obj == OBJECT_LIST_OPENED)
 		fprintf(stdout, "null");
 	else {
 		switch(obj->type) {
@@ -236,7 +236,7 @@ void print_object(object_t* obj) {
 
 string_t* object_to_string(object_t* obj) {
 	string_t* ret = NULL;
-	if(obj == NULL)
+	if(obj == NULL || obj == OBJECT_LIST_OPENED)
 		ret = string_create("null");
 	switch (obj->type) {
 		case OBJECT_TYPE_NONE: ret = string_create("none"); break;
@@ -282,7 +282,7 @@ string_t* object_to_string(object_t* obj) {
 }
 
 bool_t is_true(object_t* obj) {
-	if(obj == NULL)
+	if(obj == NULL || obj == OBJECT_LIST_OPENED)
 		return false;
 	switch (obj->type) {
 		case OBJECT_TYPE_NONE: return false; break;

@@ -69,9 +69,26 @@ void* operation_exec(operation_t* op, environment_t* env) {
 						ret =  RET_ERROR;
 					} else
 						for(int i = 0; assign_loc[i] != NULL && assign_val[i] != NULL; i++) {
-							object_dereference(*(assign_loc[i]));
-							*(assign_loc[i]) = assign_val[i];
-							object_reference(*(assign_loc[i]));
+							if(assign_loc[i] == OBJECT_LIST_OPENED) {
+								object_t** obj = assign_loc[i+1];
+								object_dereference(*obj);
+
+								size_t length_left = 0;
+								while(assign_val[length_left] != NULL) length_left++;
+
+								list_t* list = list_create_null(length_left);
+								for(int j = 0; j < length_left; j++) {
+									list->data[j] = assign_val[i+j];
+									object_reference(list->data[j]);
+								}
+								*obj = object_create_list(list);
+								object_reference(*obj);
+								break;
+							} else {
+								object_dereference(*(assign_loc[i]));
+								*(assign_loc[i]) = assign_val[i];
+								object_reference(*(assign_loc[i]));
+							}
 						}
 						
 					if(assign_loc != RET_ERROR && assign_loc != NULL) {
@@ -479,7 +496,10 @@ void* operation_exec(operation_t* op, environment_t* env) {
 					ret = operation_exec(op->data.operations[0], env);
 					environment_set_local_mode(env, prev_limit);
 				} break;
-				case OPERATION_TYPE_COPY:operation_exec(op->data.operations[0], env); break;
+				case OPERATION_TYPE_COPY:
+					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
+						ret = RET_ERROR; 
+					break;
 				case OPERATION_TYPE_FOR: {
 					operation_exec(op->data.operations[0], env);
 					object_t** cond = operation_result(op->data.operations[1], env);
@@ -520,6 +540,10 @@ void* operation_exec(operation_t* op, environment_t* env) {
 						_free(cond);
 					}
 				} break;
+				case OPERATION_TYPE_LIST_OPEN:
+					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
+						ret = RET_ERROR;
+					break;
 			}
 		}
 
@@ -664,9 +688,26 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						ret = RET_ERROR;
 					} else {
 						for(int i = 0; assign_loc[i] != NULL && assign_val[i] != NULL; i++) {
-							object_dereference(*(assign_loc[i]));
-							*(assign_loc[i]) = assign_val[i];
-							object_reference(*(assign_loc[i]));
+							if(assign_loc[i] == OBJECT_LIST_OPENED) {
+								object_t** obj = assign_loc[i+1];
+								object_dereference(*obj);
+
+								size_t length_left = 0;
+								while(assign_val[length_left] != NULL) length_left++;
+
+								list_t* list = list_create_null(length_left);
+								for(int j = 0; j < length_left; j++) {
+									list->data[j] = assign_val[i+j];
+									object_reference(list->data[j]);
+								}
+								*obj = object_create_list(list);
+								object_reference(*obj);
+								break;
+							} else {
+								object_dereference(*(assign_loc[i]));
+								*(assign_loc[i]) = assign_val[i];
+								object_reference(*(assign_loc[i]));
+							}
 						}
 					}
 						
@@ -3363,6 +3404,44 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						}
 					}
 				} break;
+				case OPERATION_TYPE_LIST_OPEN: {
+					object_t** vals = operation_result(op->data.operations[0], env);
+						
+					if(vals == NULL) {
+						error("Runtime error: List-opening NULL error.");
+						ret = RET_ERROR;
+					} else if(vals == RET_ERROR) {
+						ret = RET_ERROR;
+					} else {
+						size_t num_ret = 0;
+
+						for(int i = 0; ret != RET_ERROR && vals[i] != NULL; i++)
+							if(vals[i]->type == OBJECT_TYPE_LIST) {
+								num_ret += vals[i]->data.list->size;
+							} else {
+								error("Runtime error: List-opening type error.");
+								ret = RET_ERROR;
+							}
+
+						if(ret != RET_ERROR) {
+							ret = (object_t**)_alloc(sizeof(object_t*)*(num_ret+1));
+
+							num_ret = 0;
+							for(int i = 0; vals[i] != NULL; i++)
+								for(int j = 0; j < vals[i]->data.list->size; j++) {
+									ret[num_ret] = vals[i]->data.list->data[j];
+									object_reference(ret[num_ret]);
+									num_ret++;
+								}
+
+							ret[num_ret] = NULL;
+						}
+
+						for(int i = 0; vals[i] != NULL; i++)
+							object_dereference(vals[i]);
+						_free(vals);
+					}
+				} break;
 			}
 		}
 	
@@ -3418,9 +3497,26 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 
 					} else {
 						for(int i = 0; assign_loc[i] != NULL && assign_val[i] != NULL; i++) {
-							object_dereference(*(assign_loc[i]));
-							*(assign_loc[i]) = assign_val[i];
-							object_reference(*(assign_loc[i]));
+							if(assign_loc[i] == OBJECT_LIST_OPENED) {
+								object_t** obj = assign_loc[i+1];
+								object_dereference(*obj);
+
+								size_t length_left = 0;
+								while(assign_val[length_left] != NULL) length_left++;
+
+								list_t* list = list_create_null(length_left);
+								for(int j = 0; j < length_left; j++) {
+									list->data[j] = assign_val[i+j];
+									object_reference(list->data[j]);
+								}
+								*obj = object_create_list(list);
+								object_reference(*obj);
+								break;
+							} else {
+								object_dereference(*(assign_loc[i]));
+								*(assign_loc[i]) = assign_val[i];
+								object_reference(*(assign_loc[i]));
+							}
 						}
 					}
 					
@@ -3841,6 +3937,28 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						}
 					}
 				} break;
+				case OPERATION_TYPE_LIST_OPEN: {
+					object_t*** vals = operation_var(op->data.operations[0], env);
+
+					if(vals == NULL) {
+						error("Runtime error: List-opening NULL error.");
+						ret = RET_ERROR;
+					} else if(vals == RET_ERROR) {
+						ret = RET_ERROR;
+					} else { 
+						if(vals[0] == OBJECT_LIST_OPENED) {
+							error("Runtime error: List-open type error.");
+							ret = RET_ERROR;
+						} else {
+							ret = (object_t***)_alloc(sizeof(object_t**)*3);
+							ret[0] = OBJECT_LIST_OPENED;
+							ret[1] = vals[0];
+							ret[2] = NULL;
+							
+							_free(vals);
+						}
+					}
+				} break;
 			}
 		}
 
@@ -4147,6 +4265,10 @@ void operation_free(operation_t* op) {
 				operation_free(op->data.operations[3]);
 				_free(op->data.operations);
 			break;
+			case OPERATION_TYPE_LIST_OPEN:
+				operation_free(op->data.operations[0]);
+				_free(op->data.operations);
+			break;
 		}
 		_free(op);
 	}
@@ -4234,6 +4356,7 @@ id_t operation_id(operation_t* op) {
 			case OPERATION_TYPE_GLOBAL: break;
 			case OPERATION_TYPE_COPY: break;
 			case OPERATION_TYPE_FOR: break;
+			case OPERATION_TYPE_LIST_OPEN: break;
 		}
 	}
 	
@@ -4328,6 +4451,7 @@ bool_t operation_equ(operation_t* o1, operation_t* o2) {
 		case OPERATION_TYPE_GLOBAL: break;
 		case OPERATION_TYPE_COPY: break;
 		case OPERATION_TYPE_FOR: break;
+		case OPERATION_TYPE_LIST_OPEN: break;
 	}
 
 	return ret;

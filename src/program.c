@@ -33,6 +33,7 @@ int get_operation_priority(operation_type_t type) {
 			return 3;
 		case OPERATION_TYPE_FIND:
 		case OPERATION_TYPE_SPLIT:
+		case OPERATION_TYPE_LIST_OPEN:
 			return 4;
 		case OPERATION_TYPE_IFELSE:
 			return 5;
@@ -275,6 +276,8 @@ operation_type_t get_operation(token_t** stack, size_t count, bool_t(*func)(toke
 		return OPERATION_TYPE_POW;
 	else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_MUL, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_MUL;
+	else if(func(stack, count, 2, TOKEN_TYPE_MUL, TOKEN_TYPE_EXP))
+		return OPERATION_TYPE_LIST_OPEN;
 	else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_DIV, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_DIV;
 	else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_MOD, TOKEN_TYPE_EXP))
@@ -571,6 +574,7 @@ program_t* parse_program(tokenlist_t* list) {
 							case OPERATION_TYPE_LOCAL:
 							case OPERATION_TYPE_GLOBAL:
 							case OPERATION_TYPE_COPY:
+							case OPERATION_TYPE_LIST_OPEN:
 								tmp->data.op = operation_create();
 								tmp->data.op->type = on_stack;
 								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
@@ -614,7 +618,7 @@ program_t* parse_program(tokenlist_t* list) {
 			}
 		}
 
-		program_t* ret;
+		program_t* ret = NULL;
 		if (stack[0]->type == TOKEN_TYPE_START && stack[1]->type == TOKEN_TYPE_END)
 			ret = operation_create_NOOP();
 		else if(stack[0]->type == TOKEN_TYPE_START && stack[1]->type == TOKEN_TYPE_EXP && stack[2]->type == TOKEN_TYPE_END)

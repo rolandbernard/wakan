@@ -9,7 +9,8 @@
 #include "./string.h"
 #include "./environment.h"
 
-#define RET_ERROR (void*)0x01
+#define RET_ERROR ((void*)0x01)
+#define OBJECT_LIST_OPENED ((void*)0x02)
 
 typedef enum operation_type_e {
 	OPERATION_TYPE_NOOP,	// ()
@@ -90,6 +91,7 @@ typedef enum operation_type_e {
 	OPERATION_TYPE_FOR,		// for E\E\E do E
 	OPERATION_TYPE_NOOP_PLUS,		// +E
 	OPERATION_TYPE_TO_ASCII,		// to_ascii E
+	OPERATION_TYPE_LIST_OPEN,		// * E
 } operation_type_t;
 
 typedef struct operation_s {

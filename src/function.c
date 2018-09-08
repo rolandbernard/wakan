@@ -34,10 +34,27 @@ void* function_exec(function_t* func, object_t** par, environment_t* env) {
 			object_t*** par_loc_list = operation_var(func->parameter, env);
 
 			if(par != NULL && par_loc_list != NULL)
-				for(int i = 0; par[i] != NULL && par_loc_list[i] != NULL; i++) {
-					object_dereference(*(par_loc_list[i]));
-					*(par_loc_list[i]) = par[i];
-					object_reference(*(par_loc_list[i]));
+				for(int i = 0; par_loc_list[i] != NULL && par[i] != NULL; i++) {
+					if(par_loc_list[i] == OBJECT_LIST_OPENED) {
+						object_t** obj = par_loc_list[i+1];
+						object_dereference(*obj);
+
+						size_t length_left = 0;
+						while(par[length_left] != NULL) length_left++;
+
+						list_t* list = list_create_null(length_left);
+						for(int j = 0; j < length_left; j++) {
+							list->data[j] = par[i+j];
+							object_reference(list->data[j]);
+						}
+						*obj = object_create_list(list);
+						object_reference(*obj);
+						break;
+					} else {
+						object_dereference(*(par_loc_list[i]));
+						*(par_loc_list[i]) = par[i];
+						object_reference(*(par_loc_list[i]));
+					}
 				}
 
 			if(operation_exec(func->function, env) == RET_ERROR)
@@ -71,10 +88,27 @@ object_t** function_result(function_t* func, object_t** par, environment_t* env)
 			object_t*** par_loc_list = operation_var(func->parameter, env);
 
 			if(par != NULL && par_loc_list != NULL)
-				for(int i = 0; par[i] != NULL && par_loc_list[i] != NULL; i++) {
-					object_dereference(*(par_loc_list[i]));
-					*(par_loc_list[i]) = par[i];
-					object_reference(*(par_loc_list[i]));
+				for(int i = 0; par_loc_list[i] != NULL && par[i] != NULL; i++) {
+					if(par_loc_list[i] == OBJECT_LIST_OPENED) {
+						object_t** obj = par_loc_list[i+1];
+						object_dereference(*obj);
+
+						size_t length_left = 0;
+						while(par[length_left] != NULL) length_left++;
+
+						list_t* list = list_create_null(length_left);
+						for(int j = 0; j < length_left; j++) {
+							list->data[j] = par[i+j];
+							object_reference(list->data[j]);
+						}
+						*obj = object_create_list(list);
+						object_reference(*obj);
+						break;
+					} else {
+						object_dereference(*(par_loc_list[i]));
+						*(par_loc_list[i]) = par[i];
+						object_reference(*(par_loc_list[i]));
+					}
 				}
 
 			ret = operation_result(func->function, env);

@@ -9,7 +9,7 @@ id_t number_id(number_t num) {
 	if(num == round(num))
 		return (unsigned)(int)num; // Might still be undefined
 	else
-		return *(id_t*)&num;
+		return *((id_t*)&num);
 }
 
 int number_cmp(number_t n1, number_t n2) {

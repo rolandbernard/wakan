@@ -1,7 +1,6 @@
 # This example is not guaranteed to work.
 
-f1 := function (x, y) does (x * y, x-2*y, global f1(1, 2));
-f2 := function (x, y) does (x - y);
-
-write ([(f1, f2)(5, 3)], '\n')
+list := [1] * 700;
+write len list;
+write '\n'
 
