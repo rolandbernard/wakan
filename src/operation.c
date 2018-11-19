@@ -554,9 +554,8 @@ void* operation_exec(operation_t* op, environment_t* env) {
 					} else if(vals_loc == RET_ERROR || vals_in == RET_ERROR) {
 						ret = RET_ERROR;
 					} else {
-						bool_t end = false;
 						int pos_in = 0;
-						while(ret != RET_ERROR && !end) {
+						while(ret != RET_ERROR && vals_in[pos_in] != NULL) {
 							// Assign values
 							for(int i = 0; vals_loc[i] != NULL && vals_in[pos_in] != NULL; i++) {
 								if(vals_loc[i] == OBJECT_LIST_OPENED) {
@@ -581,8 +580,6 @@ void* operation_exec(operation_t* op, environment_t* env) {
 									pos_in++;
 								}
 							}
-							if(vals_in[pos_in] == NULL)
-								end = true;
 
 							if(operation_exec(op->data.operations[2], env) == RET_ERROR)
 								ret = RET_ERROR;
