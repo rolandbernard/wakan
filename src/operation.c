@@ -33,7 +33,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 	} else
 		if(op != NULL) {
 			switch(op->type) {
-				case OPERATION_TYPE_NOOP: 
+				case OPERATION_TYPE_NOOP:
 				case OPERATION_TYPE_NOOP_BRAC:
 				case OPERATION_TYPE_NOOP_EMP_REC:
 				case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
@@ -51,7 +51,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 							ret = RET_ERROR;
 				} break;
 				case OPERATION_TYPE_BOOL: break;
-				case OPERATION_TYPE_PAIR: 
+				case OPERATION_TYPE_PAIR:
 					if (operation_exec(op->data.operations[0], env) == RET_ERROR ||
 						operation_exec(op->data.operations[1], env) == RET_ERROR)
 							ret = RET_ERROR;
@@ -59,8 +59,8 @@ void* operation_exec(operation_t* op, environment_t* env) {
 				case OPERATION_TYPE_FUNCTION: break;
 				case OPERATION_TYPE_MACRO: break;
 				case OPERATION_TYPE_ASSIGN: {
-					object_t*** assign_loc = operation_var(op->data.operations[0], env);
 					object_t**	assign_val = operation_result(op->data.operations[1], env);
+					object_t*** assign_loc = operation_var(op->data.operations[0], env);
 
 					if(assign_loc == NULL || assign_val == NULL) {
 						error("Runtime error: Assignment NULL error.");
@@ -90,7 +90,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 								object_reference(*(assign_loc[i]));
 							}
 						}
-						
+
 					if(assign_loc != RET_ERROR && assign_loc != NULL) {
 						_free(assign_loc);
 					}
@@ -100,12 +100,12 @@ void* operation_exec(operation_t* op, environment_t* env) {
 						_free(assign_val);
 					}
 				} break;
-				case OPERATION_TYPE_PROC: 
+				case OPERATION_TYPE_PROC:
 					for(int i = 0; ret != RET_ERROR && op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_STRUCT: 
+				case OPERATION_TYPE_STRUCT:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
@@ -114,11 +114,11 @@ void* operation_exec(operation_t* op, environment_t* env) {
 						if(operation_exec(op->data.operations[i], env))
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_LIST: 
+				case OPERATION_TYPE_LIST:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_INDEX: 
+				case OPERATION_TYPE_INDEX:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR ||
 						operation_exec(op->data.operations[1], env) == RET_ERROR)
 							ret = RET_ERROR;
@@ -139,8 +139,8 @@ void* operation_exec(operation_t* op, environment_t* env) {
 								ret = RET_ERROR;
 							} else
 								if(function_exec(function[i]->data.func, parameter, env) == RET_ERROR)
-									ret = RET_ERROR; 
-								
+									ret = RET_ERROR;
+
 
 					if(function != RET_ERROR && function != NULL) {
 						for(int i = 0; function[i] != NULL; i++)
@@ -153,25 +153,25 @@ void* operation_exec(operation_t* op, environment_t* env) {
 						_free(parameter);
 					}
 				} break;
-				case OPERATION_TYPE_TO_NUM: 
+				case OPERATION_TYPE_TO_NUM:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_TO_BOOL: 
+				case OPERATION_TYPE_TO_BOOL:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_TO_ASCII: 
+				case OPERATION_TYPE_TO_ASCII:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_TO_STR: 
+				case OPERATION_TYPE_TO_STR:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
 				case OPERATION_TYPE_READ: {
 					char temp_str[TMP_STR_MAX];
-					fgets(temp_str, TMP_STR_MAX, stdin); 
+					fgets(temp_str, TMP_STR_MAX, stdin);
 				} break;
 				case OPERATION_TYPE_WRITE: {
 					object_t** data = operation_result(op->data.operations[0], env);
@@ -182,7 +182,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 					} else if(data == RET_ERROR)
 						ret = RET_ERROR;
 					else
-						for(int i = 0; data[i] != NULL; i++) 
+						for(int i = 0; data[i] != NULL; i++)
 							print_object(data[i]);
 
 					if(data != RET_ERROR && data != NULL) {
@@ -191,12 +191,12 @@ void* operation_exec(operation_t* op, environment_t* env) {
 						_free(data);
 					}
 				} break;
-				case OPERATION_TYPE_ADD: 
+				case OPERATION_TYPE_ADD:
 					for(int i = 0; op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_SUB: 
+				case OPERATION_TYPE_SUB:
 					for(int i = 0; op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
@@ -206,168 +206,168 @@ void* operation_exec(operation_t* op, environment_t* env) {
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_DIV: 
+				case OPERATION_TYPE_DIV:
 					for(int i = 0; op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_MOD: 
+				case OPERATION_TYPE_MOD:
 					for(int i = 0; op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_NEG: 
+				case OPERATION_TYPE_NEG:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_POW: 
+				case OPERATION_TYPE_POW:
 					for(int i = 0; op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_AND: 
+				case OPERATION_TYPE_AND:
 					for(int i = 0; op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_OR: 
+				case OPERATION_TYPE_OR:
 					for(int i = 0; op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_XOR: 
+				case OPERATION_TYPE_XOR:
 					for(int i = 0; op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_NOT: 
+				case OPERATION_TYPE_NOT:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_SQRT: 
+				case OPERATION_TYPE_SQRT:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_CBRT: 
+				case OPERATION_TYPE_CBRT:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_SIN: 
+				case OPERATION_TYPE_SIN:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_COS: 
+				case OPERATION_TYPE_COS:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_TAN: 
+				case OPERATION_TYPE_TAN:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_ASIN: 
+				case OPERATION_TYPE_ASIN:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_ACOS: 
+				case OPERATION_TYPE_ACOS:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_ATAN: 
+				case OPERATION_TYPE_ATAN:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_SINH: 
+				case OPERATION_TYPE_SINH:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_COSH: 
+				case OPERATION_TYPE_COSH:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_TANH: 
+				case OPERATION_TYPE_TANH:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_ASINH: 
+				case OPERATION_TYPE_ASINH:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_ACOSH: 
+				case OPERATION_TYPE_ACOSH:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_ATANH: 
+				case OPERATION_TYPE_ATANH:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_TRUNC: 
+				case OPERATION_TYPE_TRUNC:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_FLOOR: 
+				case OPERATION_TYPE_FLOOR:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_CEIL: 
+				case OPERATION_TYPE_CEIL:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_ROUND: 
+				case OPERATION_TYPE_ROUND:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_RAND: 
+				case OPERATION_TYPE_RAND:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_LEN: 
+				case OPERATION_TYPE_LEN:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_EQU: 
+				case OPERATION_TYPE_EQU:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR ||
 						operation_exec(op->data.operations[1], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_GEQ: 
+				case OPERATION_TYPE_GEQ:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR ||
 						operation_exec(op->data.operations[1], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_LEQ: 
+				case OPERATION_TYPE_LEQ:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR ||
 						operation_exec(op->data.operations[1], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_GTR: 
+				case OPERATION_TYPE_GTR:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR ||
 						operation_exec(op->data.operations[1], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_LES: 
+				case OPERATION_TYPE_LES:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR ||
 						operation_exec(op->data.operations[1], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_DIC: 
+				case OPERATION_TYPE_DIC:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_FIND: 
+				case OPERATION_TYPE_FIND:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR ||
 						operation_exec(op->data.operations[1], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_SPLIT: 
+				case OPERATION_TYPE_SPLIT:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR ||
 						operation_exec(op->data.operations[1], env) == RET_ERROR)
 							ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_ABS: 
+				case OPERATION_TYPE_ABS:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
 					break;
-				case OPERATION_TYPE_SCOPE: 
+				case OPERATION_TYPE_SCOPE:
 					environment_add_scope(env);
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
 						ret = RET_ERROR;
@@ -375,7 +375,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 					break;
 				case OPERATION_TYPE_IF: {
 					object_t** cond = operation_result(op->data.operations[0], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: If NULL error.");
 						ret = RET_ERROR;
@@ -398,7 +398,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 				} break;
 				case OPERATION_TYPE_IFELSE: {
 					object_t** cond = operation_result(op->data.operations[0], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: If-else NULL error.");
 						ret = RET_ERROR;
@@ -416,7 +416,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 								ret = RET_ERROR;
 						}
 					}
-					
+
 					if(cond != RET_ERROR && cond != NULL) {
 						for(int i = 0; cond[i] != NULL; i++)
 							object_dereference(cond[i]);
@@ -425,7 +425,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 				} break;
 				case OPERATION_TYPE_WHILE: {
 					object_t** cond = operation_result(op->data.operations[0], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: While NULL error.");
 						ret = RET_ERROR;
@@ -477,7 +477,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 							} else
 								if(struct_exec(stc[i]->data.stc, op->data.operations[1]) == RET_ERROR)
 									ret = RET_ERROR;
-						
+
 					if(stc != RET_ERROR && stc != NULL) {
 						for(int i = 0; stc[i] != NULL; i++)
 							object_dereference(stc[i]);
@@ -498,12 +498,12 @@ void* operation_exec(operation_t* op, environment_t* env) {
 				} break;
 				case OPERATION_TYPE_COPY:
 					if(operation_exec(op->data.operations[0], env) == RET_ERROR)
-						ret = RET_ERROR; 
+						ret = RET_ERROR;
 					break;
 				case OPERATION_TYPE_FOR: {
 					operation_exec(op->data.operations[0], env);
 					object_t** cond = operation_result(op->data.operations[1], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: while NULL error.");
 						ret = RET_ERROR;
@@ -512,7 +512,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 					} else if(cond[1] != NULL) {
 						error("Runtime error: while non-scalar condition error.");
 						ret = RET_ERROR;
-					} else 
+					} else
 						while(ret != RET_ERROR && is_true(cond[0]))
 						{
 							if(operation_exec(op->data.operations[3], env) == RET_ERROR)
@@ -611,32 +611,32 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 	} else
 		if(op != NULL) {
 			switch(op->type) {
-				case OPERATION_TYPE_NOOP: 
+				case OPERATION_TYPE_NOOP:
 				case OPERATION_TYPE_NOOP_BRAC:
 				case OPERATION_TYPE_NOOP_EMP_REC:
 				case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 				case OPERATION_TYPE_NOOP_PROC_DEADEND:
 				case OPERATION_TYPE_NOOP_PLUS:
 				case OPERATION_TYPE_NOOP_EMP_CUR: break;
-				case OPERATION_TYPE_NONE: 
+				case OPERATION_TYPE_NONE:
 					ret = (object_t**)_alloc(sizeof(object_t*)*2);
 					ret[0] = object_create_none();
 					object_reference(ret[0]);
 					ret[1] = NULL;
 					break;
-				case OPERATION_TYPE_NUM: 
+				case OPERATION_TYPE_NUM:
 					ret = (object_t**)_alloc(sizeof(object_t*)*2);
 					ret[0] = object_create_number(op->data.num);
 					object_reference(ret[0]);
 					ret[1] = NULL;
 					break;
-				case OPERATION_TYPE_STR: 
+				case OPERATION_TYPE_STR:
 					ret = (object_t**)_alloc(sizeof(object_t*)*2);
 					ret[0] = object_create_string(string_copy(op->data.str));
 					object_reference(ret[0]);
 					ret[1] = NULL;
 					break;
-				case OPERATION_TYPE_VAR: 
+				case OPERATION_TYPE_VAR:
 					ret = (object_t**)_alloc(sizeof(object_t*)*2);
 					environment_make(env, op->data.str);
 					ret[0] = environment_get(env, op->data.str);
@@ -650,10 +650,10 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							_free(ret);
 							ret = tmp;
 						}
-					} else 
+					} else
 						object_reference(ret[0]);
 					break;
-				case OPERATION_TYPE_BOOL: 
+				case OPERATION_TYPE_BOOL:
 					ret = (object_t**)_alloc(sizeof(object_t*)*2);
 					ret[0] = object_create_boolean(op->data.boolean);
 					object_reference(ret[0]);
@@ -717,21 +717,21 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						_free(vals);
 					}
 				} break;
-				case OPERATION_TYPE_FUNCTION: 
+				case OPERATION_TYPE_FUNCTION:
 					ret = (object_t**)_alloc(sizeof(object_t*)*2);
 					ret[0] = object_create_function(function_create(op->data.operations[0], op->data.operations[1]));
 					object_reference(ret[0]);
 					ret[1] = NULL;
 					break;
-				case OPERATION_TYPE_MACRO: 
+				case OPERATION_TYPE_MACRO:
 					ret = (object_t**)_alloc(sizeof(object_t*)*2);
 					ret[0] = object_create_macro(macro_create(op->data.operations[0]));
 					object_reference(ret[0]);
 					ret[1] = NULL;
 					break;
 				case OPERATION_TYPE_ASSIGN: {
-					object_t*** assign_loc = operation_var(op->data.operations[0], env);
 					object_t**	assign_val = operation_result(op->data.operations[1], env);
+					object_t*** assign_loc = operation_var(op->data.operations[0], env);
 
 					if(assign_loc == NULL || assign_val == NULL) {
 						error("Runtime error: Assignment NULL error.");
@@ -762,12 +762,12 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 						}
 					}
-						
+
+					if(ret != RET_ERROR)
+						ret = assign_val;
 					if(assign_loc != RET_ERROR && assign_loc != NULL)
 						_free(assign_loc);
-					if(ret != RET_ERROR) {
-						ret = assign_val;
-					} else if(assign_val != RET_ERROR && assign_val != NULL) {
+					if(assign_val != RET_ERROR && assign_val != NULL) {
 						for(int i = 0; assign_val[i] != NULL; i++)
 							object_dereference(assign_val[i]);
 						_free(assign_val);
@@ -827,7 +827,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						}
 						ret[num_ret] = NULL;
 					}
-					
+
 					for(int i = 0; i < num_op; i++)
 						if(ret != RET_ERROR) {
 							_free(vals[i]);
@@ -877,7 +877,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						while(index[num_index] != NULL) num_index++;
 						ret = (object_t**)_alloc(sizeof(object_t*)*(num_data*num_index+1));
 
-						for(int i = 0; ret != RET_ERROR && i < num_data; i++) 
+						for(int i = 0; ret != RET_ERROR && i < num_data; i++)
 							for(int j = 0; ret != RET_ERROR && j < num_index; j++) {
 								if(data[i]->type == OBJECT_TYPE_LIST) {
 
@@ -940,7 +940,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 										object_reference(ret[i*num_index+j]);
 
 									} else if (index[j]->type == OBJECT_TYPE_PAIR && index[j]->data.pair->key->type == OBJECT_TYPE_NUMBER && index[j]->data.pair->value->type == OBJECT_TYPE_NUMBER) {
-										
+
 										pos_t index_start = (int)round(index[j]->data.pair->key->data.number);
 										pos_t index_end = (int)round(index[j]->data.pair->value->data.number);
 										if(index_start < 0)
@@ -956,7 +956,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 										object_reference(ret[i*num_index+j]);
 
 									} else {
-										error("Runtime error: Indexing type error."); 
+										error("Runtime error: Indexing type error.");
 										for(int k = 0; k < i*num_index+j; k++)
 											object_dereference(ret[k]);
 										_free(ret);
@@ -964,7 +964,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 									}
 
 								} else {
-									error("Runtime error: Indexing type error."); 
+									error("Runtime error: Indexing type error.");
 									for(int k = 0; k < i*num_index+j; k++)
 										object_dereference(ret[k]);
 									_free(ret);
@@ -975,7 +975,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							ret[num_data*num_index] = NULL;
 					}
 
-					
+
 					if(data != RET_ERROR && data != NULL) {
 						for(int i = 0; data[i] != NULL; i++)
 							object_dereference(data[i]);
@@ -986,7 +986,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							object_dereference(index[i]);
 						_free(index);
 					}
-					
+
 				} break;
 				case OPERATION_TYPE_EXEC: {
 					object_t** function = operation_result(op->data.operations[0], env);
@@ -1021,7 +1021,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 									ret = RET_ERROR;
 									for(++i;i < num_func; i++)
 										vals[i] = NULL;
-								} else 
+								} else
 									for(int j = 0; vals[i][j] != NULL; j++)
 										num_ret++;
 							}
@@ -1085,8 +1085,8 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 								case OBJECT_TYPE_DICTIONARY:
 								case OBJECT_TYPE_FUNCTION:
 								case OBJECT_TYPE_MACRO:
-								case OBJECT_TYPE_STRUCT: 
-									error("Runtime error: To_num type error."); 
+								case OBJECT_TYPE_STRUCT:
+									error("Runtime error: To_num type error.");
 									for(int j = 0; j < i; j++)
 										object_dereference(ret[j]);
 									_free(ret);
@@ -1175,10 +1175,10 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 												object_dereference(ret[i]);
 											_free(ret);
 											ret = RET_ERROR;
-										} else 
+										} else
 											tmp[j] = (char)(int)round(vals[i]->data.list->data[j]->data.number);
 									}
-									
+
 									if(ret != RET_ERROR)
 										ret[i] = object_create_string(string_create(tmp));
 								} break;
@@ -1188,8 +1188,8 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 								case OBJECT_TYPE_DICTIONARY:
 								case OBJECT_TYPE_FUNCTION:
 								case OBJECT_TYPE_MACRO:
-								case OBJECT_TYPE_STRUCT: 
-									error("Runtime error: To_ascii type error."); 
+								case OBJECT_TYPE_STRUCT:
+									error("Runtime error: To_ascii type error.");
 									for(int j = 0; j < i; j++)
 										object_dereference(ret[i]);
 									_free(ret);
@@ -1233,7 +1233,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							object_dereference(vals[i]);
 						_free(vals);
 					}
-				} break; 
+				} break;
 				case OPERATION_TYPE_READ: {
 					char temp_str[TMP_STR_MAX];
 					fgets(temp_str, TMP_STR_MAX, stdin);
@@ -1251,7 +1251,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 					} else if(data == RET_ERROR) {
 						ret = RET_ERROR;
 					} else {
-						for(int i = 0; data[i] != NULL; i++) 
+						for(int i = 0; data[i] != NULL; i++)
 							print_object(data[i]);
 
 						for(int i = 0; data[i] != NULL; i++)
@@ -1294,7 +1294,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 					}
 					if(ret != RET_ERROR) {
 						ret = (object_t**)_alloc(sizeof(object_t*)*(num_ret+1));
-						for(int i = 0; ret != RET_ERROR && i < num_ret; i++) {	
+						for(int i = 0; ret != RET_ERROR && i < num_ret; i++) {
 							if(vals[0][1] == NULL)
 								ret[i] = vals[0][0];
 							else
@@ -1321,7 +1321,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 						}
 						if(ret != RET_ERROR)
-							ret[num_ret] = NULL;	
+							ret[num_ret] = NULL;
 					}
 
 					for(int i = 0; i < num_op; i++) {
@@ -1432,7 +1432,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 					}
 					if(ret != RET_ERROR) {
 						ret = (object_t**)_alloc(sizeof(object_t*)*(num_ret+1));
-						for(int i = 0; i < num_ret; i++) {	
+						for(int i = 0; i < num_ret; i++) {
 							if(vals[0][1] == NULL)
 								ret[i] = vals[0][0];
 							else
@@ -1461,7 +1461,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						if(ret != RET_ERROR)
 							ret[num_ret] = NULL;
 					}
-				
+
 					for(int i = 0; i < num_op; i++) {
 						if(vals[i] != RET_ERROR && vals[i] != NULL) {
 							for(int j = 0; vals[i][j] != NULL; j++)
@@ -1634,7 +1634,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							if(vals[num_vals]->type != OBJECT_TYPE_NUMBER) {
 								error("Runtime error: Negate type error.");
 								ret = RET_ERROR;
-							} else 
+							} else
 								num_vals++;
 						}
 						if(ret != RET_ERROR) {
@@ -1676,7 +1676,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 									ret = RET_ERROR;
 									for(++i; i < num_op; i++)
 										vals[i] = NULL;
-								} else 
+								} else
 									tmp_size++;
 							}
 							if(num_ret == 1 && tmp_size != 1)
@@ -1695,9 +1695,9 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							number_t ret_part;
 							if(vals[num_op-1][1] == NULL)
 								ret_part = (int)(vals[num_op-1][0]->data.number);
-							else 
+							else
 								ret_part = (int)(vals[num_op-1][i]->data.number);
-							
+
 
 							for(int j = num_op-2; j >= 0; j--) {
 								if(vals[j][1] == NULL)
@@ -1747,7 +1747,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 									ret = RET_ERROR;
 									for(++i; i < num_op; i++)
 										vals[i] = NULL;
-								} else 
+								} else
 									tmp_size++;
 							}
 							if(num_ret == 1 && tmp_size != 1)
@@ -2066,7 +2066,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2097,7 +2097,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2117,7 +2117,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							if(vals[num_vals]->type != OBJECT_TYPE_NUMBER) {
 								error("Runtime error: Asin type error.");
 								ret = RET_ERROR;
-							} else 
+							} else
 								num_vals++;
 						}
 						if(ret != RET_ERROR) {
@@ -2128,7 +2128,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2159,7 +2159,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2190,12 +2190,12 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
 					}
-					
+
 				} break;
 				case OPERATION_TYPE_SINH: {
 					object_t** vals = operation_result(op->data.operations[0], env);
@@ -2222,7 +2222,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2253,7 +2253,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2273,7 +2273,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							if(vals[num_vals]->type != OBJECT_TYPE_NUMBER) {
 								error("Runtime error: Tanh type error.");
 								ret = RET_ERROR;
-							} else 
+							} else
 								num_vals++;
 						}
 						if(ret != RET_ERROR) {
@@ -2284,7 +2284,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2304,7 +2304,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							if(vals[num_vals]->type != OBJECT_TYPE_NUMBER) {
 								error("Runtime error: Asinh type error.");
 								ret = RET_ERROR;
-							} else 
+							} else
 								num_vals++;
 						}
 						if(ret != RET_ERROR) {
@@ -2315,7 +2315,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2346,7 +2346,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2366,9 +2366,9 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							if(vals[num_vals]->type != OBJECT_TYPE_NUMBER) {
 								error("Runtime error: Atanh type error.");
 								ret = RET_ERROR;
-							} else 
+							} else
 								num_vals++;
-						}	
+						}
 						if(ret != RET_ERROR) {
 							ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
 							for(int i = 0; i < num_vals; i++) {
@@ -2377,7 +2377,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2397,7 +2397,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							if(vals[num_vals]->type != OBJECT_TYPE_NUMBER) {
 								error("Runtime error: Trunc type error.");
 								ret = RET_ERROR;
-							} else 
+							} else
 								num_vals++;
 						}
 						if(ret != RET_ERROR) {
@@ -2408,7 +2408,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2439,10 +2439,10 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
-						_free(vals);	
+						_free(vals);
 					}
 				} break;
 				case OPERATION_TYPE_CEIL: {
@@ -2459,7 +2459,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							if(vals[num_vals]->type != OBJECT_TYPE_NUMBER) {
 								error("Runtime error: Ceil type error.");
 								ret = RET_ERROR;
-							} else 
+							} else
 								num_vals++;
 						}
 						if(ret != RET_ERROR) {
@@ -2470,7 +2470,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2501,7 +2501,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2545,7 +2545,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						}
 						if(ret != RET_ERROR)
 							ret[num_vals] = NULL;
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -2947,7 +2947,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				} break;
 				case OPERATION_TYPE_DIC: {
 					object_t** vals = operation_result(op->data.operations[0], env);
-		
+
 					if(vals == RET_ERROR) {
 						ret = RET_ERROR;
 					} else {
@@ -2963,7 +2963,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 									error("Runtime error: Dictionary type error.");
 									dictionary_free(dic);
 									ret = RET_ERROR;
-								} else 
+								} else
 									dictionary_put(dic, vals[i]->data.pair->key, vals[i]->data.pair->value);
 							}
 							for(int i = 0; i < num_vals; i++)
@@ -3005,7 +3005,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 										else
 											ret[i*right_len+j] = object_create_none();
 									} break;
-									case OBJECT_TYPE_STRING: 
+									case OBJECT_TYPE_STRING:
 										if(right[j]->type != OBJECT_TYPE_STRING) {
 											error("Runtime error: Find type error.");
 											for(int k = 0; k < i*right_len+j; k++)
@@ -3021,8 +3021,8 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 										}
 										break;
 									case OBJECT_TYPE_DICTIONARY: ret[i*right_len+j] = object_create_boolean(dictionary_get(left[i]->data.dic, right[j]) != NULL); break;
-									default: 
-										error("Runtime error: Find type error."); 
+									default:
+										error("Runtime error: Find type error.");
 										for(int k = 0; k < i*right_len+j; k++)
 											object_reference(ret[k]);
 										_free(ret);
@@ -3062,7 +3062,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							if(src[src_len]->type != OBJECT_TYPE_STRING) {
 								error("Runtime error: Split type error.");
 								ret = RET_ERROR;
-							} else 
+							} else
 								src_len++;
 						}
 						size_t splt_len = 0;
@@ -3084,7 +3084,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 									size_t len = 0;
 									for(int j = 0; j < splt_len; j++) {
 										pos_t tmp = string_find_from(src[i]->data.string, splt[j]->data.string, last_pos);
-										if((min_pos == -1 || tmp < min_pos) && tmp != -1) 
+										if((min_pos == -1 || tmp < min_pos) && tmp != -1)
 											min_pos = tmp, len = string_length(splt[j]->data.string);
 									}
 									last_pos = min_pos + len;
@@ -3101,17 +3101,17 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 									size_t len = 0;
 									for(int j = 0; j < splt_len; j++) {
 										pos_t tmp = string_find_from(src[i]->data.string, splt[j]->data.string, last_pos);
-										if((min_pos == -1 || tmp < min_pos) && tmp != -1) 
+										if((min_pos == -1 || tmp < min_pos) && tmp != -1)
 											min_pos = tmp, len = string_length(splt[j]->data.string);
 									}
-									ret[index] = object_create_string(string_substr(src[i]->data.string, last_pos, 
+									ret[index] = object_create_string(string_substr(src[i]->data.string, last_pos,
 																	(min_pos == -1 ? string_length(src[i]->data.string) - last_pos: min_pos - last_pos)));
 									object_reference(ret[index]);
 									last_pos = min_pos + len;
 									index++;
 								}
 							}
-							ret[num_ret] = NULL; 
+							ret[num_ret] = NULL;
 						}
 					}
 
@@ -3151,7 +3151,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							}
 							ret[num_vals] = NULL;
 						}
-						
+
 						for(int i = 0; i < num_vals; i++)
 							object_dereference(vals[i]);
 						_free(vals);
@@ -3164,7 +3164,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				break;
 				case OPERATION_TYPE_IF: {
 					object_t** cond = operation_result(op->data.operations[0], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: If NULL error.");
 						ret = RET_ERROR;
@@ -3174,10 +3174,10 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						error("Runtime error: If non-scalar condition error.");
 						ret = RET_ERROR;
 					} else {
-						if(is_true(cond[0])) 
+						if(is_true(cond[0]))
 							ret = operation_result(op->data.operations[1], env);
 					}
-					
+
 					if(cond != RET_ERROR && cond != NULL) {
 						for(int i = 0; cond[i] != NULL; i++)
 							object_dereference(cond[i]);
@@ -3186,7 +3186,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				} break;
 				case OPERATION_TYPE_IFELSE: {
 					object_t** cond = operation_result(op->data.operations[0], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: If-else NULL error.");
 						ret = RET_ERROR;
@@ -3212,7 +3212,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 					list_t* list = list_create_empty();
 
 					object_t** cond = operation_result(op->data.operations[0], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: While NULL error.");
 						ret = RET_ERROR;
@@ -3301,14 +3301,14 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 									ret = RET_ERROR;
 									for(++i; i < num_stc; i++)
 										vals[i] = NULL;
-								} else 
+								} else
 									for(int j = 0; vals[i][j] != NULL; j++)
 										num_ret++;
 							}
 						}
 						if(ret != RET_ERROR) {
 							ret = (object_t**)_alloc(sizeof(object_t*)*(num_ret+1));
-							num_ret = 0; 
+							num_ret = 0;
 							for(int i = 0; i < num_stc; i++) {
 								for(int j = 0; vals[i][j] != NULL; j++) {
 									ret[num_ret] = vals[j][i];
@@ -3332,7 +3332,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						for(int i = 0; i < num_stc; i++)
 							object_dereference(stc[i]);
 						_free(stc);
-					}					
+					}
 				} break;
 				case OPERATION_TYPE_LOCAL: {
 					size_t prev_limit = env->local_mode_limit;
@@ -3347,8 +3347,8 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 					environment_set_local_mode(env, prev_limit);
 				} break;
 				case OPERATION_TYPE_COPY: {
-					object_t** vals = operation_result(op->data.operations[0], env); 
-					
+					object_t** vals = operation_result(op->data.operations[0], env);
+
 					if(vals == NULL) {
 						error("Runtime error: Copy NULL error.");
 						ret = RET_ERROR;
@@ -3370,7 +3370,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 								case OBJECT_TYPE_NUMBER: ret[i] = object_create_number(vals[i]->data.number); break;
 								case OBJECT_TYPE_PAIR: ret[i] = object_create_pair(pair_copy(vals[i]->data.pair)); break;
 								case OBJECT_TYPE_STRING: ret[i] = object_create_string(string_copy(vals[i]->data.string)); break;
-								case OBJECT_TYPE_STRUCT: 
+								case OBJECT_TYPE_STRUCT:
 									error("Runtime error: Copy type error.");
 									for(int j = 0; j < i; j++)
 										object_dereference(ret[j]);
@@ -3396,7 +3396,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						ret = RET_ERROR;
 					} else {
 						object_t** cond = operation_result(op->data.operations[1], env);
-						
+
 						if(cond == NULL) {
 							error("Runtime error: For NULL error.");
 							ret = RET_ERROR;
@@ -3458,7 +3458,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				} break;
 				case OPERATION_TYPE_LIST_OPEN: {
 					object_t** vals = operation_result(op->data.operations[0], env);
-						
+
 					if(vals == NULL) {
 						error("Runtime error: List-opening NULL error.");
 						ret = RET_ERROR;
@@ -3496,7 +3496,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 				} break;
 				case OPERATION_TYPE_FOR_IN: {
 					list_t* list = list_create_empty();
-					
+
 					object_t*** vals_loc = operation_var(op->data.operations[0], env);
 					object_t** vals_in = operation_result(op->data.operations[1], env);
 
@@ -3506,9 +3506,8 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 					} else if(vals_loc == RET_ERROR || vals_in == RET_ERROR) {
 						ret = RET_ERROR;
 					} else {
-						bool_t end = false;
 						int pos_in = 0;
-						while(ret != RET_ERROR && !end) {
+						while(ret != RET_ERROR && vals_in[pos_in] != NULL) {
 							// Assign values
 							for(int i = 0; vals_loc[i] != NULL && vals_in[pos_in] != NULL; i++) {
 								if(vals_loc[i] == OBJECT_LIST_OPENED) {
@@ -3533,8 +3532,6 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 									pos_in++;
 								}
 							}
-							if(vals_in[pos_in] == NULL)
-								end = true;
 
 							object_t** tmp = operation_result(op->data.operations[2], env);
 							if(tmp == NULL) {
@@ -3569,9 +3566,9 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						_free(list);
 					}
 				} break;
-			} 
+			}
 		}
-	
+
 	return ret;
 }
 
@@ -3581,10 +3578,10 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 	if(check_for_stackoverflow()) {
 		error("Runtime error: Stack overflow.");
 		ret = RET_ERROR;
-	} else 
+	} else
 		if(op != NULL) {
 			switch(op->type) {
-				case OPERATION_TYPE_NOOP: 
+				case OPERATION_TYPE_NOOP:
 				case OPERATION_TYPE_NOOP_BRAC:
 				case OPERATION_TYPE_NOOP_EMP_REC:
 				case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
@@ -3594,10 +3591,10 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 				case OPERATION_TYPE_NONE: break;
 				case OPERATION_TYPE_NUM: break;
 				case OPERATION_TYPE_STR: break;
-				case OPERATION_TYPE_VAR: 
+				case OPERATION_TYPE_VAR:
 					ret = (object_t***)_alloc(sizeof(object_t**)*2);
 					environment_make(env, op->data.str);
-					ret[0] = environment_get_var(env, op->data.str); 
+					ret[0] = environment_get_var(env, op->data.str);
 					ret[1] = NULL;
 					if((*(ret[0]))->type == OBJECT_TYPE_MACRO) {
 						object_t*** tmp = macro_var((*(ret[0]))->data.mac, env);
@@ -3615,13 +3612,14 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 				case OPERATION_TYPE_FUNCTION: break;
 				case OPERATION_TYPE_MACRO: break;
 				case OPERATION_TYPE_ASSIGN: {
-					object_t*** assign_loc = operation_var(op->data.operations[0], env);
 					object_t**	assign_val = operation_result(op->data.operations[1], env);
+					object_t*** assign_loc = operation_var(op->data.operations[0], env);
 
 					if(assign_loc == NULL || assign_val == NULL) {
 						error("Runtime error: Assignment NULL error.");
+						ret = RET_ERROR;
 					} else if(assign_loc == RET_ERROR || assign_val == RET_ERROR) {
-
+						ret = RET_ERROR;
 					} else {
 						for(int i = 0; assign_loc[i] != NULL && assign_val[i] != NULL; i++) {
 							if(assign_loc[i] == OBJECT_LIST_OPENED) {
@@ -3646,10 +3644,11 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 							}
 						}
 					}
-					
+
 					if(ret != RET_ERROR) {
 						ret = assign_loc;
-					} else if(assign_loc != RET_ERROR && assign_loc != NULL) {
+					}
+					if(assign_loc != RET_ERROR && assign_loc != NULL) {
 						_free(assign_loc);
 					}
 					if(assign_val != RET_ERROR && assign_val != NULL) {
@@ -3698,12 +3697,12 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						}
 						ret[num_ret] = NULL;
 					}
-					
+
 					for(int i = 0; i < num_op; i++)
 						if(ret != RET_ERROR) {
 							_free(vals[i]);
 						} else {
-							if(vals[i] != RET_ERROR && vals[i] != NULL) 
+							if(vals[i] != RET_ERROR && vals[i] != NULL)
 								_free(vals[i]);
 						}
 					_free(vals);
@@ -3725,7 +3724,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						while(index[num_index] != NULL) num_index++;
 						ret = (object_t***)_alloc(sizeof(object_t**)*(num_data*num_index+1));
 
-						for(int i = 0; ret != RET_ERROR && i < num_data; i++) 
+						for(int i = 0; ret != RET_ERROR && i < num_data; i++)
 							for(int j = 0; ret != RET_ERROR && j < num_index; j++) {
 								if(data[i]->type == OBJECT_TYPE_LIST) {
 									if(index[j]->type == OBJECT_TYPE_NUMBER) {
@@ -3749,7 +3748,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 								} else if (data[i]->type == OBJECT_TYPE_DICTIONARY) {
 									ret[i*num_index+j] = dictionary_get_loc(data[i]->data.dic, index[j]);
 								} else {
-									error("Runtime error: Indexing type error."); 
+									error("Runtime error: Indexing type error.");
 									_free(ret);
 									ret = RET_ERROR;
 								}
@@ -3816,14 +3815,14 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 				case OPERATION_TYPE_FIND: break;
 				case OPERATION_TYPE_SPLIT: break;
 				case OPERATION_TYPE_ABS: break;
-				case OPERATION_TYPE_SCOPE: 
+				case OPERATION_TYPE_SCOPE:
 					environment_add_scope(env);
 					ret = operation_var(op->data.operations[0], env);
 					environment_remove_scope(env);
 				break;
 				case OPERATION_TYPE_IF: {
 					object_t** cond = operation_result(op->data.operations[0], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: If NULL error.");
 						ret = RET_ERROR;
@@ -3833,7 +3832,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						error("Runtime error: If non-scalar condition error.");
 						ret = RET_ERROR;
 					} else {
-						if(is_true(cond[0])) 
+						if(is_true(cond[0]))
 							ret = operation_var(op->data.operations[1], env);
 					}
 
@@ -3845,7 +3844,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 				} break;
 				case OPERATION_TYPE_IFELSE: {
 					object_t** cond = operation_result(op->data.operations[0], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: If-else NULL error.");
 						ret = RET_ERROR;
@@ -3869,7 +3868,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 				}break;
 				case OPERATION_TYPE_WHILE: {
 					object_t** cond = operation_result(op->data.operations[0], env);
-					
+
 					if(cond == NULL) {
 						error("Runtime error: While NULL error.");
 						ret = RET_ERROR;
@@ -3882,7 +3881,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						ret = (object_t***)_alloc(sizeof(object_t**));
 						ret[0] = NULL;
 						size_t num_ret = 0;
-					
+
 						while(ret != RET_ERROR && is_true(cond[0]))
 						{
 							object_t*** tmp = operation_var(op->data.operations[1], env);
@@ -3970,7 +3969,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						}
 						if(ret != RET_ERROR) {
 							ret = (object_t***)_alloc(sizeof(object_t**)*(num_ret+1));
-							num_ret = 0; 
+							num_ret = 0;
 							for(int i = 0; i < num_stc; i++) {
 								for(int j = 0; vals[i][j] != NULL; j++) {
 									ret[num_ret] = vals[j][i];
@@ -4007,7 +4006,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						ret = RET_ERROR;
 					} else {
 						object_t** cond = operation_result(op->data.operations[1], env);
-						
+
 						if(cond == NULL) {
 							error("Runtime error: For NULL error.");
 							ret = RET_ERROR;
@@ -4080,7 +4079,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						ret = RET_ERROR;
 					} else if(vals == RET_ERROR) {
 						ret = RET_ERROR;
-					} else { 
+					} else {
 						if(vals[0] == OBJECT_LIST_OPENED) {
 							error("Runtime error: List-open type error.");
 							ret = RET_ERROR;
@@ -4089,7 +4088,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 							ret[0] = OBJECT_LIST_OPENED;
 							ret[1] = vals[0];
 							ret[2] = NULL;
-							
+
 							_free(vals);
 						}
 					}
@@ -4108,9 +4107,8 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						ret[0] = NULL;
 						size_t num_ret = 0;
 
-						bool_t end = false;
 						int pos_in = 0;
-						while(ret != RET_ERROR && !end) {
+						while(ret != RET_ERROR && vals_in[pos_in] != NULL) {
 							// Assign values
 							for(int i = 0; vals_loc[i] != NULL && vals_in[pos_in] != NULL; i++) {
 								if(vals_loc[i] == OBJECT_LIST_OPENED) {
@@ -4135,8 +4133,6 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 									pos_in++;
 								}
 							}
-							if(vals_in[pos_in] == NULL)
-								end = true;
 
 							object_t*** tmp = operation_var(op->data.operations[2], env);
 							if(tmp == NULL) {
@@ -4180,7 +4176,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 void operation_free(operation_t* op) {
 	if(op != NULL) {
 		switch(op->type) {
-			case OPERATION_TYPE_NOOP: 
+			case OPERATION_TYPE_NOOP:
 			case OPERATION_TYPE_NOOP_BRAC:
 			case OPERATION_TYPE_NOOP_EMP_REC:
 			case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
@@ -4192,17 +4188,17 @@ void operation_free(operation_t* op) {
 			case OPERATION_TYPE_STR:
 			case OPERATION_TYPE_VAR: string_free(op->data.str); break;
 			case OPERATION_TYPE_BOOL: break;
-			case OPERATION_TYPE_PAIR: 
+			case OPERATION_TYPE_PAIR:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_FUNCTION: 
+			case OPERATION_TYPE_FUNCTION:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_MACRO: 
+			case OPERATION_TYPE_MACRO:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
@@ -4211,245 +4207,245 @@ void operation_free(operation_t* op) {
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_PROC: 
+			case OPERATION_TYPE_PROC:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_STRUCT: 
+			case OPERATION_TYPE_STRUCT:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_O_LIST: 
+			case OPERATION_TYPE_O_LIST:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_LIST: 
+			case OPERATION_TYPE_LIST:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_INDEX: 
-				operation_free(op->data.operations[0]);
-				operation_free(op->data.operations[1]);
-				_free(op->data.operations);
-			break;
-			case OPERATION_TYPE_EXEC: 
+			case OPERATION_TYPE_INDEX:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_TO_NUM: 
+			case OPERATION_TYPE_EXEC:
+				operation_free(op->data.operations[0]);
+				operation_free(op->data.operations[1]);
+				_free(op->data.operations);
+			break;
+			case OPERATION_TYPE_TO_NUM:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_TO_BOOL: 
+			case OPERATION_TYPE_TO_BOOL:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_TO_ASCII: 
+			case OPERATION_TYPE_TO_ASCII:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_TO_STR: 
+			case OPERATION_TYPE_TO_STR:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
 			case OPERATION_TYPE_READ: break;
-			case OPERATION_TYPE_WRITE: 
+			case OPERATION_TYPE_WRITE:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_ADD: 
+			case OPERATION_TYPE_ADD:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_SUB: 
+			case OPERATION_TYPE_SUB:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_MUL: 
+			case OPERATION_TYPE_MUL:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_DIV: 
+			case OPERATION_TYPE_DIV:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_MOD: 
+			case OPERATION_TYPE_MOD:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_NEG: 
+			case OPERATION_TYPE_NEG:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_POW: 
+			case OPERATION_TYPE_POW:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_AND: 
+			case OPERATION_TYPE_AND:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_OR: 
+			case OPERATION_TYPE_OR:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_XOR: 
+			case OPERATION_TYPE_XOR:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_NOT: 
+			case OPERATION_TYPE_NOT:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_SQRT: 
+			case OPERATION_TYPE_SQRT:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_CBRT: 
+			case OPERATION_TYPE_CBRT:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_SIN: 
+			case OPERATION_TYPE_SIN:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_COS: 
+			case OPERATION_TYPE_COS:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_TAN: 
+			case OPERATION_TYPE_TAN:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_ASIN: 
+			case OPERATION_TYPE_ASIN:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_ACOS: 
+			case OPERATION_TYPE_ACOS:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_ATAN: 
+			case OPERATION_TYPE_ATAN:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_SINH: 
+			case OPERATION_TYPE_SINH:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_COSH: 
+			case OPERATION_TYPE_COSH:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_TANH: 
+			case OPERATION_TYPE_TANH:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_ASINH: 
+			case OPERATION_TYPE_ASINH:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_ACOSH: 
+			case OPERATION_TYPE_ACOSH:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_ATANH: 
+			case OPERATION_TYPE_ATANH:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_TRUNC: 
+			case OPERATION_TYPE_TRUNC:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_FLOOR: 
+			case OPERATION_TYPE_FLOOR:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_CEIL: 
+			case OPERATION_TYPE_CEIL:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_ROUND: 
+			case OPERATION_TYPE_ROUND:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
 			case OPERATION_TYPE_RAND: break;
-			case OPERATION_TYPE_LEN: 
+			case OPERATION_TYPE_LEN:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_EQU: 
-				operation_free(op->data.operations[0]);
-				operation_free(op->data.operations[1]);
-				_free(op->data.operations);
-			break;
-			case OPERATION_TYPE_GEQ: 
+			case OPERATION_TYPE_EQU:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_LEQ: 
+			case OPERATION_TYPE_GEQ:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_GTR: 
+			case OPERATION_TYPE_LEQ:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_LES: 
+			case OPERATION_TYPE_GTR:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_FIND: 
+			case OPERATION_TYPE_LES:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_SPLIT: 
+			case OPERATION_TYPE_FIND:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_ABS: 
-				operation_free(op->data.operations[0]);
-				_free(op->data.operations);
-			break;
-			case OPERATION_TYPE_SCOPE: 
-				operation_free(op->data.operations[0]);
-				_free(op->data.operations);
-			break;
-			case OPERATION_TYPE_IF: 
+			case OPERATION_TYPE_SPLIT:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_IFELSE: 
+			case OPERATION_TYPE_ABS:
+				operation_free(op->data.operations[0]);
+				_free(op->data.operations);
+			break;
+			case OPERATION_TYPE_SCOPE:
+				operation_free(op->data.operations[0]);
+				_free(op->data.operations);
+			break;
+			case OPERATION_TYPE_IF:
+				operation_free(op->data.operations[0]);
+				operation_free(op->data.operations[1]);
+				_free(op->data.operations);
+			break;
+			case OPERATION_TYPE_IFELSE:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				operation_free(op->data.operations[2]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_WHILE: 
+			case OPERATION_TYPE_WHILE:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_IN_STRUCT: 
+			case OPERATION_TYPE_IN_STRUCT:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				_free(op->data.operations);
@@ -4466,11 +4462,11 @@ void operation_free(operation_t* op) {
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_COPY: 
+			case OPERATION_TYPE_COPY:
 				operation_free(op->data.operations[0]);
 				_free(op->data.operations);
 			break;
-			case OPERATION_TYPE_FOR: 
+			case OPERATION_TYPE_FOR:
 				operation_free(op->data.operations[0]);
 				operation_free(op->data.operations[1]);
 				operation_free(op->data.operations[2]);
@@ -4497,7 +4493,7 @@ id_t operation_id(operation_t* op) {
 
 	if(op != NULL) {
 		switch(op->type) {
-			case OPERATION_TYPE_NOOP: 
+			case OPERATION_TYPE_NOOP:
 			case OPERATION_TYPE_NOOP_BRAC:
 			case OPERATION_TYPE_NOOP_EMP_REC:
 			case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
@@ -4578,7 +4574,7 @@ id_t operation_id(operation_t* op) {
 			case OPERATION_TYPE_FOR_IN: break;
 		}
 	}
-	
+
 	return ret;
 }
 
@@ -4589,11 +4585,11 @@ bool_t operation_equ(operation_t* o1, operation_t* o2) {
 		return false;
 	else if(o1->type != o2->type)
 		return false;
-	
+
 	bool_t ret = true;
 
 	switch(o1->type) {
-		case OPERATION_TYPE_NOOP: 
+		case OPERATION_TYPE_NOOP:
 		case OPERATION_TYPE_NOOP_BRAC:
 		case OPERATION_TYPE_NOOP_EMP_REC:
 		case OPERATION_TYPE_NOOP_O_LIST_DEADEND:

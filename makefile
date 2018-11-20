@@ -16,7 +16,7 @@ COPY=cp -R
 
 $(TARGET): $(OBJECTS)
 	$(CC) -o $(TARGET) $(ARGS) $(OBJECTS) $(LIBS)
- 
+
 $(BUILD)/main.o: $(SRC)/main.c $(SRC)/object.h $(SRC)/types.h $(SRC)/program.h
 	$(CC) -c -o $(BUILD)/main.o $(ARGS) $(SRC)/main.c
 
@@ -24,7 +24,7 @@ $(BUILD)/string.o: $(SRC)/string.c $(SRC)/string.h $(SRC)/types.h $(SRC)/langall
 	$(CC) -c -o $(BUILD)/string.o $(ARGS) $(SRC)/string.c
 
 $(BUILD)/object.o: $(SRC)/object.c $(SRC)/object.h $(SRC)/string.h $(SRC)/pair.h $(SRC)/number.h $(SRC)/list.h $(SRC)/dictionary.h $(SRC)/function.h\
-$(SRC)/macro.h $(SRC)/types.h $(SRC)/langallocator.h $(SRC)/bool.h 
+$(SRC)/macro.h $(SRC)/types.h $(SRC)/langallocator.h $(SRC)/bool.h
 	$(CC) -c -o $(BUILD)/object.o $(ARGS) $(SRC)/object.c
 
 $(BUILD)/list.o: $(SRC)/list.c $(SRC)/list.h $(SRC)/object.h $(SRC)/types.h $(SRC)/langallocator.h $(SRC)/bool.h
@@ -48,7 +48,7 @@ $(BUILD)/dictionary.o: $(SRC)/dictionary.c $(SRC)/dictionary.h $(SRC)/prime.h $(
 $(BUILD)/environment.o: $(SRC)/environment.c $(SRC)/environment.h $(SRC)/variabletable.h $(SRC)/types.h $(SRC)/object.h $(SRC)/prime.h $(SRC)/string.h
 	$(CC) -c -o $(BUILD)/environment.o $(ARGS) $(SRC)/environment.c
 
-$(BUILD)/error.o: $(SRC)/error.c $(SRC)/error.h 
+$(BUILD)/error.o: $(SRC)/error.c $(SRC)/error.h
 	$(CC) -c -o $(BUILD)/error.o $(ARGS) $(SRC)/error.c
 
 $(BUILD)/function.o: $(SRC)/function.c $(SRC)/function.h $(SRC)/object.h $(SRC)/environment.h $(SRC)/prime.h $(SRC)/object.h $(SRC)/operation.h $(SRC)/types.h
@@ -75,7 +75,7 @@ $(BUILD)/token.o: $(SRC)/token.c $(SRC)/token.h $(SRC)/operation.h $(SRC)/types.
 $(BUILD)/tokenlist.o: $(SRC)/tokenlist.c $(SRC)/tokenlist.h $(SRC)/token.h $(SRC)/types.h $(SRC)/string.h $(SRC)/error.h
 	$(CC) -c -o $(BUILD)/tokenlist.o $(ARGS) $(SRC)/tokenlist.c
 
-$(BUILD)/program.o: $(SRC)/program.c $(SRC)/program.h $(SRC)/types.h $(SRC)/operation.h 
+$(BUILD)/program.o: $(SRC)/program.c $(SRC)/program.h $(SRC)/types.h $(SRC)/operation.h
 	$(CC) -c -o $(BUILD)/program.o $(ARGS) $(SRC)/program.c
 
 lib: $(OBJECTS)
