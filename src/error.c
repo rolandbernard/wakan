@@ -22,6 +22,10 @@ void set_error_handler(error_handler_t handler) {
 	curr_handler = handler;
 }
 
+error_handler_t get_error_handler() {
+	return curr_handler;
+}
+
 void default_error_handler(const char* msg) {
 	fprintf(stderr, "Error: %s (aborting process).\n", msg);
 	abort();

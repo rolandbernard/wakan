@@ -9,8 +9,17 @@
 #include "./langallocator.h"
 #include "./prime.h"
 #include "./error.h"
+#include "./program.h"
 
 #define TMP_STR_MAX 1<<12
+
+static void (*old_error_handler)(const char* msg) = NULL;
+static bool_t import_error_flag = false;
+
+void import_error_handler(const char* msg) {
+	old_error_handler(msg);
+	import_error_flag = true;
+}
 
 operation_t* operation_create() {
 	return (operation_t*)_alloc(sizeof(operation_t));
@@ -595,7 +604,53 @@ void* operation_exec(operation_t* op, environment_t* env) {
 						_free(vals_in);
 					}
 				} break;
+				case OPERATION_TYPE_IMPORT: {
+					object_t** vals = operation_result(op->data.operations[0], env);
 
+					if(vals == NULL) {
+						error("Runtime error: Import NULL error.");
+						ret = RET_ERROR;
+					} else if(vals == RET_ERROR) {
+						ret = RET_ERROR;
+					} else {
+						for (int i = 0; ret != RET_ERROR && vals[i] != NULL; i++) {
+							if(vals[i]->type != OBJECT_TYPE_STRING) {
+								error("Runtime error: Import type error.");
+								ret = RET_ERROR;
+							} else {
+								FILE* file = fopen(string_get_cstr(vals[i]->data.string), "r");
+								if(file == NULL) {
+									error("Runtime error: Import file error.");
+									ret = RET_ERROR;
+								} else {
+									old_error_handler = get_error_handler();
+									set_error_handler(import_error_handler);
+
+									fseek(file, 0, SEEK_END);
+									size_t file_size = ftell(file);
+									fseek(file, 0, SEEK_SET);
+
+									char* buffer = (char*)_alloc(sizeof(char)*(file_size+1));
+									buffer[file_size] = '\0';
+									fread(buffer, 1, file_size, file);
+
+									program_t* program = tokenize_and_parse_program(buffer);
+									program_exec(program, env);
+									program_free(program);
+
+									_free(buffer);
+									fclose(file);
+
+									set_error_handler(old_error_handler);
+
+									if(import_error_flag) {
+										ret = RET_ERROR;
+									}
+								}
+							}
+						}
+					}
+				} break;
 			}
 		}
 
@@ -1013,7 +1068,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 							} else {
 								vals[i] = function_result(function[i]->data.func, parameter, env);
 								if(vals[i] == NULL) {
-									error("Runtime error: Function NULL error.");
+									error("Runtime error: Function NULL error");
 									ret = RET_ERROR;
 									for(++i;i < num_func; i++)
 										vals[i] = NULL;
@@ -3566,6 +3621,53 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						_free(list);
 					}
 				} break;
+				case OPERATION_TYPE_IMPORT: {
+					object_t** vals = operation_result(op->data.operations[0], env);
+
+					if(vals == NULL) {
+						error("Runtime error: Import NULL error.");
+						ret = RET_ERROR;
+					} else if(vals == RET_ERROR) {
+						ret = RET_ERROR;
+					} else {
+						for (int i = 0; ret != RET_ERROR && vals[i] != NULL; i++) {
+							if(vals[i]->type != OBJECT_TYPE_STRING) {
+								error("Runtime error: Import type error.");
+								ret = RET_ERROR;
+							} else {
+								FILE* file = fopen(string_get_cstr(vals[i]->data.string), "r");
+								if(file == NULL) {
+									error("Runtime error: Import file error.");
+									ret = RET_ERROR;
+								} else {
+									old_error_handler = get_error_handler();
+									set_error_handler(import_error_handler);
+
+									fseek(file, 0, SEEK_END);
+									size_t file_size = ftell(file);
+									fseek(file, 0, SEEK_SET);
+
+									char* buffer = (char*)_alloc(sizeof(char)*(file_size+1));
+									buffer[file_size] = '\0';
+									fread(buffer, 1, file_size, file);
+
+									program_t* program = tokenize_and_parse_program(buffer);
+									ret = operation_result(program, env);
+									program_free(program);
+
+									_free(buffer);
+									fclose(file);
+
+									set_error_handler(old_error_handler);
+
+									if(import_error_flag) {
+										ret = RET_ERROR;
+									}
+								}
+							}
+						}
+					}
+				} break;
 			}
 		}
 
@@ -4167,6 +4269,53 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						_free(vals_in);
 					}
 				} break;
+				case OPERATION_TYPE_IMPORT: {
+					object_t** vals = operation_result(op->data.operations[0], env);
+
+					if(vals == NULL) {
+						error("Runtime error: Import NULL error.");
+						ret = RET_ERROR;
+					} else if(vals == RET_ERROR) {
+						ret = RET_ERROR;
+					} else {
+						for (int i = 0; ret != RET_ERROR && vals[i] != NULL; i++) {
+							if(vals[i]->type != OBJECT_TYPE_STRING) {
+								error("Runtime error: Import type error.");
+								ret = RET_ERROR;
+							} else {
+								FILE* file = fopen(string_get_cstr(vals[i]->data.string), "r");
+								if(file == NULL) {
+									error("Runtime error: Import file error.");
+									ret = RET_ERROR;
+								} else {
+									old_error_handler = get_error_handler();
+									set_error_handler(import_error_handler);
+
+									fseek(file, 0, SEEK_END);
+									size_t file_size = ftell(file);
+									fseek(file, 0, SEEK_SET);
+
+									char* buffer = (char*)_alloc(sizeof(char)*(file_size+1));
+									buffer[file_size] = '\0';
+									fread(buffer, 1, file_size, file);
+
+									program_t* program = tokenize_and_parse_program(buffer);
+									ret = operation_var(program, env);
+									program_free(program);
+
+									_free(buffer);
+									fclose(file);
+
+									set_error_handler(old_error_handler);
+
+									if(import_error_flag) {
+										ret = RET_ERROR;
+									}
+								}
+							}
+						}
+					}
+				} break;
 			}
 		}
 
@@ -4483,6 +4632,10 @@ void operation_free(operation_t* op) {
 				operation_free(op->data.operations[2]);
 				_free(op->data.operations);
 			break;
+			case OPERATION_TYPE_IMPORT:
+				operation_free(op->data.operations[0]);
+				_free(op->data.operations);
+			break;
 		}
 		_free(op);
 	}
@@ -4572,6 +4725,7 @@ id_t operation_id(operation_t* op) {
 			case OPERATION_TYPE_FOR: break;
 			case OPERATION_TYPE_LIST_OPEN: break;
 			case OPERATION_TYPE_FOR_IN: break;
+			case OPERATION_TYPE_IMPORT: break;
 		}
 	}
 
@@ -4668,6 +4822,131 @@ bool_t operation_equ(operation_t* o1, operation_t* o2) {
 		case OPERATION_TYPE_FOR: break;
 		case OPERATION_TYPE_LIST_OPEN: break;
 		case OPERATION_TYPE_FOR_IN: break;
+		case OPERATION_TYPE_IMPORT: break;
+	}
+
+	return ret;
+}
+
+operation_t* operation_copy(operation_t* op) {
+	operation_t* ret = operation_create();
+	ret->type = op->type;
+
+	switch (op->type) {
+		case OPERATION_TYPE_VAR:
+		case OPERATION_TYPE_STR:
+			ret->data.str = string_copy(op->data.str);
+		break;
+		case OPERATION_TYPE_NUM:
+			ret->data.num = op->data.num;
+		break;
+		case OPERATION_TYPE_BOOL:
+			ret->data.boolean = op->data.boolean;
+		break;
+		case OPERATION_TYPE_NOOP:
+		case OPERATION_TYPE_NONE:
+		case OPERATION_TYPE_READ:
+		case OPERATION_TYPE_RAND:
+		break;
+		case OPERATION_TYPE_EXEC:
+		case OPERATION_TYPE_INDEX:
+		case OPERATION_TYPE_IN_STRUCT:
+		case OPERATION_TYPE_PAIR:
+		case OPERATION_TYPE_ASSIGN:
+		case OPERATION_TYPE_EQU:
+		case OPERATION_TYPE_GTR:
+		case OPERATION_TYPE_LES:
+		case OPERATION_TYPE_LEQ:
+		case OPERATION_TYPE_GEQ:
+		case OPERATION_TYPE_FIND:
+		case OPERATION_TYPE_SPLIT:
+		case OPERATION_TYPE_IF:
+		case OPERATION_TYPE_WHILE:
+		case OPERATION_TYPE_FUNCTION:
+			ret->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*2);
+			ret->data.operations[0] = operation_copy(op->data.operations[0]);
+			ret->data.operations[1] = operation_copy(op->data.operations[1]);
+		break;
+		case OPERATION_TYPE_IFELSE:
+		case OPERATION_TYPE_FOR_IN:
+			ret->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*3);
+			ret->data.operations[0] = operation_copy(op->data.operations[0]);
+			ret->data.operations[1] = operation_copy(op->data.operations[1]);
+			ret->data.operations[2] = operation_copy(op->data.operations[2]);
+		break;
+		case OPERATION_TYPE_MACRO:
+		case OPERATION_TYPE_STRUCT:
+		case OPERATION_TYPE_DIC:
+		case OPERATION_TYPE_SIN:
+		case OPERATION_TYPE_COS:
+		case OPERATION_TYPE_TAN:
+		case OPERATION_TYPE_ASIN:
+		case OPERATION_TYPE_ACOS:
+		case OPERATION_TYPE_ATAN:
+		case OPERATION_TYPE_SINH:
+		case OPERATION_TYPE_COSH:
+		case OPERATION_TYPE_TANH:
+		case OPERATION_TYPE_ASINH:
+		case OPERATION_TYPE_ACOSH:
+		case OPERATION_TYPE_ATANH:
+		case OPERATION_TYPE_TRUNC:
+		case OPERATION_TYPE_FLOOR:
+		case OPERATION_TYPE_CEIL:
+		case OPERATION_TYPE_ROUND:
+		case OPERATION_TYPE_LEN:
+		case OPERATION_TYPE_CBRT:
+		case OPERATION_TYPE_SQRT:
+		case OPERATION_TYPE_TO_STR:
+		case OPERATION_TYPE_TO_NUM:
+		case OPERATION_TYPE_TO_BOOL:
+		case OPERATION_TYPE_TO_ASCII:
+		case OPERATION_TYPE_WRITE:
+		case OPERATION_TYPE_NEG:
+		case OPERATION_TYPE_NOT:
+		case OPERATION_TYPE_LOCAL:
+		case OPERATION_TYPE_GLOBAL:
+		case OPERATION_TYPE_COPY:
+		case OPERATION_TYPE_IMPORT:
+		case OPERATION_TYPE_LIST_OPEN:
+		case OPERATION_TYPE_LIST:
+		case OPERATION_TYPE_SCOPE:
+		case OPERATION_TYPE_ABS:
+		case OPERATION_TYPE_NOOP_PLUS:
+		case OPERATION_TYPE_NOOP_BRAC:
+		case OPERATION_TYPE_NOOP_EMP_CUR:
+		case OPERATION_TYPE_NOOP_EMP_REC:
+			ret->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
+			ret->data.operations[0] = operation_copy(op->data.operations[0]);
+		break;
+		case OPERATION_TYPE_FOR:
+			ret->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*4);
+			ret->data.operations[0] = operation_copy(op->data.operations[0]);
+			ret->data.operations[1] = operation_copy(op->data.operations[1]);
+			ret->data.operations[2] = operation_copy(op->data.operations[2]);
+			ret->data.operations[3] = operation_copy(op->data.operations[3]);
+		break;
+		case OPERATION_TYPE_PROC:
+		case OPERATION_TYPE_O_LIST:
+		case OPERATION_TYPE_ADD:
+		case OPERATION_TYPE_SUB:
+		case OPERATION_TYPE_MUL:
+		case OPERATION_TYPE_DIV:
+		case OPERATION_TYPE_MOD:
+		case OPERATION_TYPE_POW:
+		case OPERATION_TYPE_AND:
+		case OPERATION_TYPE_OR:
+		case OPERATION_TYPE_XOR: {
+			int num_operations = 0;
+			while(op->data.operations[num_operations] != NULL)
+				num_operations++;
+			ret->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*(num_operations+1));
+			for(int i = 0; i < num_operations; i++)
+				ret->data.operations[i] = operation_copy(op->data.operations[i]);
+			ret->data.operations[num_operations] = NULL;
+		} break;
+		case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
+		case OPERATION_TYPE_NOOP_PROC_DEADEND:
+		break;
 	}
 
 	return ret;

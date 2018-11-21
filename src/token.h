@@ -87,6 +87,7 @@ typedef enum token_type_e {
 		TOKEN_TYPE_FOR,
 		TOKEN_TYPE_BACKSLASH,
 		TOKEN_TYPE_IN,
+		TOKEN_TYPE_IMPORT,
 } token_type_t;
 
 typedef struct token_s {

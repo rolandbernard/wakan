@@ -10,6 +10,8 @@
 
 #define TMP_STR_MAX 1<<12
 
+bool_t empty_line = true;
+
 object_t* object_create_none() {
 	object_t* ret = (object_t*)_alloc(sizeof(object_t));
 	ret->num_references = 0;
@@ -24,7 +26,7 @@ object_t* object_create_number(number_t number) {
 	ret->data.number = number;
 	return ret;
 }
- 
+
 object_t* object_create_boolean(bool_t boolean) {
 	object_t* ret = (object_t*)_alloc(sizeof(object_t));
 	ret->num_references = 0;
@@ -175,6 +177,7 @@ void object_free(object_t* obj) {
 }
 
 void print_object(object_t* obj) {
+	empty_line = false;
 	if(obj == NULL || obj == OBJECT_LIST_OPENED)
 		fprintf(stdout, "null");
 	else {
@@ -182,8 +185,12 @@ void print_object(object_t* obj) {
 			case OBJECT_TYPE_NONE: fprintf(stdout, "none"); break;
 			case OBJECT_TYPE_NUMBER: fprintf(stdout, "%.15lg", obj->data.number); break;
 			case OBJECT_TYPE_BOOL: fprintf(stdout, (obj->data.boolean ? "true" : "false")); break;
-			case OBJECT_TYPE_STRING: fprintf(stdout, "%s", string_get_cstr(obj->data.string)); break;
-			case OBJECT_TYPE_PAIR: 
+			case OBJECT_TYPE_STRING:
+				fprintf(stdout, "%s", string_get_cstr(obj->data.string));
+				if (string_char_at(obj->data.string, string_length(obj->data.string)-1) == '\n')
+					empty_line = true;
+			break;
+			case OBJECT_TYPE_PAIR:
 				if(obj->data.pair->key->type == OBJECT_TYPE_STRING)
 					fprintf(stdout, "\"");
 				print_object(obj->data.pair->key);
@@ -196,7 +203,7 @@ void print_object(object_t* obj) {
 				if(obj->data.pair->value->type == OBJECT_TYPE_STRING)
 					fprintf(stdout, "\"");
 			break;
-			case OBJECT_TYPE_LIST: 
+			case OBJECT_TYPE_LIST:
 				fprintf(stdout, "[");
 				for(int i = 0; i < obj->data.list->size; i++) {
 					if(obj->data.list->data[i]->type == OBJECT_TYPE_STRING)
@@ -208,9 +215,9 @@ void print_object(object_t* obj) {
 				}
 				fprintf(stdout, "]");
 			break;
-			case OBJECT_TYPE_DICTIONARY: 
+			case OBJECT_TYPE_DICTIONARY:
 				fprintf(stdout, "dic(");
-				for(int i = 0; i < obj->data.dic->size; i++) 
+				for(int i = 0; i < obj->data.dic->size; i++)
 					if(obj->data.dic->data[i] != NULL) {
 						if(obj->data.dic->data[i]->key->type == OBJECT_TYPE_STRING)
 							fprintf(stdout, "\"");
@@ -247,7 +254,7 @@ string_t* object_to_string(object_t* obj) {
 		} break;
 		case OBJECT_TYPE_BOOL: ret = string_create(obj->data.boolean ? "true" : "false"); break;
 		case OBJECT_TYPE_STRING: ret = obj->data.string; break;
-		case OBJECT_TYPE_LIST: 
+		case OBJECT_TYPE_LIST:
 			ret = string_create("");
 			ret = string_concat_and_free(ret, string_create("["));
 			for(int i = 0; i < obj->data.list->size; i++) {
@@ -256,7 +263,7 @@ string_t* object_to_string(object_t* obj) {
 			}
 			ret = string_concat_and_free(ret, string_create("]"));
 		break;
-		case OBJECT_TYPE_PAIR: 
+		case OBJECT_TYPE_PAIR:
 			ret = string_create("");
 			ret = string_concat_and_free(ret, object_to_string(obj->data.pair->key));
 			ret = string_concat_and_free(ret, string_create(":"));
@@ -265,7 +272,7 @@ string_t* object_to_string(object_t* obj) {
 		case OBJECT_TYPE_DICTIONARY:
 			ret = string_create("");
 			ret = string_concat_and_free(ret, string_create("dic("));
-			for(int i = 0; i < obj->data.dic->size; i++) 
+			for(int i = 0; i < obj->data.dic->size; i++)
 				if(obj->data.dic->data[i] != NULL) {
 					ret = string_concat_and_free(ret, object_to_string(obj->data.dic->data[i]->key));
 					ret = string_concat_and_free(ret, string_create(":"));

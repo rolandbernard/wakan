@@ -1,11 +1,10 @@
+dynamic_save := dic (0:0, 1:1);
 
 fib := function (n) does (
-	if (n <= 1) then
-		1
-	else (
-		func_self(n-1) + func_self(n-2)
-	)
+	if(not global dynamic_save find n) then (
+		global dynamic_save[n] := func_self(n-1) + func_self(n-2)
+	);
+	global dynamic_save[n]
 );
 
-write ([{for i := 0 \ i <= 20 \ i := i+1 do fib(i)}], '\n')
-
+write ([{for i := 0 \ i <= 1400 \ i := i+100 do fib(i)}], '\n')

@@ -73,6 +73,7 @@ int get_operation_priority(operation_type_t type) {
 		case OPERATION_TYPE_LOCAL:
 		case OPERATION_TYPE_GLOBAL:
 		case OPERATION_TYPE_COPY:
+		case OPERATION_TYPE_IMPORT:
 			return 7;
 		case OPERATION_TYPE_POW:
 			return 8;
@@ -275,6 +276,8 @@ operation_type_t get_operation(token_t** stack, size_t count, bool_t(*func)(toke
 		return OPERATION_TYPE_GLOBAL;
 	else if(func(stack, count, 2, TOKEN_TYPE_COPY, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_COPY;
+	else if(func(stack, count, 2, TOKEN_TYPE_IMPORT, TOKEN_TYPE_EXP))
+		return OPERATION_TYPE_IMPORT;
 	else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_POW, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_POW;
 	else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_MUL, TOKEN_TYPE_EXP))
@@ -578,6 +581,7 @@ program_t* parse_program(tokenlist_t* list) {
 							case OPERATION_TYPE_LOCAL:
 							case OPERATION_TYPE_GLOBAL:
 							case OPERATION_TYPE_COPY:
+							case OPERATION_TYPE_IMPORT:
 							case OPERATION_TYPE_LIST_OPEN:
 								tmp->data.op = operation_create();
 								tmp->data.op->type = on_stack;

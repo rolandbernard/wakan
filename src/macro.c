@@ -3,7 +3,7 @@
 #include "./macro.h"
 
 macro_t* macro_create(operation_t* mac) {
-	return mac;
+	return operation_copy(mac);
 }
 
 void* macro_exec(macro_t* mac, environment_t* env) {
@@ -19,8 +19,7 @@ object_t*** macro_var(macro_t* mac, environment_t* env) {
 }
 
 void macro_free(macro_t* mac) {
-	// Operations in Objects don't have to be freed since they are part of the tree
-	//operation_free(mac);
+	operation_free(mac);
 }
 
 id_t macro_id(macro_t* mac) {

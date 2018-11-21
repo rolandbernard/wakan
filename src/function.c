@@ -11,6 +11,17 @@
 function_t* function_create(operation_t* par, operation_t* func) {
 	function_t* ret = (function_t*)_alloc(sizeof(function_t));
 
+	ret->freeable = true;
+	ret->parameter = operation_copy(par);
+	ret->function = operation_copy(func);
+
+	return ret;
+}
+
+function_t* function_create_reference(operation_t* par, operation_t* func) {
+	function_t* ret = (function_t*)_alloc(sizeof(function_t));
+
+	ret->freeable = false;
 	ret->parameter = par;
 	ret->function = func;
 
@@ -28,8 +39,9 @@ void* function_exec(function_t* func, object_t** par, environment_t* env) {
 			environment_add_scope(env);
 			size_t prev_limit = env->local_mode_limit;
 			environment_set_local_mode(env, env->count-1);
+
 			string_t* func_self_name = string_create("func_self");
-			environment_write(env, func_self_name, object_create_function(function_create(func->parameter, func->function)));
+			environment_write(env, func_self_name, object_create_function(function_create_reference(func->parameter, func->function)));
 
 			object_t*** par_loc_list = operation_var(func->parameter, env);
 
@@ -62,7 +74,7 @@ void* function_exec(function_t* func, object_t** par, environment_t* env) {
 
 			environment_del(env, func_self_name);
 			_free(func_self_name);
-			
+
 			environment_set_local_mode(env, prev_limit);
 			environment_remove_scope(env);
 		}
@@ -82,8 +94,9 @@ object_t** function_result(function_t* func, object_t** par, environment_t* env)
 			environment_add_scope(env);
 			size_t prev_limit = env->local_mode_limit;
 			environment_set_local_mode(env, env->count-1);
+
 			string_t* func_self_name = string_create("func_self");
-			environment_write(env, func_self_name, object_create_function(function_create(func->parameter, func->function)));
+			environment_write(env, func_self_name, object_create_function(function_create_reference(func->parameter, func->function)));
 
 			object_t*** par_loc_list = operation_var(func->parameter, env);
 
@@ -112,7 +125,7 @@ object_t** function_result(function_t* func, object_t** par, environment_t* env)
 				}
 
 			ret = operation_result(func->function, env);
-			
+
 			environment_del(env, func_self_name);
 			string_free(func_self_name);
 
@@ -125,9 +138,10 @@ object_t** function_result(function_t* func, object_t** par, environment_t* env)
 
 void function_free(function_t* func) {
 	if(func != NULL) {
-		// Operations in Objects don't have to be freed since they are part of the tree
-		//operation_free(func->function);
-		//operation_free(func->parameter);
+		if(func->freeable) {
+			operation_free(func->function);
+			operation_free(func->parameter);
+		}
 		_free(func);
 	}
 }
