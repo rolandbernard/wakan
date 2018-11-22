@@ -1400,14 +1400,20 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 						if(vals[i] == NULL) {
 							error("Runtime error: Subtraction NULL error.");
 							ret = RET_ERROR;
+							for(++i; i < num_op; i++)
+								vals[i] = NULL;
 						} else if(vals[i] == RET_ERROR) {
 							ret = RET_ERROR;
+							for(++i; i < num_op; i++)
+								vals[i] = NULL;
 						} else {
 							size_t tmp_size = 0;
 							while(ret != RET_ERROR && vals[i][tmp_size] != NULL) {
 								if(vals[i][tmp_size]->type != OBJECT_TYPE_NUMBER) {
 									error("Runtime error: Subtraction type error.");
 									ret = RET_ERROR;
+									for(++i; i < num_op; i++)
+										vals[i] = NULL;
 								} else
 									tmp_size++;
 							}
@@ -1417,6 +1423,8 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 								else if(num_ret != tmp_size && tmp_size != 1) {
 									error("Runtime error: Subtraction symmetry error.");
 									ret = RET_ERROR;
+									for(++i; i < num_op; i++)
+										vals[i] = NULL;
 								}
 							}
 						}
