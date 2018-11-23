@@ -202,6 +202,7 @@ void print_object(object_t* obj) {
 				print_object(obj->data.pair->value);
 				if(obj->data.pair->value->type == OBJECT_TYPE_STRING)
 					fprintf(stdout, "\"");
+				empty_line = false;
 			break;
 			case OBJECT_TYPE_LIST:
 				fprintf(stdout, "[");
@@ -214,6 +215,7 @@ void print_object(object_t* obj) {
 					fprintf(stdout, ",");
 				}
 				fprintf(stdout, "]");
+				empty_line = false;
 			break;
 			case OBJECT_TYPE_DICTIONARY:
 				fprintf(stdout, "dic(");
@@ -233,6 +235,7 @@ void print_object(object_t* obj) {
 						fprintf(stdout, ",");
 					}
 				fprintf(stdout, ")");
+				empty_line = false;
 			break;
 			case OBJECT_TYPE_FUNCTION: fprintf(stdout, "/function/"); break;
 			case OBJECT_TYPE_MACRO: fprintf(stdout, "/macro/"); break;
