@@ -8,5 +8,4 @@ write ("z: ", z, '\n');
 x := 12;
 y := 1;
 
-write ("z: ", z, '\n')
-
+write ("z: ", z, '\n');

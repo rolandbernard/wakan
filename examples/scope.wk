@@ -13,8 +13,8 @@ x := 12;
 
 	local x := 13;
 
-	write ('x: ', x, '\n')
+	write ('x: ', x, '\n');
 };
 
 write ('x: ', x, '\n');
-write ('y: ', y, '\n')
+write ('y: ', y, '\n');

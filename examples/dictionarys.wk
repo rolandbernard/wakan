@@ -7,4 +7,4 @@ dictionary[none] := 50;
 write ("dictionary = ", dictionary, '\n');
 write ("dictionary['blue'] = ", dictionary['blue'], '\n');
 write ("dictionary[none] = ", dictionary[none], '\n');
-write if (dictionary find 'pink') then "dictionary includes 'pink'.\n" else "dictionary doesn't include 'pink'.\n"
+write if (dictionary find 'pink') then "dictionary includes 'pink'.\n" else "dictionary doesn't include 'pink'.\n";

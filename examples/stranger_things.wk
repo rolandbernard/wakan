@@ -8,5 +8,4 @@ write ("a: ", a, "\n");
 write ("b: ", b, "\n");
 write ("c: ", c, "\n");
 write ("d: ", d, "\n");
-write if (c = d) then "c is d.\n" else "c in not d.\n"
-
+write if (c = d) then "c is d.\n" else "c in not d.\n";

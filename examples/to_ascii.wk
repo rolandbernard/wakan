@@ -1,6 +1,5 @@
 
 list := [for i := 1 \ i < 128 \ i := i+1 do i];
 
-write to_ascii list;
-write '\n'
-
+write to_ascii (list);
+write '\n';

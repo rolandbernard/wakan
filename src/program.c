@@ -29,7 +29,7 @@ int get_operation_priority(operation_type_t type) {
 		case OPERATION_TYPE_LIST:
 		case OPERATION_TYPE_NOOP_EMP_REC:
 		case OPERATION_TYPE_SCOPE:
-		case OPERATION_TYPE_NOOP_EMP_CUR: 
+		case OPERATION_TYPE_NOOP_EMP_CUR:
 			return 3;
 		case OPERATION_TYPE_FIND:
 		case OPERATION_TYPE_SPLIT:
@@ -134,7 +134,21 @@ bool_t is_on_stack(token_t** stack, size_t count, int n, ...) {
 		va_end(list);
 	}
 	return ret;
-} 
+}
+
+bool_t is_closing_exp(token_type_t type) {
+	if(type == TOKEN_TYPE_ABS || type == TOKEN_TYPE_CLOSE_BRAC || type == TOKEN_TYPE_SEMICOL || type == TOKEN_TYPE_END
+	|| type == TOKEN_TYPE_CLOSE_CUR || type == TOKEN_TYPE_CLOSE_REC || type == TOKEN_TYPE_COMMA || type == TOKEN_TYPE_ASSIGN
+	|| type == TOKEN_TYPE_PAIR || type == TOKEN_TYPE_DO || type == TOKEN_TYPE_DOES || type == TOKEN_TYPE_DIV
+	|| type == TOKEN_TYPE_MOD || type == TOKEN_TYPE_POW || type == TOKEN_TYPE_AND || type == TOKEN_TYPE_OR
+	|| type == TOKEN_TYPE_XOR || type == TOKEN_TYPE_EQU || type == TOKEN_TYPE_GEQ || type == TOKEN_TYPE_LEQ
+	|| type == TOKEN_TYPE_GTR || type == TOKEN_TYPE_LES || type == TOKEN_TYPE_FIND || type == TOKEN_TYPE_SPLIT
+	|| type == TOKEN_TYPE_THEN || type == TOKEN_TYPE_ELSE || type == TOKEN_TYPE_DOT || type == TOKEN_TYPE_BACKSLASH
+	|| type == TOKEN_TYPE_IN)
+		return true;
+	else
+		return false;
+}
 
 // Assumes only one accordance
 bool_t is_expected_on_stack(token_t** stack, size_t count, int n, ...) {
@@ -146,10 +160,17 @@ bool_t is_expected_on_stack(token_t** stack, size_t count, int n, ...) {
 	token_type_t last = va_arg(list, token_type_t);
 	for(int i = 0; pos == -1 && i < n-1; i++) {
 		token_type_t tmp = va_arg(list, token_type_t);
-		if(last == stack[count-1]->type && tmp == stack[count-1]->next->type)
-			pos = i;
-		else
-			last = tmp;
+		if(tmp == TOKEN_TYPE_EXP) {
+			if(last == stack[count-1]->type && !is_closing_exp(stack[count-1]->next->type))
+				pos = i;
+			else
+				last = tmp;
+		} else {
+			if(last == stack[count-1]->type && tmp == stack[count-1]->next->type)
+				pos = i;
+			else
+				last = tmp;
+		}
 	}
 	va_end(list);
 
@@ -157,7 +178,7 @@ bool_t is_expected_on_stack(token_t** stack, size_t count, int n, ...) {
 		ret = false;
 	else {
 		va_list list;
-		va_start(list, n);	
+		va_start(list, n);
 		for(int i = pos; ret && i > 0; i--)
 			if(va_arg(list, token_type_t) != stack[count-1-i]->type)
 				ret = false;
@@ -322,12 +343,12 @@ operation_type_t get_operation(token_t** stack, size_t count, bool_t(*func)(toke
 		return OPERATION_TYPE_ASSIGN;
 	else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_COMMA, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_O_LIST;
-	//else if(func(stack, count, 2, TOKEN_TYPE_EXP, TOKEN_TYPE_COMMA))
-		//return OPERATION_TYPE_NOOP_O_LIST_DEADEND;
+	else if(func(stack, count, 2, TOKEN_TYPE_EXP, TOKEN_TYPE_COMMA))
+		return OPERATION_TYPE_NOOP_O_LIST_DEADEND;
 	else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_SEMICOL, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_PROC;
-	//else if(func(stack, count, 2, TOKEN_TYPE_EXP, TOKEN_TYPE_SEMICOL))
-		//return OPERATION_TYPE_NOOP_PROC_DEADEND;
+	else if(func(stack, count, 2, TOKEN_TYPE_EXP, TOKEN_TYPE_SEMICOL))
+		return OPERATION_TYPE_NOOP_PROC_DEADEND;
 	else
 		return ~0;
 }
@@ -345,7 +366,7 @@ program_t* parse_program(tokenlist_t* list) {
 		token_t** stack = (token_t**)_alloc(sizeof(token_t*)*MAX_STACK_SIZE);
 		stack[0] = list->start;
 		size_t count = 1;
-		
+
 		while(stack[count-1]->type != TOKEN_TYPE_END)
 		{
 			operation_type_t on_stack = get_on_stack(stack, count);
@@ -358,7 +379,7 @@ program_t* parse_program(tokenlist_t* list) {
 				operation_type_t expected_on_stack = get_expected_on_stack(stack, count);
 				if(on_stack == OPERATION_TYPE_POW ||
 				on_stack == OPERATION_TYPE_MUL ||
-				on_stack == OPERATION_TYPE_DIV || 
+				on_stack == OPERATION_TYPE_DIV ||
 				on_stack == OPERATION_TYPE_MOD ||
 				on_stack == OPERATION_TYPE_ADD ||
 				on_stack == OPERATION_TYPE_SUB ||
@@ -376,7 +397,7 @@ program_t* parse_program(tokenlist_t* list) {
 						token_t* tmp = token_create();
 						tmp->type = TOKEN_TYPE_EXP;
 						tmp->next = stack[count-1]->next;
-						
+
 						int num_of_repetitions = 0;
 						while(get_on_stack(stack, count-num_of_repetitions*2) == on_stack) num_of_repetitions++;
 
@@ -510,7 +531,7 @@ program_t* parse_program(tokenlist_t* list) {
 								_free(stack[count-1]);
 								count -= 2;
 								break;
-							case OPERATION_TYPE_NOOP_EMP_CUR: 
+							case OPERATION_TYPE_NOOP_EMP_CUR:
 								tmp->data.op = operation_create();
 								tmp->data.op->type = OPERATION_TYPE_SCOPE;
 								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*));
@@ -642,7 +663,7 @@ program_t* parse_program(tokenlist_t* list) {
 			_free(stack[i]);
 		_free(stack);
 		return ret;
-	} else 
+	} else
 		return NULL;
 }
 

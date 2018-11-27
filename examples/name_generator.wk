@@ -6,13 +6,13 @@ gen_name := function () does (
 
 	while rand > 0.01 do {
 		if rand > 0.5 and len name > 3 then (
-			name := name[0:1] + name[3:-2]
+			name := name[0:1] + name[3:-2];
 		) else (
-			name := name + global(alphabet[trunc(rand*len alphabet)])
+			name := name + global(alphabet[trunc(rand*len alphabet)]);
 		)
 	};
 
-	name
+	name;
 );
 
 name := none;
@@ -20,8 +20,7 @@ input := 'no';
 while not input = 'yes' do (
 	name := gen_name();
 	write ('Can you pronounce "', name, '"?\n');
-	input := read split ' ' split '\n'
+	input := read split ' ' split '\n';
 );
 
-write ('My new name is "', name, '".\n')
-
+write ('My new name is "', name, '".\n');
