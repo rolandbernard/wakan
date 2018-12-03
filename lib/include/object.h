@@ -13,7 +13,9 @@
 #include "./function.h"
 #include "./macro.h"
 #include "./struct.h"
-	
+
+extern bool_t empty_line;
+
 typedef enum object_type_e {
 	OBJECT_TYPE_NONE,
 	OBJECT_TYPE_NUMBER,
@@ -44,7 +46,7 @@ typedef struct object_s {
 		struct_t* stc;
 		/*...*/
 	} data;
-	
+
 } object_t;
 
 

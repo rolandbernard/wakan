@@ -1,5 +1,5 @@
 
-sort := function (list) does (
+sort := (list) -> (
 	k := len list - 1;
 	while(k > 0) do {
 		tmp_k := 0;

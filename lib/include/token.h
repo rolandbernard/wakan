@@ -29,10 +29,9 @@ typedef enum token_type_e {
 		TOKEN_TYPE_LEQ,
 		TOKEN_TYPE_DO,
 		TOKEN_TYPE_THEN,
-		TOKEN_TYPE_DOES,
+		TOKEN_TYPE_ARROW,
 		TOKEN_TYPE_WHILE,
 		TOKEN_TYPE_IF,
-		TOKEN_TYPE_FUNCTION,
 		TOKEN_TYPE_ELSE,
 		TOKEN_TYPE_SEMICOL,
 		TOKEN_TYPE_COMMA,
@@ -86,6 +85,8 @@ typedef enum token_type_e {
 		TOKEN_TYPE_COPY,
 		TOKEN_TYPE_FOR,
 		TOKEN_TYPE_BACKSLASH,
+		TOKEN_TYPE_IN,
+		TOKEN_TYPE_IMPORT,
 } token_type_t;
 
 typedef struct token_s {

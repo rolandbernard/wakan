@@ -1,5 +1,5 @@
 
-fib := function (n) does (
+fib := (n) -> (
 	this_num := 1;
 	next_num := 1;
 	for i := 0 \ i < n \ i := i+1 do (

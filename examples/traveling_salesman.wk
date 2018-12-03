@@ -25,13 +25,17 @@ for i := 0 \ i < num_connections \ i:=i+1 do {
 	rev := rev[0] = "Y" or rev[0] = "y";
 
 	# Insert connection
-	dist_matrix[start][end] := cost;
+	if(dist_matrix[start][end] > cost or dist_matrix[start][end] = MAX_DIST) then (
+		dist_matrix[start][end] := cost
+	);
 	if rev then (
-		dist_matrix[end][start] := cost;
+		if(dist_matrix[end][start] > cost or dist_matrix[start][end] = MAX_DIST) then (
+			dist_matrix[end][start] := cost
+		);
 	)
 };
 
-remove := def function (list, elem) does (
+remove := def (list, elem) -> (
 	[
 		for el in *list do (
 			if (el = elem) then (
@@ -43,7 +47,7 @@ remove := def function (list, elem) does (
 	]
 );
 
-path_cost := def function (dist_matrix, path) does (
+path_cost := def (dist_matrix, path) -> (
 	ret := 0;
 	for i:=0 \ i < len path-1 \ i:=i+1 do (
 		ret := ret + dist_matrix[path[i]][path[i+1]];
@@ -51,7 +55,7 @@ path_cost := def function (dist_matrix, path) does (
 	ret;
 );
 
-solve := def function (dist_matrix, current_pos, to_visit, bound) does (
+solve := def (dist_matrix, current_pos, to_visit, bound) -> (
 	if (len to_visit = 0) then (
 		if((dist_matrix[current_pos][0] < bound or bound = global MAX_DIST) and not dist_matrix[current_pos][0] = global MAX_DIST) then (
 			[0];

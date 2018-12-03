@@ -81,8 +81,6 @@ void add_token(tokenlist_t* list, const char* start, const char* end) {
 		add_simple_token(list, TOKEN_TYPE_THEN);
 	} else if(cmp_str(start, end, "else")) {
 		add_simple_token(list, TOKEN_TYPE_ELSE);
-	} else if(cmp_str(start, end, "does")) {
-		add_simple_token(list, TOKEN_TYPE_DOES);
 	} else if(cmp_str(start, end, "true")) {
 		add_simple_token(list, TOKEN_TYPE_BOOL);
 		list->end->data.boolean = true;
@@ -135,8 +133,6 @@ void add_token(tokenlist_t* list, const char* start, const char* end) {
 		add_simple_token(list, TOKEN_TYPE_TO_BOOL);
 	} else if(cmp_str(start, end, "to_ascii")) {
 		add_simple_token(list, TOKEN_TYPE_TO_ASCII);
-	} else if(cmp_str(start, end, "function")) {
-		add_simple_token(list, TOKEN_TYPE_FUNCTION);
 	} else {
 		add_simple_token(list, TOKEN_TYPE_VAR);
 		list->end->data.str = string_create_full(start, end-start);
@@ -170,8 +166,15 @@ tokenlist_t* tokenize(const char* src) {
 		} else if(*cur_pos == '-') {
 			if(start_pos != cur_pos)
 				add_token(ret, start_pos, cur_pos);
-			add_simple_token(ret, TOKEN_TYPE_MINUS);
-			start_pos = cur_pos+1;
+
+			if(*(cur_pos+1) == '>') {
+				add_simple_token(ret, TOKEN_TYPE_ARROW);
+				start_pos = cur_pos+2;
+				cur_pos++;
+			} else {
+				add_simple_token(ret, TOKEN_TYPE_MINUS);
+				start_pos = cur_pos+1;
+			}
 		} else if(*cur_pos == '*') {
 			if(start_pos != cur_pos)
 				add_token(ret, start_pos, cur_pos);
@@ -298,7 +301,7 @@ tokenlist_t* tokenize(const char* src) {
 						c = *(cur_pos+index);
 						index++;
 						switch(c) {
-							case '\0': 
+							case '\0':
 								error("Tokenization error: Unexpected end of input.");
 								had_error = true;
 								break;
@@ -315,7 +318,7 @@ tokenlist_t* tokenize(const char* src) {
 					}
 
 					temp_str[length] = c;
-					length++;	
+					length++;
 				}
 			}
 

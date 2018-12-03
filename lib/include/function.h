@@ -5,8 +5,10 @@
 
 #include "./types.h"
 #include "./operation.h"
+#include "./bool.h"
 
 typedef struct function_s {
+	bool_t freeable;
 	operation_t* parameter;
 	operation_t* function;
 } function_t;

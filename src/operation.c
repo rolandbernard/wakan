@@ -820,14 +820,14 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 
 					if(ret != RET_ERROR)
 						ret = assign_val;
-					if(assign_loc != RET_ERROR && assign_loc != NULL)
-						_free(assign_loc);
-					if(assign_val != RET_ERROR && assign_val != NULL) {
+					else if(assign_val != RET_ERROR && assign_val != NULL) {
 						for(int i = 0; assign_val[i] != NULL; i++)
 							object_dereference(assign_val[i]);
 						_free(assign_val);
 					}
-				} break;
+					if(assign_loc != RET_ERROR && assign_loc != NULL)
+						_free(assign_loc);
+					} break;
 				case OPERATION_TYPE_PROC: {
 					int i;
 					for(i = 0; ret != RET_ERROR && op->data.operations[i+1] != NULL; i++)
@@ -3758,7 +3758,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 					if(ret != RET_ERROR) {
 						ret = assign_loc;
 					}
-					if(assign_loc != RET_ERROR && assign_loc != NULL) {
+					else if(assign_loc != RET_ERROR && assign_loc != NULL) {
 						_free(assign_loc);
 					}
 					if(assign_val != RET_ERROR && assign_val != NULL) {

@@ -1,5 +1,5 @@
 
-is_prime := function (x) does (
+is_prime := (x) -> (
 	ret := true;
 	for i := +2 \ i <= sqrt x and ret \ i := i+1 do (
 		if x mod i = 0 then (

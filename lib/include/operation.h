@@ -9,7 +9,8 @@
 #include "./string.h"
 #include "./environment.h"
 
-#define RET_ERROR (void*)0x01
+#define RET_ERROR ((void*)0x01)
+#define OBJECT_LIST_OPENED ((void*)0x02)
 
 typedef enum operation_type_e {
 	OPERATION_TYPE_NOOP,	// ()
@@ -20,7 +21,7 @@ typedef enum operation_type_e {
 	OPERATION_TYPE_NONE,	// none
 
 	OPERATION_TYPE_PAIR,	// 5:true		// EXP : EXP
-	OPERATION_TYPE_FUNCTION,// function (end := "\n";str) does (print to_str str + end)	// function EXP does EXP
+	OPERATION_TYPE_FUNCTION,// (end := "\n";str) -> (print to_str str + end)	// function EXP does EXP
 	OPERATION_TYPE_MACRO,	// def 5 + x		// def EXP
 	OPERATION_TYPE_ASSIGN,	// a := 5		// EXP := EXP
 	OPERATION_TYPE_PROC,	// a := 5; b := 6; c := a + b	// EXP ; EXP
@@ -46,7 +47,7 @@ typedef enum operation_type_e {
 	OPERATION_TYPE_XOR,		// true xor false		// EXP xor EXP
 	OPERATION_TYPE_NOT,		// not true		// not EXP
 	OPERATION_TYPE_SQRT,	// sqrt 36		// sqrt EXP
-	OPERATION_TYPE_CBRT,	// cbrt 8		// cbrt EXP	
+	OPERATION_TYPE_CBRT,	// cbrt 8		// cbrt EXP
 	OPERATION_TYPE_SIN,		// sin 12		// sin EXP
 	OPERATION_TYPE_COS,		// cos 12
 	OPERATION_TYPE_TAN,		// tan 12
@@ -90,6 +91,9 @@ typedef enum operation_type_e {
 	OPERATION_TYPE_FOR,		// for E\E\E do E
 	OPERATION_TYPE_NOOP_PLUS,		// +E
 	OPERATION_TYPE_TO_ASCII,		// to_ascii E
+	OPERATION_TYPE_LIST_OPEN,		// * E
+	OPERATION_TYPE_FOR_IN,		// for E in E do E
+	OPERATION_TYPE_IMPORT,		// import E
 } operation_type_t;
 
 typedef struct operation_s {
@@ -110,5 +114,6 @@ object_t*** operation_var(operation_t* op, environment_t* env);
 void operation_free(operation_t* op);
 id_t operation_id(operation_t* op);
 bool_t operation_equ(operation_t* o1, operation_t* o2);
+operation_t* operation_copy(operation_t* op);
 
 #endif

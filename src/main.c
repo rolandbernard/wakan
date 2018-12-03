@@ -63,6 +63,7 @@ int main(int argc, char** argv) {
 
 				do {
 					int ch = getc(stdin);
+
 					line_buffer[buffer_index] = ch;
 					buffer_index++;
 				} while (line_buffer[buffer_index-1] != '\n' && buffer_index < LINE_BUFFER_SIZE);

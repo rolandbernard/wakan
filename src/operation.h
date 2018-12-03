@@ -21,7 +21,7 @@ typedef enum operation_type_e {
 	OPERATION_TYPE_NONE,	// none
 
 	OPERATION_TYPE_PAIR,	// 5:true		// EXP : EXP
-	OPERATION_TYPE_FUNCTION,// function (end := "\n";str) does (print to_str str + end)	// function EXP does EXP
+	OPERATION_TYPE_FUNCTION,// (end := "\n";str) -> (print to_str str + end)	// function EXP does EXP
 	OPERATION_TYPE_MACRO,	// def 5 + x		// def EXP
 	OPERATION_TYPE_ASSIGN,	// a := 5		// EXP := EXP
 	OPERATION_TYPE_PROC,	// a := 5; b := 6; c := a + b	// EXP ; EXP

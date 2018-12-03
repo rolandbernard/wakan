@@ -1,5 +1,5 @@
 
-avg := function (list) does (
+avg := (list) -> (
 	if(not list = none) then (
 		count := 0;
 		sum := 0;
@@ -11,7 +11,7 @@ avg := function (list) does (
 	) else
 		none;
 );
-sum := function (a, *b) does (
+sum := (a, *b := 0) -> (
 	if(b = none) then (
 		a;
 	) else (

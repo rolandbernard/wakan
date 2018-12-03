@@ -41,8 +41,6 @@ int get_operation_priority(operation_type_t type) {
 		case OPERATION_TYPE_WHILE:
 		case OPERATION_TYPE_FOR:
 		case OPERATION_TYPE_FOR_IN:
-		case OPERATION_TYPE_FUNCTION:
-		case OPERATION_TYPE_MACRO:
 		case OPERATION_TYPE_STRUCT:
 		case OPERATION_TYPE_DIC:
 			return 6;
@@ -103,11 +101,13 @@ int get_operation_priority(operation_type_t type) {
 		case OPERATION_TYPE_XOR:
 			return 16;
 		case OPERATION_TYPE_PAIR:
+		case OPERATION_TYPE_FUNCTION:
 			return 17;
 		case OPERATION_TYPE_O_LIST:
 			return 18;
 		case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 			return 19;
+		case OPERATION_TYPE_MACRO:
 		case OPERATION_TYPE_ASSIGN:
 			return 20;
 		case OPERATION_TYPE_PROC:
@@ -139,7 +139,7 @@ bool_t is_on_stack(token_t** stack, size_t count, int n, ...) {
 bool_t is_closing_exp(token_type_t type) {
 	if(type == TOKEN_TYPE_ABS || type == TOKEN_TYPE_CLOSE_BRAC || type == TOKEN_TYPE_SEMICOL || type == TOKEN_TYPE_END
 	|| type == TOKEN_TYPE_CLOSE_CUR || type == TOKEN_TYPE_CLOSE_REC || type == TOKEN_TYPE_COMMA || type == TOKEN_TYPE_ASSIGN
-	|| type == TOKEN_TYPE_PAIR || type == TOKEN_TYPE_DO || type == TOKEN_TYPE_DOES || type == TOKEN_TYPE_DIV
+	|| type == TOKEN_TYPE_PAIR || type == TOKEN_TYPE_DO || type == TOKEN_TYPE_ARROW || type == TOKEN_TYPE_DIV
 	|| type == TOKEN_TYPE_MOD || type == TOKEN_TYPE_POW || type == TOKEN_TYPE_AND || type == TOKEN_TYPE_OR
 	|| type == TOKEN_TYPE_XOR || type == TOKEN_TYPE_EQU || type == TOKEN_TYPE_GEQ || type == TOKEN_TYPE_LEQ
 	|| type == TOKEN_TYPE_GTR || type == TOKEN_TYPE_LES || type == TOKEN_TYPE_FIND || type == TOKEN_TYPE_SPLIT
@@ -235,7 +235,7 @@ operation_type_t get_operation(token_t** stack, size_t count, bool_t(*func)(toke
 		return OPERATION_TYPE_FOR;
 	else if(func(stack, count, 6, TOKEN_TYPE_FOR, TOKEN_TYPE_EXP, TOKEN_TYPE_IN, TOKEN_TYPE_EXP, TOKEN_TYPE_DO, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_FOR_IN;
-	else if(func(stack, count, 4, TOKEN_TYPE_FUNCTION, TOKEN_TYPE_EXP, TOKEN_TYPE_DOES, TOKEN_TYPE_EXP))
+	else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_ARROW, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_FUNCTION;
 	else if(func(stack, count, 2, TOKEN_TYPE_DEF, TOKEN_TYPE_EXP))
 		return OPERATION_TYPE_MACRO;
@@ -480,6 +480,7 @@ program_t* parse_program(tokenlist_t* list) {
 							case OPERATION_TYPE_LEQ:
 							case OPERATION_TYPE_GEQ:
 							case OPERATION_TYPE_FIND:
+							case OPERATION_TYPE_FUNCTION:
 							case OPERATION_TYPE_SPLIT:
 								tmp->data.op = operation_create();
 								tmp->data.op->type = on_stack;
@@ -558,7 +559,6 @@ program_t* parse_program(tokenlist_t* list) {
 								break;
 							case OPERATION_TYPE_IF:
 							case OPERATION_TYPE_WHILE:
-							case OPERATION_TYPE_FUNCTION:
 								tmp->data.op = operation_create();
 								tmp->data.op->type = on_stack;
 								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*2);

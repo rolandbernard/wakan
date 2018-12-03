@@ -1,6 +1,6 @@
 dynamic_save := dic (0:0, 1:1);
 
-fib := function (n) does (
+fib := (n) -> (
 	if(not global dynamic_save find n) then (
 		global dynamic_save[n] := func_self(n-1) + func_self(n-2);
 	);
