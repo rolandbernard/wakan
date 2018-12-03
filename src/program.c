@@ -349,6 +349,8 @@ operation_type_t get_operation(token_t** stack, size_t count, bool_t(*func)(toke
 		return OPERATION_TYPE_PROC;
 	else if(func(stack, count, 2, TOKEN_TYPE_EXP, TOKEN_TYPE_SEMICOL))
 		return OPERATION_TYPE_NOOP_PROC_DEADEND;
+	else if(func(stack, count, 2, TOKEN_TYPE_EXP, TOKEN_TYPE_EXP))
+		return OPERATION_TYPE_PROC_IMP;
 	else
 		return ~0;
 }
@@ -633,6 +635,17 @@ program_t* parse_program(tokenlist_t* list) {
 							case OPERATION_TYPE_NOOP_O_LIST_DEADEND:
 							case OPERATION_TYPE_NOOP_PROC_DEADEND:
 								tmp->data.op = stack[count-2]->data.op;
+								_free(stack[count-2]);
+								_free(stack[count-1]);
+								count -= 2;
+								break;
+							case OPERATION_TYPE_PROC_IMP:
+								tmp->data.op = operation_create();
+								tmp->data.op->type = on_stack;
+								tmp->data.op->data.operations = (operation_t**)_alloc(sizeof(operation_t*)*3);
+								tmp->data.op->data.operations[0] = stack[count-2]->data.op;
+								tmp->data.op->data.operations[1] = stack[count-1]->data.op;
+								tmp->data.op->data.operations[2] = NULL;
 								_free(stack[count-2]);
 								_free(stack[count-1]);
 								count -= 2;

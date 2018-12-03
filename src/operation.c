@@ -110,6 +110,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
 					}
 				} break;
 				case OPERATION_TYPE_PROC:
+				case OPERATION_TYPE_PROC_IMP:
 					for(int i = 0; ret != RET_ERROR && op->data.operations[i] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
 							ret = RET_ERROR;
@@ -828,7 +829,8 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 					if(assign_loc != RET_ERROR && assign_loc != NULL)
 						_free(assign_loc);
 					} break;
-				case OPERATION_TYPE_PROC: {
+				case OPERATION_TYPE_PROC:
+				case OPERATION_TYPE_PROC_IMP: {
 					int i;
 					for(i = 0; ret != RET_ERROR && op->data.operations[i+1] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
@@ -3767,7 +3769,8 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
 						_free(assign_val);
 					}
 				} break;
-				case OPERATION_TYPE_PROC: {
+				case OPERATION_TYPE_PROC:
+				case OPERATION_TYPE_PROC_IMP: {
 					int i;
 					for(i = 0; ret != RET_ERROR && op->data.operations[i+1] != NULL; i++)
 						if(operation_exec(op->data.operations[i], env) == RET_ERROR)
@@ -4365,6 +4368,7 @@ void operation_free(operation_t* op) {
 				_free(op->data.operations);
 			break;
 			case OPERATION_TYPE_PROC:
+			case OPERATION_TYPE_PROC_IMP:
 				for(int i = 0; op->data.operations[i] != NULL; i++)
 					operation_free(op->data.operations[i]);
 				_free(op->data.operations);
@@ -4670,7 +4674,8 @@ id_t operation_id(operation_t* op) {
 			case OPERATION_TYPE_FUNCTION: break;
 			case OPERATION_TYPE_MACRO: break;
 			case OPERATION_TYPE_ASSIGN: break;
-			case OPERATION_TYPE_PROC: break;
+			case OPERATION_TYPE_PROC:
+			case OPERATION_TYPE_PROC_IMP: break;
 			case OPERATION_TYPE_STRUCT: break;
 			case OPERATION_TYPE_O_LIST: break;
 			case OPERATION_TYPE_LIST: break;
@@ -4767,7 +4772,8 @@ bool_t operation_equ(operation_t* o1, operation_t* o2) {
 		case OPERATION_TYPE_FUNCTION: break;
 		case OPERATION_TYPE_MACRO: break;
 		case OPERATION_TYPE_ASSIGN: break;
-		case OPERATION_TYPE_PROC: break;
+		case OPERATION_TYPE_PROC:
+		case OPERATION_TYPE_PROC_IMP:break;
 		case OPERATION_TYPE_STRUCT: break;
 		case OPERATION_TYPE_O_LIST: break;
 		case OPERATION_TYPE_LIST: break;
@@ -4934,6 +4940,7 @@ operation_t* operation_copy(operation_t* op) {
 			ret->data.operations[3] = operation_copy(op->data.operations[3]);
 		break;
 		case OPERATION_TYPE_PROC:
+		case OPERATION_TYPE_PROC_IMP:
 		case OPERATION_TYPE_O_LIST:
 		case OPERATION_TYPE_ADD:
 		case OPERATION_TYPE_SUB:
