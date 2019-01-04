@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Roland Bernard
+// Copyright (c) 2018-2019 Roland Bernard
 
 #ifndef __OPERATION_H__
 #define __OPERATION_H__

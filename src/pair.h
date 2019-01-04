@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Roland Bernard
+// Copyright (c) 2018-2019 Roland Bernard
 
 #ifndef __PAIR_H__
 #define __PAIR_H__

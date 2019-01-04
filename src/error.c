@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Roland Bernard
+// Copyright (c) 2018-2019 Roland Bernard
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	#include <windows.h> // The Windows code has not been implemented yet.
