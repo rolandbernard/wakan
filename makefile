@@ -5,7 +5,7 @@ INCLUDE=./lib/include
 
 LIBS=-lm
 ARGS=-O3 -Wall
-OBJECTS=$(BUILD)/main.o $(BUILD)/string.o $(BUILD)/object.o $(BUILD)/list.o $(BUILD)/number.o $(BUILD)/pair.o $(BUILD)/bool.o $(BUILD)/prime.o\
+OBJECTS=$(BUILD)/string.o $(BUILD)/object.o $(BUILD)/list.o $(BUILD)/number.o $(BUILD)/pair.o $(BUILD)/bool.o $(BUILD)/prime.o\
 $(BUILD)/dictionary.o $(BUILD)/environment.o $(BUILD)/error.o $(BUILD)/function.o $(BUILD)/macro.o $(BUILD)/operation.o $(BUILD)/struct.o \
 $(BUILD)/variabletable.o $(BUILD)/tokenlist.o $(BUILD)/program.o $(BUILD)/token.o #langallocator.o
 TARGET=./wakan
@@ -14,8 +14,8 @@ CC=gcc
 CLEAN=rm -f
 COPY=cp -R
 
-$(TARGET): $(OBJECTS)
-	$(CC) -o $(TARGET) $(ARGS) $(OBJECTS) $(LIBS)
+$(TARGET): $(OBJECTS) $(BUILD)/main.o
+	$(CC) -o $(TARGET) $(ARGS) $(OBJECTS) $(BUILD)/main.o $(LIBS)
 
 $(BUILD)/main.o: $(SRC)/main.c $(SRC)/object.h $(SRC)/types.h $(SRC)/program.h
 	$(CC) -c -o $(BUILD)/main.o $(ARGS) $(SRC)/main.c
