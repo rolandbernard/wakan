@@ -1,6 +1,6 @@
 SRC=./src
 BUILD=./build
-LIB=./lib/lib
+LIB=./lib/bin
 INCLUDE=./lib/include
 
 LIBS=-lm
@@ -14,8 +14,15 @@ CC=gcc
 CLEAN=rm -f
 COPY=cp -R
 
+./lib: $(OBJECTS)
+	$(COPY) $(SRC)/bool.h $(SRC)/dictionary.h $(SRC)/environment.h $(SRC)/error.h $(SRC)/function.h $(SRC)/langallocator.h $(SRC)/list.h $(SRC)/struct.h $(SRC)/tokenlist.h $(SRC)/variabletable.h \
+$(SRC)/macro.h $(SRC)/number.h $(SRC)/object.h $(SRC)/operation.h $(SRC)/pair.h $(SRC)/prime.h $(SRC)/program.h $(SRC)/string.h $(SRC)/token.h $(SRC)/types.h $(INCLUDE)/
+	ar rcs $(LIB)/$(LIBTARGET) $(OBJECTS)
+
 $(TARGET): $(OBJECTS) $(BUILD)/main.o
 	$(CC) -o $(TARGET) $(ARGS) $(OBJECTS) $(BUILD)/main.o $(LIBS)
+
+all: ./lib $(TARGE)
 
 $(BUILD)/main.o: $(SRC)/main.c $(SRC)/object.h $(SRC)/types.h $(SRC)/program.h
 	$(CC) -c -o $(BUILD)/main.o $(ARGS) $(SRC)/main.c
@@ -77,11 +84,6 @@ $(BUILD)/tokenlist.o: $(SRC)/tokenlist.c $(SRC)/tokenlist.h $(SRC)/token.h $(SRC
 
 $(BUILD)/program.o: $(SRC)/program.c $(SRC)/program.h $(SRC)/types.h $(SRC)/operation.h
 	$(CC) -c -o $(BUILD)/program.o $(ARGS) $(SRC)/program.c
-
-lib: $(OBJECTS)
-	$(COPY) $(SRC)/bool.h $(SRC)/dictionary.h $(SRC)/environment.h $(SRC)/error.h $(SRC)/function.h $(SRC)/langallocator.h $(SRC)/list.h $(SRC)/struct.h $(SRC)/tokenlist.h $(SRC)/variabletable.h \
-$(SRC)/macro.h $(SRC)/number.h $(SRC)/object.h $(SRC)/operation.h $(SRC)/pair.h $(SRC)/prime.h $(SRC)/program.h $(SRC)/string.h $(SRC)/token.h $(SRC)/types.h $(INCLUDE)/
-	ar rcs $(LIB)/$(LIBTARGET) $(OBJECTS)
 
 clean:
 	$(CLEAN) $(OBJECTS)
