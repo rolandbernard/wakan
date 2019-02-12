@@ -10,5 +10,5 @@ you are free to report any bugs or suggestions by creating a new issue.
 
 
 
-
+---
 ###### Copyright (c) 2018 Roland Bernard
