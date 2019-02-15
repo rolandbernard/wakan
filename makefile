@@ -14,6 +14,8 @@ CC=gcc
 CLEAN=rm -f
 COPY=cp -R
 
+all: ./lib $(TARGE)
+
 ./lib: $(OBJECTS)
 	$(COPY) $(SRC)/bool.h $(SRC)/dictionary.h $(SRC)/environment.h $(SRC)/error.h $(SRC)/function.h $(SRC)/langallocator.h $(SRC)/list.h $(SRC)/struct.h $(SRC)/tokenlist.h $(SRC)/variabletable.h \
 $(SRC)/macro.h $(SRC)/number.h $(SRC)/object.h $(SRC)/operation.h $(SRC)/pair.h $(SRC)/prime.h $(SRC)/program.h $(SRC)/string.h $(SRC)/token.h $(SRC)/types.h $(INCLUDE)/
@@ -21,8 +23,6 @@ $(SRC)/macro.h $(SRC)/number.h $(SRC)/object.h $(SRC)/operation.h $(SRC)/pair.h 
 
 $(TARGET): $(OBJECTS) $(BUILD)/main.o
 	$(CC) -o $(TARGET) $(ARGS) $(OBJECTS) $(BUILD)/main.o $(LIBS)
-
-all: ./lib $(TARGE)
 
 $(BUILD)/main.o: $(SRC)/main.c $(SRC)/object.h $(SRC)/types.h $(SRC)/program.h
 	$(CC) -c -o $(BUILD)/main.o $(ARGS) $(SRC)/main.c
