@@ -14,7 +14,7 @@ CC=gcc
 CLEAN=rm -f
 COPY=cp -R
 
-all: ./lib $(TARGE)
+all: ./lib $(TARGET)
 
 ./lib: $(OBJECTS)
 	$(COPY) $(SRC)/bool.h $(SRC)/dictionary.h $(SRC)/environment.h $(SRC)/error.h $(SRC)/function.h $(SRC)/langallocator.h $(SRC)/list.h $(SRC)/struct.h $(SRC)/tokenlist.h $(SRC)/variabletable.h \
