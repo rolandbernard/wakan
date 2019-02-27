@@ -9,7 +9,7 @@ OBJECTS=$(BUILD)/string.o $(BUILD)/object.o $(BUILD)/list.o $(BUILD)/number.o $(
 $(BUILD)/dictionary.o $(BUILD)/environment.o $(BUILD)/error.o $(BUILD)/function.o $(BUILD)/macro.o $(BUILD)/operation.o $(BUILD)/struct.o \
 $(BUILD)/variabletable.o $(BUILD)/tokenlist.o $(BUILD)/program.o $(BUILD)/token.o #langallocator.o
 TARGET=./wakan
-LIBTARGET=libcwakan.a
+LIBTARGET=libwakan.a
 CC=gcc
 CLEAN=rm -f
 COPY=cp -R
