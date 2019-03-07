@@ -1,17 +1,17 @@
 
-x := 12;
+x = 12;
 
 {
-	local x := global x;
+	local x = global x;
 
     write ('x: ', x, '\n');
 
-	y := 12;
-	x := 5;
+	y = 12;
+	x = 5;
 
 	write ('x: ', x, '\n');
 
-	local x := 13;
+	local x = 13;
 
 	write ('x: ', x, '\n');
 };

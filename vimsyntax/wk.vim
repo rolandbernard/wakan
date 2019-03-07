@@ -24,7 +24,7 @@ syn keyword wkOpr and or xor not mod
 
 syn keyword wkControl for in do while if then else
 
-syn match wkOp ":="
+syn match wkOp "="
 syn match wkOp "+"
 syn match wkOp "-"
 syn match wkOp "\*"
@@ -34,7 +34,7 @@ syn match wkOP "<"
 syn match wkOp ">"
 syn match wkOp "<="
 syn match wkOp ">="
-syn match wkOp "="
+syn match wkOp "=="
 syn match wkOp "->"
 syn match wkOp "\."
 

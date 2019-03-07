@@ -1,9 +1,9 @@
 
-x := sin ceil cos round tan floor asin trunc acos atan cbrt sqrt 2;
+x = sin ceil cos round tan floor asin trunc acos atan cbrt sqrt 2;
 write ('x = ', x, '\n');
 
-y := |3 + 3 ^ 4 * 45 * (3 + 4) ^ 3 - 3 * -3| / 5 + 5^3 mod 3;
+y = |3 + 3 ^ 4 * 45 * (3 + 4) ^ 3 - 3 * -3| / 5 + 5^3 mod 3;
 write ('y = ', y, '\n');
 
-b := not true or not false and (false xor true) xor not true;
+b = not true or not false and (false xor true) xor not true;
 write ('b = ', b, '\n');

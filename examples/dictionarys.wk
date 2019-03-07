@@ -1,8 +1,8 @@
 
-dictionary := dic('red':5,'blue':7,'green':0,12:'pink');
+dictionary = dic('red':5,'blue':7,'green':0,12:'pink');
 
-dictionary['yellow'] := 12;
-dictionary[none] := 50;
+dictionary['yellow'] = 12;
+dictionary[none] = 50;
 
 write ("dictionary = ", dictionary, '\n');
 write ("dictionary['blue'] = ", dictionary['blue'], '\n');

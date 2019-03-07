@@ -199,19 +199,20 @@ tokenlist_t* tokenize(const char* src) {
 			if(start_pos != cur_pos)
 				add_token(ret, start_pos, cur_pos);
 
-			if(*(cur_pos+1) == '=') {
-				add_simple_token(ret, TOKEN_TYPE_ASSIGN);
-				start_pos = cur_pos+2;
-				cur_pos++;
-			} else {
-				add_simple_token(ret, TOKEN_TYPE_PAIR);
-				start_pos = cur_pos+1;
-			}
+			add_simple_token(ret, TOKEN_TYPE_PAIR);
+			start_pos = cur_pos+1;
 		} else if(*cur_pos == '=') {
 			if(start_pos != cur_pos)
 				add_token(ret, start_pos, cur_pos);
-			add_simple_token(ret, TOKEN_TYPE_EQU);
-			start_pos = cur_pos+1;
+			
+			if(*(cur_pos+1) == '=') {
+				add_simple_token(ret, TOKEN_TYPE_EQU);
+				start_pos = cur_pos+2;
+				cur_pos++;
+			} else {
+				add_simple_token(ret, TOKEN_TYPE_ASSIGN);
+				start_pos = cur_pos+1;
+			}
 		} else if(*cur_pos == '>') {
 			if(start_pos != cur_pos)
 				add_token(ret, start_pos, cur_pos);
