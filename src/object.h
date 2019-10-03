@@ -17,35 +17,35 @@
 extern bool_t empty_line;
 
 typedef enum object_type_e {
-	OBJECT_TYPE_NONE,
-	OBJECT_TYPE_NUMBER,
-	OBJECT_TYPE_BOOL,
-	OBJECT_TYPE_STRING,
-	OBJECT_TYPE_PAIR,
-	OBJECT_TYPE_LIST,
-	OBJECT_TYPE_DICTIONARY,
-	OBJECT_TYPE_FUNCTION,
-	OBJECT_TYPE_MACRO,
-	OBJECT_TYPE_STRUCT,
-	/*...*/
+    OBJECT_TYPE_NONE,
+    OBJECT_TYPE_NUMBER,
+    OBJECT_TYPE_BOOL,
+    OBJECT_TYPE_STRING,
+    OBJECT_TYPE_PAIR,
+    OBJECT_TYPE_LIST,
+    OBJECT_TYPE_DICTIONARY,
+    OBJECT_TYPE_FUNCTION,
+    OBJECT_TYPE_MACRO,
+    OBJECT_TYPE_STRUCT,
+    /*...*/
 } object_type_t;
 
 typedef struct object_s {
-	size_t num_references;
-	object_type_t type;
-	union
-	{
-		number_t number;
-		bool_t boolean;
-		string_t* string;
-		pair_t* pair;
-		list_t* list;
-		dictionary_t* dic;
-		function_t* func;
-		macro_t* mac;
-		struct_t* stc;
-		/*...*/
-	} data;
+    size_t num_references;
+    object_type_t type;
+    union
+    {
+        number_t number;
+        bool_t boolean;
+        string_t* string;
+        pair_t* pair;
+        list_t* list;
+        dictionary_t* dic;
+        function_t* func;
+        macro_t* mac;
+        struct_t* stc;
+        /*...*/
+    } data;
 
 } object_t;
 

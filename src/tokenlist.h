@@ -7,8 +7,8 @@
 #include "./string.h"
 
 typedef struct tokenlist_s {
-	token_t* start;
-	token_t* end;
+    token_t* start;
+    token_t* end;
 } tokenlist_t;
 
 tokenlist_t* tokenize(const char* src);

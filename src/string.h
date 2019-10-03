@@ -7,8 +7,8 @@
 #include "./bool.h"
 
 typedef struct string_s {
-	char* data;
-	size_t length;
+    char* data;
+    size_t length;
 } string_t;
 
 string_t* string_create(const char* str);

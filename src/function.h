@@ -8,9 +8,9 @@
 #include "./bool.h"
 
 typedef struct function_s {
-	bool_t freeable;
-	operation_t* parameter;
-	operation_t* function;
+    bool_t freeable;
+    operation_t* parameter;
+    operation_t* function;
 } function_t;
 
 function_t* function_create(operation_t* par, operation_t* func);

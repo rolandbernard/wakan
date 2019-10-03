@@ -7,7 +7,7 @@
 #include "./operation.h"
 #include "./environment.h"
 
-typedef	operation_t program_t;
+typedef    operation_t program_t;
 
 program_t* parse_program(tokenlist_t* tokens);
 program_t* tokenize_and_parse_program(const char* src);

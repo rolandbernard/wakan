@@ -7,8 +7,8 @@
 #include "./bool.h"
 
 typedef struct list_s {
-	object_t** data;
-	size_t size;
+    object_t** data;
+    size_t size;
 } list_t;
 
 list_t* list_create_empty();

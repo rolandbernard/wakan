@@ -1,13 +1,13 @@
 SRC=./src
 BUILD=./build
-LIB=./lib/bin
-INCLUDE=./lib/include
+LIBBIN=./build/lib/bin
+LIBINCLUDE=./build/lib/include
 
 LIBS=-lm
 ARGS=-O3 -Wall
 OBJECTS=$(BUILD)/string.o $(BUILD)/object.o $(BUILD)/list.o $(BUILD)/number.o $(BUILD)/pair.o $(BUILD)/bool.o $(BUILD)/prime.o\
 $(BUILD)/dictionary.o $(BUILD)/environment.o $(BUILD)/error.o $(BUILD)/function.o $(BUILD)/macro.o $(BUILD)/operation.o $(BUILD)/struct.o \
-$(BUILD)/variabletable.o $(BUILD)/tokenlist.o $(BUILD)/program.o $(BUILD)/token.o #langallocator.o
+$(BUILD)/variabletable.o $(BUILD)/tokenlist.o $(BUILD)/program.o $(BUILD)/token.o
 TARGET=./wakan
 LIBTARGET=libwakan.a
 CC=gcc
@@ -18,8 +18,8 @@ all: ./lib $(TARGET)
 
 ./lib: $(OBJECTS)
 	$(COPY) $(SRC)/bool.h $(SRC)/dictionary.h $(SRC)/environment.h $(SRC)/error.h $(SRC)/function.h $(SRC)/langallocator.h $(SRC)/list.h $(SRC)/struct.h $(SRC)/tokenlist.h $(SRC)/variabletable.h \
-$(SRC)/macro.h $(SRC)/number.h $(SRC)/object.h $(SRC)/operation.h $(SRC)/pair.h $(SRC)/prime.h $(SRC)/program.h $(SRC)/string.h $(SRC)/token.h $(SRC)/types.h $(INCLUDE)/
-	ar rcs $(LIB)/$(LIBTARGET) $(OBJECTS)
+$(SRC)/macro.h $(SRC)/number.h $(SRC)/object.h $(SRC)/operation.h $(SRC)/pair.h $(SRC)/prime.h $(SRC)/program.h $(SRC)/string.h $(SRC)/token.h $(SRC)/types.h $(LIBINCLUDE)/
+	ar rcs $(LIBBIN)/$(LIBTARGET) $(OBJECTS)
 
 $(TARGET): $(OBJECTS) $(BUILD)/main.o
 	$(CC) -o $(TARGET) $(ARGS) $(OBJECTS) $(BUILD)/main.o $(LIBS)
@@ -87,6 +87,8 @@ $(BUILD)/program.o: $(SRC)/program.c $(SRC)/program.h $(SRC)/types.h $(SRC)/oper
 
 clean:
 	$(CLEAN) $(OBJECTS)
+	$(CLEAN) $(LIBBIN)/$(LIBTARGET) $(LIBINCLUDE)/*
 
 cleanall:
 	$(CLEAN) $(OBJECTS) $(TARGET)
+	$(CLEAN) $(LIBBIN)/$(LIBTARGET) $(LIBINCLUDE)/*

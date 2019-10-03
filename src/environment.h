@@ -8,10 +8,10 @@
 #include "./variabletable.h"
 
 typedef struct environment_s {
-	variabletable_t** data;
-	size_t size;
-	size_t count;
-	size_t local_mode_limit;
+    variabletable_t** data;
+    size_t size;
+    size_t count;
+    size_t local_mode_limit;
 } environment_t;
 
 environment_t* environment_create();

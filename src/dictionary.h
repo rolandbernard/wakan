@@ -10,9 +10,9 @@
 #include "./bool.h"
 
 typedef struct dictionary_s {
-	size_t size;
-	size_t count;
-	pair_t** data;
+    size_t size;
+    size_t count;
+    pair_t** data;
 } dictionary_t;
 
 dictionary_t* dictionary_create();

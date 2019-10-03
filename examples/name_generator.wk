@@ -1,5 +1,5 @@
 
-alphabet = ['x','y','r','i','q','u','l','a','e','g','n', 'v', 'c', 'f'];
+alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
 gen_name = () -> (
 	name = '';

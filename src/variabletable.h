@@ -10,12 +10,12 @@
 #include "./string.h"
 
 typedef struct variabletable_s {
-	struct bucket_element_s {
-		string_t* name;
-		object_t* value;
-	}** data;
-	size_t size;
-	size_t count; 
+    struct bucket_element_s {
+        string_t* name;
+        object_t* value;
+    }** data;
+    size_t size;
+    size_t count; 
 } variabletable_t;
 typedef struct bucket_element_s bucket_element_t;
 
