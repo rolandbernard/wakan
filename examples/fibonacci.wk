@@ -1,15 +1,15 @@
 
 fib = (n) -> (
-	this_num = 1;
-	next_num = 1;
-	for i = 0 \ i < n \ i = i+1 do (
-		this_num, next_num = next_num, this_num+next_num;
-	);
-	this_num;
+    this_num = 1;
+    next_num = 1;
+    for i = 0 \ i < n \ i = i+1 do (
+        this_num, next_num = next_num, this_num+next_num;
+    );
+    this_num;
 );
 
 for i = 0 \ i < 50 \ i = i+1 do (
-	write (fib(i), ', ');
+    write (fib(i), ', ');
 );
 
 write '\n';

@@ -2,13 +2,13 @@
 list = [for i=1 \ i<=15 \ i=i+1 do (2*i)];
 
 for el in *list do (
-	write (el, ', ');
+    write (el, ', ');
 );
 write '\n';
 
 for i=14 \ i >= 0 \ i=i-1 do list[i] = for el in *list do el;
 
 for el in *list do (
-	write (el, ', ');
+    write (el, ', ');
 );
 write '\n';

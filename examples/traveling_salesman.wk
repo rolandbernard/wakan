@@ -7,76 +7,76 @@ num_citys = trunc to_num read;
 # Init dist_matrix
 dist_matrix = [];
 for i = 0 \ i < num_citys \ i=i+1 do (
-	dist_matrix = dist_matrix + [[MAX_DIST] * num_citys];
+    dist_matrix = dist_matrix + [[MAX_DIST] * num_citys];
 );
 
 # Eingabe Anzahl Verbindungen
 write "Anzahl an Verbindungen: ";
 num_connections = trunc to_num read;
 for i = 0 \ i < num_connections \ i=i+1 do {
-	write (i, ".\tStart: ");
-	start = trunc to_num read;
-	write "\tEnd: ";
-	end = trunc to_num read;
-	write "\tCost: ";
-	cost = to_num read;
-	write "\tReversable [Y/n]: ";
-	rev = read;
-	rev = rev[0] == "Y" or rev[0] == "y";
+    write (i, ".\tStart: ");
+    start = trunc to_num read;
+    write "\tEnd: ";
+    end = trunc to_num read;
+    write "\tCost: ";
+    cost = to_num read;
+    write "\tReversable [Y/n]: ";
+    rev = read;
+    rev = rev[0] == "Y" or rev[0] == "y";
 
-	# Insert connection
-	if(dist_matrix[start][end] > cost or dist_matrix[start][end] == MAX_DIST) then (
-		dist_matrix[start][end] = cost
-	);
-	if rev then (
-		if(dist_matrix[end][start] > cost or dist_matrix[start][end] == MAX_DIST) then (
-			dist_matrix[end][start] = cost
-		);
-	)
+    # Insert connection
+    if(dist_matrix[start][end] > cost or dist_matrix[start][end] == MAX_DIST) then (
+        dist_matrix[start][end] = cost
+    );
+    if rev then (
+        if(dist_matrix[end][start] > cost or dist_matrix[start][end] == MAX_DIST) then (
+            dist_matrix[end][start] = cost
+        );
+    )
 };
 
 remove = def (list, elem) -> (
-	[
-		for el in *list do (
-			if (el == elem) then (
-				*[];
-			) else (
-				el;
-			)
-		)
-	]
+    [
+        for el in *list do (
+            if (el == elem) then (
+                *[];
+            ) else (
+                el;
+            )
+        )
+    ]
 );
 
 path_cost = def (dist_matrix, path) -> (
-	ret = 0;
-	for i=0 \ i < len path-1 \ i=i+1 do (
-		ret = ret + dist_matrix[path[i]][path[i+1]];
-	);
-	ret;
+    ret = 0;
+    for i=0 \ i < len path-1 \ i=i+1 do (
+        ret = ret + dist_matrix[path[i]][path[i+1]];
+    );
+    ret;
 );
 
 solve = def (dist_matrix, current_pos, to_visit, bound) -> (
-	if (len to_visit == 0) then (
-		if((dist_matrix[current_pos][0] < bound or bound == global MAX_DIST) and not dist_matrix[current_pos][0] == global MAX_DIST) then (
-			[0];
-		) else (
-			[];
-		)
-	) else (
-		ret = [];
-		for n in *to_visit do (
-			if ((dist_matrix[current_pos][n] < bound or bound == global MAX_DIST) and not dist_matrix[current_pos][n] == global MAX_DIST) then (
-				tmp = func_self(dist_matrix, n, global remove(to_visit, n), if(bound == global MAX_DIST) then (global MAX_DIST) else (bound - dist_matrix[current_pos][n]));
-				if (not len tmp == 0) then (
-					tmp = [n] + tmp;
-					tmp_cost = global path_cost(dist_matrix,[current_pos] + tmp);
-					bound = tmp_cost;
-					ret = tmp;
-				)
-			)
-		);
-		ret;
-	)
+    if (len to_visit == 0) then (
+        if((dist_matrix[current_pos][0] < bound or bound == global MAX_DIST) and not dist_matrix[current_pos][0] == global MAX_DIST) then (
+            [0];
+        ) else (
+            [];
+        )
+    ) else (
+        ret = [];
+        for n in *to_visit do (
+            if ((dist_matrix[current_pos][n] < bound or bound == global MAX_DIST) and not dist_matrix[current_pos][n] == global MAX_DIST) then (
+                tmp = func_self(dist_matrix, n, global remove(to_visit, n), if(bound == global MAX_DIST) then (global MAX_DIST) else (bound - dist_matrix[current_pos][n]));
+                if (not len tmp == 0) then (
+                    tmp = [n] + tmp;
+                    tmp_cost = global path_cost(dist_matrix,[current_pos] + tmp);
+                    bound = tmp_cost;
+                    ret = tmp;
+                )
+            )
+        );
+        ret;
+    )
 );
 
 write "\n\n";

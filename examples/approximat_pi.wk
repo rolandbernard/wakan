@@ -4,13 +4,13 @@ num_in_circle = 0;
 pi = def (num_in_circle / num_total * 4);
 
 for i = 0 \ i < 500000 \ i = i+1 do {
-	num_total = num_total + 1;
-	x = rand;
-	y = rand;
-	if (x^2 + y^2 < 1) then (
-		num_in_circle = num_in_circle+1;
-	);
-	if ((i+1) mod 500 == 0) then (
-		write ('p= ', pi, '\n');
-	);
+    num_total = num_total + 1;
+    x = rand;
+    y = rand;
+    if (x^2 + y^2 < 1) then (
+        num_in_circle = num_in_circle+1;
+    );
+    if ((i+1) mod 500 == 0) then (
+        write ('p= ', pi, '\n');
+    );
 }
