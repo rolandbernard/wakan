@@ -27,11 +27,23 @@ void dictionary_check_size(dictionary_t* dic) {
 }
 
 // TODO: Improve collision handling (Double hashing)
-upos_t dictionary_find(dictionary_t* dic, object_t* key) {
+upos_t dictionary_find_existing(dictionary_t* dic, object_t* key) {
     if(dic != NULL) {
         upos_t index = object_id(key) % dic->size;
 
-        while(dic->data[index] != NULL && !object_equ(key, dic->data[index]->key))
+        while(dic->data[index] != NULL && (dic->data[index] == (void*)1 || !object_equ(key, dic->data[index]->key)))
+            index = (index + 1) % dic->size;
+
+        return index;
+    } else 
+        return ~0;
+}
+
+upos_t dictionary_find_new(dictionary_t* dic, object_t* key) {
+    if(dic != NULL) {
+        upos_t index = object_id(key) % dic->size;
+
+        while(dic->data[index] != NULL && dic->data[index] != (void*)1 && !object_equ(key, dic->data[index]->key))
             index = (index + 1) % dic->size;
 
         return index;
@@ -90,19 +102,23 @@ void dictionary_resize(dictionary_t* dic, size_t size) {
 
 void dictionary_put_pair(dictionary_t* dic, pair_t* pair) {
     if(dic != NULL) {
-        upos_t index = dictionary_find(dic, pair->key);
-        if(dic->data[index] != NULL)
+        upos_t index = dictionary_find_existing(dic, pair->key);
+        if(dic->data[index] != NULL) {
             pair_free(dic->data[index]);
-        else 
+            dic->data[index] = pair;
+        } else {
+            index = dictionary_find_new(dic, pair->key);
             dic->count++;
-        dic->data[index] = pair;
+            dic->data[index] = pair;
+        }
     }
 }
 
 void dictionary_put(dictionary_t* dic, object_t* key, object_t* value) {
     if(dic != NULL) {
-        upos_t index = dictionary_find(dic, key);
+        upos_t index = dictionary_find_existing(dic, key);
         if(dic->data[index] == NULL) {
+            index = dictionary_find_new(dic, key);
             dic->data[index] = pair_create(key, value);
             dic->count++;
         } else {
@@ -116,7 +132,7 @@ void dictionary_put(dictionary_t* dic, object_t* key, object_t* value) {
 
 object_t* dictionary_get(dictionary_t* dic, object_t* key) {
     if(dic != NULL) {
-        upos_t index = dictionary_find(dic, key);
+        upos_t index = dictionary_find_existing(dic, key);
         if(dic->data[index] != NULL)
             return dic->data[index]->value;
         else
@@ -128,14 +144,15 @@ object_t* dictionary_get(dictionary_t* dic, object_t* key) {
 
 object_t** dictionary_get_loc(dictionary_t* dic, object_t* key) {
     if(dic != NULL) {
-        upos_t index = dictionary_find(dic, key);
+        upos_t index = dictionary_find_existing(dic, key);
         if(dic->data[index] != NULL)
             return &(dic->data[index]->value);
         else {
+            index = dictionary_find_new(dic, key);
             dic->data[index] = pair_create(key, object_create_none());
             dic->count++;
             dictionary_check_size(dic);
-            return &(dic->data[dictionary_find(dic, key)]->value);
+            return &(dic->data[dictionary_find_existing(dic, key)]->value);
         }
     }
     else
@@ -144,9 +161,10 @@ object_t** dictionary_get_loc(dictionary_t* dic, object_t* key) {
 
 void dictionary_del(dictionary_t* dic, object_t* key) {
     if(dic != NULL) {
-        upos_t index = dictionary_find(dic, key);
+        upos_t index = dictionary_find_existing(dic, key);
         if(dic->data[index] != NULL) {
             pair_free(dic->data[index]);
+            dic->data[index] = (void*)1;
             dic->count--;
         }
         dictionary_check_size(dic);
@@ -159,7 +177,6 @@ void dictionary_free(dictionary_t* dic) {
             for(int i = 0; i < dic->size; i++)
                 if(dic->data[i] != NULL)
                     pair_free(dic->data[i]);
-            
             _free(dic->data);
         }
         _free(dic);

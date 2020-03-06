@@ -1,0 +1,21 @@
+
+fin1 = fopen("op1.csv", "r")
+fin2 = fopen("op2.csv", "r")
+fout = fopen("res.csv", "w")
+
+notempty = true
+while notempty do {
+    line1 = fread fin1
+    line2 = fread fin2
+    if len line1 == 0 then notempty = false
+    else if len line2 == 0 then notempty = false
+    else {
+        output = [to_num(line1 split ",") + to_num(line2 split ",")]
+        fwrite(fout, output[0], (for x in *output[1:-1] do "," + to_str(x)), "\n")
+    }
+}
+
+fclose fin1
+fclose fin2
+fclose fout
+

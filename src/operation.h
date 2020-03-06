@@ -95,6 +95,10 @@ typedef enum operation_type_e {
     OPERATION_TYPE_FOR_IN,        // for E in E do E
     OPERATION_TYPE_IMPORT,        // import E
     OPERATION_TYPE_PROC_IMP,         // E E
+    OPERATION_TYPE_FOPEN,            // fopen ( EXP )
+    OPERATION_TYPE_FCLOSE,           // fclose ( EXP )
+    OPERATION_TYPE_FREAD,            // fread ( EXP )
+    OPERATION_TYPE_FWRITE,           // fwrite ( EXP )
 } operation_type_t;
 
 typedef struct operation_s {

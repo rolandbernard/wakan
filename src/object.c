@@ -256,7 +256,7 @@ string_t* object_to_string(object_t* obj) {
             ret = string_create(temp_str);
         } break;
         case OBJECT_TYPE_BOOL: ret = string_create(obj->data.boolean ? "true" : "false"); break;
-        case OBJECT_TYPE_STRING: ret = obj->data.string; break;
+        case OBJECT_TYPE_STRING: ret = string_copy(obj->data.string); break;
         case OBJECT_TYPE_LIST:
             ret = string_create("");
             ret = string_concat_and_free(ret, string_create("["));

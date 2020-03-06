@@ -15,14 +15,17 @@ syn keyword wkCmd sin cos tan asin acos atan
 syn keyword wkCmd sinh cosh tanh asinh acosh atanh
 syn keyword wkCmd floor ceil trunc local global
 syn keyword wkCmd to_str to_num to_ascii to_bool
-syn keyword wkCmd def write len
-syn keyword wkCmd struct dic find
+syn keyword wkCmd def write len round cbrt
+syn keyword wkCmd struct dic find split import
+syn keyword wkCmd fread fwrite fopen fclose
 
 syn keyword wkVar rand read self func_self
 
 syn keyword wkOpr and or xor not mod
 
 syn keyword wkControl for in do while if then else
+
+syn keyword wkBool true false
 
 syn match wkOp "="
 syn match wkOp "+"
@@ -42,7 +45,7 @@ syn match wkSep ","
 syn match wkSep ";"
 syn match wkSep "\\"
 
-syn match wkNumber "\d\+\(\.\d*\)\=\(e[+-]\=\d*\)\="
+syn match wkNumber "\s\d\+\(\.\d*\)\=\(e[+-]\=\d*\)\="
 
 syn match wkNormalChar "\zs\\\ze[^0abtnvfr]\|\\\n" contained
 
@@ -61,6 +64,7 @@ hi def link wkTodo Todo
 hi def link wkComment Comment
 hi def link wkNumber Constant
 hi def link wkString Constant
+hi def link wkBool Constant
 hi def link wkCmd Function
 " hi def link wkFunc Function " couldn't find good regex
 hi def link wkControl Statement

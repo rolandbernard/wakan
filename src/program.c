@@ -35,15 +35,6 @@ int get_operation_priority(operation_type_t type) {
         case OPERATION_TYPE_SPLIT:
         case OPERATION_TYPE_LIST_OPEN:
             return 4;
-        case OPERATION_TYPE_IFELSE:
-            return 5;
-        case OPERATION_TYPE_IF:
-        case OPERATION_TYPE_WHILE:
-        case OPERATION_TYPE_FOR:
-        case OPERATION_TYPE_FOR_IN:
-        case OPERATION_TYPE_STRUCT:
-        case OPERATION_TYPE_DIC:
-            return 6;
         case OPERATION_TYPE_SIN:
         case OPERATION_TYPE_COS:
         case OPERATION_TYPE_TAN:
@@ -72,6 +63,10 @@ int get_operation_priority(operation_type_t type) {
         case OPERATION_TYPE_GLOBAL:
         case OPERATION_TYPE_COPY:
         case OPERATION_TYPE_IMPORT:
+        case OPERATION_TYPE_FREAD:
+        case OPERATION_TYPE_FWRITE:
+        case OPERATION_TYPE_FOPEN:
+        case OPERATION_TYPE_FCLOSE:
             return 7;
         case OPERATION_TYPE_POW:
             return 8;
@@ -110,10 +105,19 @@ int get_operation_priority(operation_type_t type) {
         case OPERATION_TYPE_MACRO:
         case OPERATION_TYPE_ASSIGN:
             return 20;
-        case OPERATION_TYPE_PROC:
+        case OPERATION_TYPE_IFELSE:
             return 21;
-        case OPERATION_TYPE_NOOP_PROC_DEADEND:
+        case OPERATION_TYPE_IF:
+        case OPERATION_TYPE_WHILE:
+        case OPERATION_TYPE_FOR:
+        case OPERATION_TYPE_FOR_IN:
+        case OPERATION_TYPE_STRUCT:
+        case OPERATION_TYPE_DIC:
             return 22;
+        case OPERATION_TYPE_PROC:
+            return 23;
+        case OPERATION_TYPE_NOOP_PROC_DEADEND:
+            return 24;
         default: return 1024;
     }
 }
@@ -299,6 +303,14 @@ operation_type_t get_operation(token_t** stack, size_t count, bool_t(*func)(toke
         return OPERATION_TYPE_COPY;
     else if(func(stack, count, 2, TOKEN_TYPE_IMPORT, TOKEN_TYPE_EXP))
         return OPERATION_TYPE_IMPORT;
+    else if(func(stack, count, 2, TOKEN_TYPE_FOPEN, TOKEN_TYPE_EXP))
+        return OPERATION_TYPE_FOPEN;
+    else if(func(stack, count, 2, TOKEN_TYPE_FCLOSE, TOKEN_TYPE_EXP))
+        return OPERATION_TYPE_FCLOSE;
+    else if(func(stack, count, 2, TOKEN_TYPE_FWRITE, TOKEN_TYPE_EXP))
+        return OPERATION_TYPE_FWRITE;
+    else if(func(stack, count, 2, TOKEN_TYPE_FREAD, TOKEN_TYPE_EXP))
+        return OPERATION_TYPE_FREAD;
     else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_POW, TOKEN_TYPE_EXP))
         return OPERATION_TYPE_POW;
     else if(func(stack, count, 3, TOKEN_TYPE_EXP, TOKEN_TYPE_MUL, TOKEN_TYPE_EXP))
@@ -605,6 +617,10 @@ program_t* parse_program(tokenlist_t* list) {
                             case OPERATION_TYPE_GLOBAL:
                             case OPERATION_TYPE_COPY:
                             case OPERATION_TYPE_IMPORT:
+                            case OPERATION_TYPE_FOPEN:
+                            case OPERATION_TYPE_FCLOSE:
+                            case OPERATION_TYPE_FREAD:
+                            case OPERATION_TYPE_FWRITE:
                             case OPERATION_TYPE_LIST_OPEN:
                                 tmp->data.op = operation_create();
                                 tmp->data.op->type = on_stack;

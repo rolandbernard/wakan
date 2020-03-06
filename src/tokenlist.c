@@ -111,6 +111,14 @@ void add_token(tokenlist_t* list, const char* start, const char* end) {
     } else if(cmp_str(start, end, "false")) {
         add_simple_token(list, TOKEN_TYPE_BOOL);
         list->end->data.boolean = false;
+    } else if(cmp_str(start, end, "fopen")) {
+        add_simple_token(list, TOKEN_TYPE_FOPEN);
+    } else if(cmp_str(start, end, "fread")) {
+        add_simple_token(list, TOKEN_TYPE_FREAD);
+    } else if(cmp_str(start, end, "fwrite")) {
+        add_simple_token(list, TOKEN_TYPE_FWRITE);
+    } else if(cmp_str(start, end, "fclose")) {
+        add_simple_token(list, TOKEN_TYPE_FCLOSE);
     } else if(cmp_str(start, end, "asinh")) {
         add_simple_token(list, TOKEN_TYPE_ASINH);
     } else if(cmp_str(start, end, "acosh")) {

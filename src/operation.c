@@ -3,6 +3,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "./operation.h"
 #include "./object.h"
@@ -595,7 +597,6 @@ void* operation_exec(operation_t* op, environment_t* env) {
                                 ret = RET_ERROR;
                         }
                     }
-
                     if(vals_loc != RET_ERROR && vals_loc != NULL) {
                         _free(vals_loc);
                     }
@@ -650,6 +651,69 @@ void* operation_exec(operation_t* op, environment_t* env) {
                                 }
                             }
                         }
+                    }
+                } break;
+                case OPERATION_TYPE_FOPEN:
+                    if(operation_exec(op->data.operations[0], env) == RET_ERROR)
+                        ret = RET_ERROR;
+                    break;
+                case OPERATION_TYPE_FCLOSE: {
+                    object_t** data = operation_result(op->data.operations[0], env);
+
+                    if(data == NULL) {
+                        error("Runtime error: fclose NULL error.");
+                        ret = RET_ERROR;
+                    } else if(data == RET_ERROR)
+                        ret = RET_ERROR;
+                    else if(data[1] != NULL) {
+                        error("Runtime error: fclose Too many arguments error.");
+                        ret = RET_ERROR;
+                    } else if(data[0]->type != OBJECT_TYPE_NUMBER) {
+                        error("Runtime error: fclose Type error.");
+                        ret = RET_ERROR;
+                    } else if(data[0]->data.number != (int)(data[0]->data.number)) {
+                        error("Runtime error: fclose Integer error.");
+                        ret = RET_ERROR;
+                    } else {
+                        int file = (int)(data[0]->data.number);
+                        close(file);
+                    }
+                    if(data != RET_ERROR && data != NULL) {
+                        for(int i = 0; data[i] != NULL; i++)
+                            object_dereference(data[i]);
+                        _free(data);
+                    }
+                } break;
+                case OPERATION_TYPE_FREAD:
+                    if(operation_exec(op->data.operations[0], env) == RET_ERROR)
+                        ret = RET_ERROR;
+                    break;
+                case OPERATION_TYPE_FWRITE: {
+                    object_t** data = operation_result(op->data.operations[0], env);
+
+                    if(data == NULL) {
+                        error("Runtime error: fwrite NULL error.");
+                        ret = RET_ERROR;
+                    } else if(data == RET_ERROR)
+                        ret = RET_ERROR;
+                    else if(data[0]->type != OBJECT_TYPE_NUMBER) {
+                        error("Runtime error: fwrite Type error.");
+                        ret = RET_ERROR;
+                    } else if(data[0]->data.number != (int)(data[0]->data.number)) {
+                        error("Runtime error: fwrite Integer error.");
+                        ret = RET_ERROR;
+                    } else {
+                        int file = (int)(data[0]->data.number);
+                        for(int i = 1; data[i] != NULL; i++) {
+                            string_t* str = object_to_string(data[i]);
+                            write(file, str->data, str->length);
+                            string_free(str);
+                        }
+                    }
+                    if(data != RET_ERROR && data != NULL) {
+                        for(int i = 0; data[i] != NULL; i++)
+                            object_dereference(data[i]);
+                        _free(data);
                     }
                 } break;
             }
@@ -3678,6 +3742,154 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         }
                     }
                 } break;
+                case OPERATION_TYPE_FOPEN: {
+                    object_t** data = operation_result(op->data.operations[0], env);
+
+                    if(data == NULL) {
+                        error("Runtime error: fopen NULL error.");
+                        ret = RET_ERROR;
+                    } else if(data == RET_ERROR)
+                        ret = RET_ERROR;
+                    else if(data[1] == NULL) {
+                        error("Runtime error: fopen Too few arguments error.");
+                        ret = RET_ERROR;
+                    } else if(data[2] != NULL) {
+                        error("Runtime error: fopen Too many arguments error.");
+                        ret = RET_ERROR;
+                    } else if(data[0]->type != OBJECT_TYPE_STRING || data[1]->type != OBJECT_TYPE_STRING) {
+                        error("Runtime error: fopen Type error.");
+                        ret = RET_ERROR;
+                    } else {
+                        int flags = O_SYNC;
+                        if(data[1]->data.string->length == 1) {
+                            if(data[1]->data.string->data[0] == 'r') {
+                                flags |= O_RDONLY;
+                            } else if(data[1]->data.string->data[0] == 'w') {
+                                flags |= O_WRONLY | O_CREAT;
+                            } else if(data[1]->data.string->data[0] == 'a') {
+                                flags |= O_WRONLY | O_APPEND | O_CREAT;
+                            }
+                        } else if(data[1]->data.string->length == 2 && data[1]->data.string->data[1] == '+') {
+                            if(data[1]->data.string->data[0] == 'r') {
+                                flags |= O_RDWR;
+                            } else if(data[1]->data.string->data[0] == 'w') {
+                                flags |= O_RDWR | O_CREAT;
+                            } else if(data[1]->data.string->data[0] == 'a') {
+                                flags |= O_RDWR | O_APPEND | O_CREAT;
+                            }
+                        }
+                        ret = (object_t**)_alloc(sizeof(object_t*)*2);
+                        int file = open(data[0]->data.string->data, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+                        ret[0] = object_create_number((number_t)file);
+                        object_reference(ret[0]);
+                        ret[1] = NULL;
+                    }
+                    if(data != RET_ERROR && data != NULL) {
+                        for(int i = 0; data[i] != NULL; i++)
+                            object_dereference(data[i]);
+                        _free(data);
+                    }
+                } break;
+                case OPERATION_TYPE_FCLOSE: {
+                    object_t** data = operation_result(op->data.operations[0], env);
+
+                    if(data == NULL) {
+                        error("Runtime error: fclose NULL error.");
+                        ret = RET_ERROR;
+                    } else if(data == RET_ERROR)
+                        ret = RET_ERROR;
+                    else if(data[1] != NULL) {
+                        error("Runtime error: fclose Too many arguments error.");
+                        ret = RET_ERROR;
+                    } else if(data[0]->type != OBJECT_TYPE_NUMBER) {
+                        error("Runtime error: fclose Type error.");
+                        ret = RET_ERROR;
+                    } else if(data[0]->data.number != (int)(data[0]->data.number)) {
+                        error("Runtime error: fclose Integer error.");
+                        ret = RET_ERROR;
+                    } else {
+                        int file = (int)(data[0]->data.number);
+                        close(file);
+                    }
+                    if(data != RET_ERROR && data != NULL) {
+                        for(int i = 0; data[i] != NULL; i++)
+                            object_dereference(data[i]);
+                        _free(data);
+                    }
+                } break;
+                case OPERATION_TYPE_FREAD: {
+                    object_t** data = operation_result(op->data.operations[0], env);
+
+                    if(data == NULL) {
+                        error("Runtime error: fread NULL error.");
+                        ret = RET_ERROR;
+                    } else if(data == RET_ERROR)
+                        ret = RET_ERROR;
+                    else if(data[1] != NULL) {
+                        error("Runtime error: fread Too many arguments error.");
+                        ret = RET_ERROR;
+                    } else if(data[0]->type != OBJECT_TYPE_NUMBER) {
+                        error("Runtime error: fread Type error.");
+                        ret = RET_ERROR;
+                    } else if(data[0]->data.number != (int)(data[0]->data.number)) {
+                        error("Runtime error: fread Integer error.");
+                        ret = RET_ERROR;
+                    } else {
+                        int file = (int)(data[0]->data.number);
+                        size_t cap = 512;
+                        size_t size = 0;
+                        char* buffer = malloc(cap);
+                        while(1) {
+                            size_t ret = read(file, buffer + size, 1);
+                            if(ret <= 0 || buffer[size] == '\n') {
+                                break;
+                            }
+                            size++;
+                            if(size == cap) {
+                                cap *= 2;
+                                buffer = realloc(buffer, cap);
+                            }
+                        }
+                        ret = (object_t**)_alloc(sizeof(object_t*) * 2);
+                        ret[0] = object_create_string(string_create_full(buffer, size));
+                        object_reference(ret[0]);
+                        ret[1] = NULL;
+                        free(buffer);
+                    }
+                    if(data != RET_ERROR && data != NULL) {
+                        for(int i = 0; data[i] != NULL; i++)
+                            object_dereference(data[i]);
+                        _free(data);
+                    }
+                } break;
+                case OPERATION_TYPE_FWRITE: {
+                    object_t** data = operation_result(op->data.operations[0], env);
+
+                    if(data == NULL) {
+                        error("Runtime error: fwrite NULL error.");
+                        ret = RET_ERROR;
+                    } else if(data == RET_ERROR)
+                        ret = RET_ERROR;
+                    else if(data[0]->type != OBJECT_TYPE_NUMBER) {
+                        error("Runtime error: fwrite Type error.");
+                        ret = RET_ERROR;
+                    } else if(data[0]->data.number != (int)(data[0]->data.number)) {
+                        error("Runtime error: fwrite Integer error.");
+                        ret = RET_ERROR;
+                    } else {
+                        int file = (int)(data[0]->data.number);
+                        for(int i = 1; data[i] != NULL; i++) {
+                            string_t* str = object_to_string(data[i]);
+                            write(file, str->data, str->length);
+                            string_free(str);
+                        }
+                    }
+                    if(data != RET_ERROR && data != NULL) {
+                        for(int i = 0; data[i] != NULL; i++)
+                            object_dereference(data[i]);
+                        _free(data);
+                    }
+                } break;
             }
         }
 
@@ -3881,6 +4093,10 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
                         _free(index);
                     }
                 } break;
+                case OPERATION_TYPE_FOPEN: break;
+                case OPERATION_TYPE_FCLOSE: break;
+                case OPERATION_TYPE_FREAD: break;
+                case OPERATION_TYPE_FWRITE: break;
                 case OPERATION_TYPE_EXEC: break;
                 case OPERATION_TYPE_TO_NUM: break;
                 case OPERATION_TYPE_TO_BOOL: break;
@@ -4648,6 +4864,22 @@ void operation_free(operation_t* op) {
                 operation_free(op->data.operations[0]);
                 _free(op->data.operations);
             break;
+            case OPERATION_TYPE_FOPEN:
+                operation_free(op->data.operations[0]);
+                _free(op->data.operations);
+            break;
+            case OPERATION_TYPE_FCLOSE:
+                operation_free(op->data.operations[0]);
+                _free(op->data.operations);
+            break;
+            case OPERATION_TYPE_FREAD:
+                operation_free(op->data.operations[0]);
+                _free(op->data.operations);
+            break;
+            case OPERATION_TYPE_FWRITE:
+                operation_free(op->data.operations[0]);
+                _free(op->data.operations);
+            break;
         }
         _free(op);
     }
@@ -4739,6 +4971,10 @@ id_t operation_id(operation_t* op) {
             case OPERATION_TYPE_LIST_OPEN: break;
             case OPERATION_TYPE_FOR_IN: break;
             case OPERATION_TYPE_IMPORT: break;
+            case OPERATION_TYPE_FOPEN: break;
+            case OPERATION_TYPE_FREAD: break;
+            case OPERATION_TYPE_FWRITE: break;
+            case OPERATION_TYPE_FCLOSE: break;
         }
     }
 
@@ -4837,6 +5073,10 @@ bool_t operation_equ(operation_t* o1, operation_t* o2) {
         case OPERATION_TYPE_LIST_OPEN: break;
         case OPERATION_TYPE_FOR_IN: break;
         case OPERATION_TYPE_IMPORT: break;
+        case OPERATION_TYPE_FOPEN: break;
+        case OPERATION_TYPE_FREAD: break;
+        case OPERATION_TYPE_FWRITE: break;
+        case OPERATION_TYPE_FCLOSE: break;
     }
 
     return ret;
@@ -4888,6 +5128,10 @@ operation_t* operation_copy(operation_t* op) {
             ret->data.operations[1] = operation_copy(op->data.operations[1]);
             ret->data.operations[2] = operation_copy(op->data.operations[2]);
         break;
+        case OPERATION_TYPE_FOPEN: break;
+        case OPERATION_TYPE_FREAD: break;
+        case OPERATION_TYPE_FWRITE: break;
+        case OPERATION_TYPE_FCLOSE: break;
         case OPERATION_TYPE_MACRO:
         case OPERATION_TYPE_STRUCT:
         case OPERATION_TYPE_DIC:
