@@ -3765,7 +3765,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                             if(data[1]->data.string->data[0] == 'r') {
                                 flags |= O_RDONLY;
                             } else if(data[1]->data.string->data[0] == 'w') {
-                                flags |= O_WRONLY | O_CREAT;
+                                flags |= O_WRONLY | O_TRUNC | O_CREAT;
                             } else if(data[1]->data.string->data[0] == 'a') {
                                 flags |= O_WRONLY | O_APPEND | O_CREAT;
                             }
@@ -3773,7 +3773,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                             if(data[1]->data.string->data[0] == 'r') {
                                 flags |= O_RDWR;
                             } else if(data[1]->data.string->data[0] == 'w') {
-                                flags |= O_RDWR | O_CREAT;
+                                flags |= O_RDWR | O_TRUNC | O_CREAT;
                             } else if(data[1]->data.string->data[0] == 'a') {
                                 flags |= O_RDWR | O_APPEND | O_CREAT;
                             }
