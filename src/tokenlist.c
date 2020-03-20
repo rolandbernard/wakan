@@ -370,7 +370,7 @@ tokenlist_t* tokenize(const char* src) {
             cur_pos--;
 
             num /= div;
-            num *= pow(10, neg_exp ? -exp : exp);
+            num *= powl(10, neg_exp ? -exp : exp);
 
             add_simple_token(ret, TOKEN_TYPE_NUM);
             ret->end->data.num = num;

@@ -7,7 +7,7 @@
 #include "./bool.h"
 
 // TODO: Upgrade number_t
-typedef double number_t;
+typedef long double number_t;
 
 id_t number_id(number_t num);
 int number_cmp(number_t n1, number_t n2);

@@ -1832,9 +1832,9 @@ object_t** operation_result(operation_t* op, environment_t* env) {
 
                             for(int j = num_op-2; j >= 0; j--) {
                                 if(vals[j][1] == NULL)
-                                    ret_part = pow(vals[j][0]->data.number, ret_part);
+                                    ret_part = powl(vals[j][0]->data.number, ret_part);
                                 else
-                                    ret_part = pow(vals[j][i]->data.number, ret_part);
+                                    ret_part = powl(vals[j][i]->data.number, ret_part);
                             }
 
                             ret[i] = object_create_number(ret_part);
@@ -2100,7 +2100,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(sqrt(vals[i]->data.number));
+                                ret[i] = object_create_number(sqrtl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2130,7 +2130,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(cbrt(vals[i]->data.number));
+                                ret[i] = object_create_number(cbrtl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2161,7 +2161,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(sin(vals[i]->data.number));
+                                ret[i] = object_create_number(sinl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2192,7 +2192,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(cos(vals[i]->data.number));
+                                ret[i] = object_create_number(cosl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2223,7 +2223,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(tan(vals[i]->data.number));
+                                ret[i] = object_create_number(tanl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2254,7 +2254,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(asin(vals[i]->data.number));
+                                ret[i] = object_create_number(asinl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2285,7 +2285,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(acos(vals[i]->data.number));
+                                ret[i] = object_create_number(acosl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2316,7 +2316,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(atan(vals[i]->data.number));
+                                ret[i] = object_create_number(atanl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2348,7 +2348,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(sinh(vals[i]->data.number));
+                                ret[i] = object_create_number(sinhl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2379,7 +2379,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(cosh(vals[i]->data.number));
+                                ret[i] = object_create_number(coshl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2410,7 +2410,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(tanh(vals[i]->data.number));
+                                ret[i] = object_create_number(tanhl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2441,7 +2441,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(asinh(vals[i]->data.number));
+                                ret[i] = object_create_number(asinhl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2472,7 +2472,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(acosh(vals[i]->data.number));
+                                ret[i] = object_create_number(acoshl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2503,7 +2503,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(atanh(vals[i]->data.number));
+                                ret[i] = object_create_number(atanhl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2534,7 +2534,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(trunc(vals[i]->data.number));
+                                ret[i] = object_create_number(truncl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2565,7 +2565,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(floor(vals[i]->data.number));
+                                ret[i] = object_create_number(floorl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2596,7 +2596,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(ceil(vals[i]->data.number));
+                                ret[i] = object_create_number(ceill(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2627,7 +2627,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         if(ret != RET_ERROR) {
                             ret = (object_t**)_alloc(sizeof(object_t*)*(num_vals+1));
                             for(int i = 0; i < num_vals; i++) {
-                                ret[i] = object_create_number(round(vals[i]->data.number));
+                                ret[i] = object_create_number(roundl(vals[i]->data.number));
                                 object_reference(ret[i]);
                             }
                             ret[num_vals] = NULL;
@@ -2640,7 +2640,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                 } break;
                 case OPERATION_TYPE_RAND:
                     ret = (object_t**)_alloc(sizeof(object_t*)*2);
-                    ret[0] = object_create_number((double)rand()/RAND_MAX);
+                    ret[0] = object_create_number((number_t)rand()/RAND_MAX);
                     object_reference(ret[0]);
                     ret[1] = NULL;
                     break;
@@ -4101,7 +4101,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
                                 if(data[i]->type == OBJECT_TYPE_LIST) {
                                     if(index[j]->type == OBJECT_TYPE_NUMBER) {
 
-                                        pos_t ind = (int)round(index[j]->data.number);
+                                        pos_t ind = (int)roundl(index[j]->data.number);
                                         if(ind < 0)
                                             ind += data[i]->data.list->size;
                                         object_t** obj = list_get_loc(data[i]->data.list, ind);

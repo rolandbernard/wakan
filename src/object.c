@@ -189,7 +189,7 @@ void print_object(object_t* obj) {
         switch(obj->type) {
             case OBJECT_TYPE_FREED: break;
             case OBJECT_TYPE_NONE: fprintf(stdout, "none"); break;
-            case OBJECT_TYPE_NUMBER: fprintf(stdout, "%.15lg", obj->data.number); break;
+            case OBJECT_TYPE_NUMBER: fprintf(stdout, "%.15Lg", obj->data.number); break;
             case OBJECT_TYPE_BOOL: fprintf(stdout, (obj->data.boolean ? "true" : "false")); break;
             case OBJECT_TYPE_STRING:
                 fprintf(stdout, "%s", string_get_cstr(obj->data.string));
@@ -259,7 +259,7 @@ string_t* object_to_string(object_t* obj) {
         case OBJECT_TYPE_NONE: ret = string_create("none"); break;
         case OBJECT_TYPE_NUMBER: {
             char temp_str[TMP_STR_MAX];
-            sprintf(temp_str, "%.15g", obj->data.number);
+            sprintf(temp_str, "%.15Lg", obj->data.number);
             ret = string_create(temp_str);
         } break;
         case OBJECT_TYPE_BOOL: ret = string_create(obj->data.boolean ? "true" : "false"); break;
