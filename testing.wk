@@ -1,16 +1,3 @@
-# This example is not guaranteed to work.
 
-fin1 = fopen("test.txt", "r")
-fin2 = fopen("test.txt", "r")
-
-notempty = true
-while notempty do {
-    line1 = fread fin1
-    line2 = fread fin2
-    if (len line1) == 0 then (notempty = false)
-    write(line1, " ", line2, "\n")
-}
-
-fclose fin1
-fclose fin2
+x = struct (x = 4, y = 5)
 

@@ -17,6 +17,7 @@
 extern bool_t empty_line;
 
 typedef enum object_type_e {
+    OBJECT_TYPE_FREED,
     OBJECT_TYPE_NONE,
     OBJECT_TYPE_NUMBER,
     OBJECT_TYPE_BOOL,

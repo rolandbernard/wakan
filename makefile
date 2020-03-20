@@ -4,7 +4,7 @@ LIBBIN=./build/lib/bin
 LIBINCLUDE=./build/lib/include
 
 LIBS=-lm
-ARGS=-O3 -Wall
+ARGS=-Wall -O0 -g -fsanitize=address
 OBJECTS=$(BUILD)/string.o $(BUILD)/object.o $(BUILD)/list.o $(BUILD)/number.o $(BUILD)/pair.o $(BUILD)/bool.o $(BUILD)/prime.o\
 $(BUILD)/dictionary.o $(BUILD)/environment.o $(BUILD)/error.o $(BUILD)/function.o $(BUILD)/macro.o $(BUILD)/operation.o $(BUILD)/struct.o \
 $(BUILD)/variabletable.o $(BUILD)/tokenlist.o $(BUILD)/program.o $(BUILD)/token.o

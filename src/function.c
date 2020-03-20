@@ -73,6 +73,7 @@ void* function_exec(function_t* func, object_t** par, environment_t* env) {
                     error("Runtime error: Too many arguments to function.");
                     ret = RET_ERROR;
                 }
+                _free(par_loc_list);
             }
             if(par != NULL && par_loc_list == NULL){
                 error("Runtime error: Too many arguments to function.");
@@ -83,7 +84,7 @@ void* function_exec(function_t* func, object_t** par, environment_t* env) {
             }
 
             environment_del(env, func_self_name);
-            _free(func_self_name);
+            string_free(func_self_name);
 
             environment_set_local_mode(env, prev_limit);
             environment_remove_scope(env);
@@ -138,14 +139,15 @@ object_t** function_result(function_t* func, object_t** par, environment_t* env)
                     error("Runtime error: Too many arguments to function.");
                     ret = RET_ERROR;
                 }
+                _free(par_loc_list);
             }
 
             if(par != NULL && par_loc_list == NULL){
                 error("Runtime error: Too many arguments to function.");
                 ret = RET_ERROR;
             } else if(ret != RET_ERROR) {
-                   ret = operation_result(func->function, env);
-               }
+                ret = operation_result(func->function, env);
+            }
 
             environment_del(env, func_self_name);
             string_free(func_self_name);

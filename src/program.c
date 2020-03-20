@@ -154,6 +154,7 @@ bool_t is_closing_exp(token_type_t type) {
         return false;
 }
 
+#include <stdio.h>
 // Assumes only one accordance
 bool_t is_expected_on_stack(token_t** stack, size_t count, int n, ...) {
     bool_t ret = true;
@@ -183,7 +184,7 @@ bool_t is_expected_on_stack(token_t** stack, size_t count, int n, ...) {
     else {
         va_list list;
         va_start(list, n);
-        for(int i = pos; ret && i > 0; i--)
+        for(int i = pos; ret && i > 0 && ((int)count-1-i) > 0; i--)
             if(va_arg(list, token_type_t) != stack[count-1-i]->type)
                 ret = false;
         va_end(list);
@@ -697,7 +698,10 @@ program_t* parse_program(tokenlist_t* list) {
 }
 
 program_t* tokenize_and_parse_program(const char* src) {
-    return parse_program(tokenize(src));
+    tokenlist_t* tokens = tokenize(src);
+    program_t* program = parse_program(tokens);
+    _free(tokens);
+    return program;
 }
 
 void program_free(program_t* program) {
@@ -707,3 +711,8 @@ void program_free(program_t* program) {
 void program_exec(program_t* program, environment_t* env) {
     operation_exec(program, env);
 }
+
+object_t** program_result(program_t* program, environment_t* env) {
+    return operation_result(program, env);
+}
+

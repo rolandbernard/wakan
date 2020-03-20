@@ -532,7 +532,7 @@ void* operation_exec(operation_t* op, environment_t* env) {
                             else if(operation_exec(op->data.operations[2], env) == RET_ERROR)
                                 ret = RET_ERROR;
                             else {
-                                object_dereference(cond[1]);
+                                object_dereference(cond[0]);
                                 _free(cond);
                                 cond = operation_result(op->data.operations[1], env);
                                 if(cond == NULL) {
@@ -548,7 +548,9 @@ void* operation_exec(operation_t* op, environment_t* env) {
                         }
 
                     if(cond != RET_ERROR && cond != NULL) {
-                        object_dereference(cond[0]);
+                        for(int i = 0; cond[i] != NULL; i++) {
+                            object_dereference(cond[i]);
+                        }
                         _free(cond);
                     }
                 } break;
@@ -3338,6 +3340,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                     }
                 } break;
                 case OPERATION_TYPE_WHILE: {
+                    ret = ((void*)2);
                     list_t* list = list_create_empty();
 
                     object_t** cond = operation_result(op->data.operations[0], env);
@@ -3353,35 +3356,53 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                     } else
                         while(ret != RET_ERROR && is_true(cond[0]))
                         {
-                            object_t** tmp = operation_result(op->data.operations[1], env);
-                            if(tmp == NULL) {
-                                error("Runtime error: While NULL error.");
-                                list_free(list);
-                                ret = RET_ERROR;
-                            } else if(tmp == RET_ERROR) {
-                                list_free(list);
-                                ret = RET_ERROR;
-                            } else {
-                                for(int i = 0; tmp[i] != NULL; i++) {
-                                    list_append(list, tmp[i]);
-                                    object_dereference(tmp[i]);
-                                }
-                                _free(tmp);
+                            if(ret != NULL) {
+                                object_t** tmp = operation_result(op->data.operations[1], env);
+                                if(tmp == NULL) {
+                                    list_free(list);
+                                    ret = NULL;
+                                } else if(tmp == RET_ERROR) {
+                                    list_free(list);
+                                    ret = RET_ERROR;
+                                } else {
+                                    for(int i = 0; tmp[i] != NULL; i++) {
+                                        list_append(list, tmp[i]);
+                                        object_dereference(tmp[i]);
+                                    }
+                                    _free(tmp);
 
-                                object_dereference(cond[0]);
-                                _free(cond);
-                                cond = operation_result(op->data.operations[0], env);
-                                if(cond == NULL) {
-                                    error("Runtime error: While NULL error.");
-                                    list_free(list);
+                                    object_dereference(cond[0]);
+                                    _free(cond);
+                                    cond = operation_result(op->data.operations[0], env);
+                                    if(cond == NULL) {
+                                        error("Runtime error: While NULL error.");
+                                        list_free(list);
+                                        ret = RET_ERROR;
+                                    } else if(cond == RET_ERROR) {
+                                        list_free(list);
+                                        ret = RET_ERROR;
+                                    } else if(cond[1] != NULL) {
+                                        error("Runtime error: While non-scalar condition error.");
+                                        list_free(list);
+                                        ret = RET_ERROR;
+                                    }
+                                }
+                            } else {
+                                if(operation_exec(op->data.operations[1], env) == RET_ERROR)
                                     ret = RET_ERROR;
-                                } else if(cond == RET_ERROR) {
-                                    list_free(list);
-                                    ret = RET_ERROR;
-                                } else if(cond[1] != NULL) {
-                                    error("Runtime error: While non-scalar condition error.");
-                                    list_free(list);
-                                    ret = RET_ERROR;
+                                else {
+                                    object_dereference(cond[0]);
+                                    _free(cond);
+                                    cond = operation_result(op->data.operations[0], env);
+                                    if(cond == NULL) {
+                                        error("Runtime error: While NULL error.");
+                                        ret = RET_ERROR;
+                                    } else if(cond == RET_ERROR) {
+                                        ret = RET_ERROR;
+                                    } else if(cond[1] != NULL) {
+                                        error("Runtime error: While non-scalar condition error.");
+                                        ret = RET_ERROR;
+                                    }
                                 }
                             }
                         }
@@ -3519,6 +3540,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                     }
                 } break;
                 case OPERATION_TYPE_FOR: {
+                    ret = ((void*)2);
                     list_t* list = list_create_empty();
 
                     if(operation_exec(op->data.operations[0], env) == RET_ERROR) {
@@ -3537,37 +3559,57 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                         } else
                             while(ret != RET_ERROR && is_true(cond[0]))
                             {
-                                object_t** tmp = operation_result(op->data.operations[3], env);
-                                if(tmp == NULL) {
-                                    error("Runtime error: For NULL error.");
-                                    list_free(list);
-                                    ret = RET_ERROR;
-                                } else if(tmp == RET_ERROR) {
-                                    list_free(list);
-                                    ret = RET_ERROR;
-                                } else if(operation_exec(op->data.operations[2], env) == RET_ERROR) {
-                                    ret = RET_ERROR;
-                                } else {
-                                    for(int i = 0; tmp[i] != NULL; i++) {
-                                        list_append(list, tmp[i]);
-                                        object_dereference(tmp[i]);
-                                    }
-                                    _free(tmp);
+                                if(ret != NULL) {
+                                    object_t** tmp = operation_result(op->data.operations[3], env);
+                                    if(tmp == NULL) {
+                                        list_free(list);
+                                        ret = NULL;
+                                    } else if(tmp == RET_ERROR) {
+                                        list_free(list);
+                                        ret = RET_ERROR;
+                                    } else if(operation_exec(op->data.operations[2], env) == RET_ERROR) {
+                                        ret = RET_ERROR;
+                                    } else {
+                                        for(int i = 0; tmp[i] != NULL; i++) {
+                                            list_append(list, tmp[i]);
+                                            object_dereference(tmp[i]);
+                                        }
+                                        _free(tmp);
 
-                                    object_dereference(cond[1]);
-                                    _free(cond);
-                                    cond = operation_result(op->data.operations[1], env);
-                                    if(cond == NULL) {
-                                        error("Runtime error: For NULL error.");
-                                        list_free(list);
+                                        object_dereference(cond[0]);
+                                        _free(cond);
+                                        cond = operation_result(op->data.operations[1], env);
+                                        if(cond == NULL) {
+                                            error("Runtime error: For NULL error.");
+                                            list_free(list);
+                                            ret = RET_ERROR;
+                                        } else if(cond == RET_ERROR) {
+                                            list_free(list);
+                                            ret = RET_ERROR;
+                                        } else if(cond[1] != NULL) {
+                                            error("Runtime error: For non-scalar condition error.");
+                                            list_free(list);
+                                            ret = RET_ERROR;
+                                        }
+                                    }
+                                } else {
+                                    if(operation_exec(op->data.operations[3], env) == RET_ERROR)
                                         ret = RET_ERROR;
-                                    } else if(cond == RET_ERROR) {
-                                        list_free(list);
+                                    else if(operation_exec(op->data.operations[2], env) == RET_ERROR)
                                         ret = RET_ERROR;
-                                    } else if(cond[1] != NULL) {
-                                        error("Runtime error: For non-scalar condition error.");
-                                        list_free(list);
-                                        ret = RET_ERROR;
+                                    else {
+                                        object_dereference(cond[0]);
+                                        _free(cond);
+                                        cond = operation_result(op->data.operations[1], env);
+                                        if(cond == NULL) {
+                                            error("Runtime error: while NULL error.");
+                                            ret = RET_ERROR;
+                                        } else if(cond == RET_ERROR) {
+                                            ret = RET_ERROR;
+                                        } else if(cond[1] != NULL) {
+                                            error("Runtime error: while non-scalar condition error.");
+                                            ret = RET_ERROR;
+                                        }
                                     }
                                 }
                             }
@@ -3624,6 +3666,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                     }
                 } break;
                 case OPERATION_TYPE_FOR_IN: {
+                    ret = ((void*)2);
                     list_t* list = list_create_empty();
 
                     object_t*** vals_loc = operation_var(op->data.operations[0], env);
@@ -3662,20 +3705,24 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                                 }
                             }
 
-                            object_t** tmp = operation_result(op->data.operations[2], env);
-                            if(tmp == NULL) {
-                                error("Runtime error: For NULL error.");
-                                list_free(list);
-                                ret = RET_ERROR;
-                            } else if(tmp == RET_ERROR) {
-                                list_free(list);
-                                ret = RET_ERROR;
-                            } else {
-                                for(int i = 0; tmp[i] != NULL; i++) {
-                                    list_append(list, tmp[i]);
-                                    object_dereference(tmp[i]);
+                            if(ret != NULL) {
+                                object_t** tmp = operation_result(op->data.operations[2], env);
+                                if(tmp == NULL) {
+                                    list_free(list);
+                                    ret = NULL;
+                                } else if(tmp == RET_ERROR) {
+                                    list_free(list);
+                                    ret = RET_ERROR;
+                                } else {
+                                    for(int i = 0; tmp[i] != NULL; i++) {
+                                        list_append(list, tmp[i]);
+                                        object_dereference(tmp[i]);
+                                    }
+                                    _free(tmp);
                                 }
-                                _free(tmp);
+                            } else {
+                                if(operation_exec(op->data.operations[2], env) == RET_ERROR)
+                                    ret = RET_ERROR;
                             }
                         }
                     }
@@ -4234,7 +4281,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
                                 }
                                 _free(tmp);
 
-                                object_dereference(cond[1]);
+                                object_dereference(cond[0]);
                                 _free(cond);
                                 cond = operation_result(op->data.operations[0], env);
                                 if(cond == NULL) {
@@ -4374,7 +4421,7 @@ object_t*** operation_var(operation_t* op, environment_t* env) {
                                     }
                                     _free(tmp);
 
-                                    object_dereference(cond[1]);
+                                    object_dereference(cond[0]);
                                     _free(cond);
                                     cond = operation_result(op->data.operations[1], env);
                                     if(cond == NULL) {

@@ -13,5 +13,6 @@ program_t* parse_program(tokenlist_t* tokens);
 program_t* tokenize_and_parse_program(const char* src);
 void program_free(program_t* program);
 void program_exec(program_t* program, environment_t* env);
+object_t** program_result(program_t* program, environment_t* env);
 
 #endif

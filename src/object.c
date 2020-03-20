@@ -98,6 +98,7 @@ id_t object_id(object_t* obj) {
         return HUGE_PRIME_5;
     switch(obj->type)
     {
+        case OBJECT_TYPE_FREED: break;
         case OBJECT_TYPE_NONE: return HUGE_PRIME_4; break;
         case OBJECT_TYPE_NUMBER: return number_id(obj->data.number); break;
         case OBJECT_TYPE_BOOL: return bool_id(obj->data.boolean); break;
@@ -123,6 +124,7 @@ bool_t object_equ(object_t* o1, object_t* o2) {
 
     switch(o1->type)
     {
+        case OBJECT_TYPE_FREED: break;
         case OBJECT_TYPE_NONE: return 1; break;
         case OBJECT_TYPE_NUMBER: return number_equ(o1->data.number, o2->data.number); break;
         case OBJECT_TYPE_BOOL: return bool_equ(o1->data.boolean, o2->data.boolean); break;
@@ -158,9 +160,12 @@ bool_t object_check_reference(object_t* obj) {
 
 // TODO:
 void object_free(object_t* obj) {
-    if(obj != NULL && obj != OBJECT_LIST_OPENED) {
-        switch(obj->type)
+    if(obj != NULL && obj != OBJECT_LIST_OPENED && obj->type != OBJECT_TYPE_FREED) {
+        object_type_t type = obj->type;
+        obj->type = OBJECT_TYPE_FREED;
+        switch(type)
         {
+            case OBJECT_TYPE_FREED: break;
             case OBJECT_TYPE_NONE: break;
             case OBJECT_TYPE_NUMBER: break;
             case OBJECT_TYPE_BOOL: break;
@@ -182,6 +187,7 @@ void print_object(object_t* obj) {
         fprintf(stdout, "null");
     else {
         switch(obj->type) {
+            case OBJECT_TYPE_FREED: break;
             case OBJECT_TYPE_NONE: fprintf(stdout, "none"); break;
             case OBJECT_TYPE_NUMBER: fprintf(stdout, "%.15lg", obj->data.number); break;
             case OBJECT_TYPE_BOOL: fprintf(stdout, (obj->data.boolean ? "true" : "false")); break;
@@ -249,6 +255,7 @@ string_t* object_to_string(object_t* obj) {
     if(obj == NULL || obj == OBJECT_LIST_OPENED)
         ret = string_create("null");
     switch (obj->type) {
+        case OBJECT_TYPE_FREED: break;
         case OBJECT_TYPE_NONE: ret = string_create("none"); break;
         case OBJECT_TYPE_NUMBER: {
             char temp_str[TMP_STR_MAX];
@@ -295,6 +302,7 @@ bool_t is_true(object_t* obj) {
     if(obj == NULL || obj == OBJECT_LIST_OPENED)
         return false;
     switch (obj->type) {
+        case OBJECT_TYPE_FREED: break;
         case OBJECT_TYPE_NONE: return false; break;
         case OBJECT_TYPE_NUMBER: return obj->data.number == 0 ? false : true; break;
         case OBJECT_TYPE_BOOL: return obj->data.boolean; break;

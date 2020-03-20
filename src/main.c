@@ -89,10 +89,22 @@ int main(int argc, char** argv) {
 
             if(program != NULL) {
                 set_error_handler(error_handler);
-                program_exec(program, env);
+                object_t** ret = program_result(program, env);
                 fflush(stdout);
                 if (!empty_line) {
                     fprintf(stdout, "\n");
+                    empty_line = true;
+                }
+                if(ret != NULL && ret != RET_ERROR && ret[0] != NULL) {
+                    fprintf(stdout, "\e[36m");
+                    for(int i = 0; ret[i] != NULL; i++) {
+                        print_object(ret[i]);
+                        if(ret[i+1] != NULL) {
+                            fprintf(stdout, ", ");
+                        }
+                    }
+                    fprintf(stdout, "\e[m\n");
+                    fflush(stdout);
                     empty_line = true;
                 }
             }
@@ -130,6 +142,7 @@ int main(int argc, char** argv) {
             fclose(file);
         }
     }
+    environment_free(env);
 
     return error_flag;
 }
