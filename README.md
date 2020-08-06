@@ -8,5 +8,10 @@ This is a rather crude implementation of Wakan. It is not trying to be very effi
 its use in any critical application is not recommended. If you want to support the project however,
 you are free to report any bugs or suggestions by creating a new issue.
 
+## Hello world
 
+The "Hello world" program of this language looks like this:
+```
+write "Hello world!\n"
+```
 
