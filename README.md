@@ -1,5 +1,5 @@
-Wakan
-======
+The Wakan Programming Language
+==============================
 
 Wakan is a small programming language designed as an educational project.
 It was not designed for any particular application and is not complete.
