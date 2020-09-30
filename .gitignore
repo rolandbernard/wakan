@@ -2,3 +2,4 @@ build/*
 build/lib/bin/*
 build/lib/include/*
 wakan
+test.*

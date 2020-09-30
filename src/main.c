@@ -44,14 +44,10 @@ int main(int argc, char** argv) {
     char* buffer;
     program_t* program;
     size_t file_size;
+    error_flag = false;
 
     if (argc == 1) {
-        string_t* history[HISTORY_BUFFER_SIZE] = { NULL };
-
         while (1) {
-            int history_end = 0;
-            int history_start = 0;
-
             fprintf(stderr, ">>> ");
             string_t* input = string_create("");
             bool_t ready = false;
@@ -63,6 +59,10 @@ int main(int argc, char** argv) {
 
                 do {
                     int ch = getc(stdin);
+                    if(ch == -1) {
+                        string_free(input);
+                        goto end;
+                    }
 
                     line_buffer[buffer_index] = ch;
                     buffer_index++;
@@ -102,22 +102,20 @@ int main(int argc, char** argv) {
                         if(ret[i+1] != NULL) {
                             fprintf(stdout, ", ");
                         }
+                        object_dereference(ret[i]);
                     }
                     fprintf(stdout, "\e[m\n");
                     fflush(stdout);
                     empty_line = true;
                 }
+                _free(ret);
+                program_free(program);
             }
-            if(history_start == (history_end+1)%HISTORY_BUFFER_SIZE) {
-                string_free(history[history_start]);
-                history_start = (history_start+1)%HISTORY_BUFFER_SIZE;
-            }
-            history_end = (history_end+1)%HISTORY_BUFFER_SIZE;
-            history[history_end] = input;
+            string_free(input);
         }
-        for(int i = 0; i != HISTORY_BUFFER_SIZE; i++)
-            if(history[i] != NULL)
-                string_free(history[i]);
+        
+    end:
+        fprintf(stdout, "\n");
     } else {
         for(int i = 1; !error_flag && i < argc; i++) {
             FILE* file = fopen(argv[i], "r");

@@ -3620,7 +3620,7 @@ object_t** operation_result(operation_t* op, environment_t* env) {
                             _free(cond);
                         }
 
-                        if(ret != RET_ERROR) {
+                        if(ret != RET_ERROR && ret != NULL) {
                             list_append(list, NULL);
                             ret = list->data;
                             _free(list);

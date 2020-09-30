@@ -174,9 +174,9 @@ size_t string_length(string_t* str) {
 
 // TODO:
 id_t string_id(string_t* str) {
-    long hash = 0;
+    id_t hash = 0;
     for (int i = 0; i < str->length; i++) {
-        hash += (long)pow(SMALL_PRIME_1, str->length - (i+1)) * str->data[i];
+        hash += (id_t)pow(SMALL_PRIME_1, str->length - (i+1)) * str->data[i];
     }
     return (id_t)hash;
 }
